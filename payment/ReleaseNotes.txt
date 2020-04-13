@@ -1,4 +1,24 @@
 ===============================================================================
+   Bukopin-Mobile-Payment 1.2.Alpha1 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Payment - Version 1.2.Alpha1
+** Notes
+	* Release for phase ...
+
+** Features
+	* 
+
+** Story
+	* 
+
+** Bug Fixed
+	*   
+	
+** Deprecated Service
+	* 
+
+
+===============================================================================
    Bukopin-Mobile-Payment 1.1.Alpha1 Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Payment - Version 1.1.Alpha1
