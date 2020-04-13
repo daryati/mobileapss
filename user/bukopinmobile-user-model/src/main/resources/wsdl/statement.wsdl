@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:ns2="http://xml.asyst.co.id/commons/ws/fault" xmlns:ns1="http://xml.asyst.co.id/cbs/listing/statement/getministatement/v1_0" xmlns:ns3="http://xml.asyst.co.id/cbs/listing/statement/getstatementbydaterange/v1_0" xmlns:tns="http://xmlns.example.com/1535727132417" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns0="http://xml.asyst.co.id/commons/ws/header" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" name="Untitled" targetNamespace="http://xmlns.example.com/1535727132417">
+    <wsdl:types>
+        <xs:schema xmlns="http://xml.asyst.co.id/cbs/listing/statement/getministatement/v1_0" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xml.asyst.co.id/cbs/listing/statement/getministatement/v1_0" elementFormDefault="qualified" attributeFormDefault="unqualified">
+            <xs:complexType name="GetMiniStatementReqType">
+                <xs:sequence>
+                    <xs:element name="accNo" type="xs:string"/>
+                    <xs:element name="accType" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="GetMiniStatementResType">
+                <xs:sequence>
+                    <xs:element name="accInfo" minOccurs="0">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="accNo">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:minLength value="0"/>
+                                            <xs:maxLength value="20"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="name">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:minLength value="0"/>
+                                            <xs:maxLength value="60"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="lastBalance">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:decimal"/>
+                                    </xs:simpleType>
+                                </xs:element>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="transaction" minOccurs="0" maxOccurs="unbounded">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="trxID">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:minLength value="1"/>
+                                            <xs:maxLength value="4"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="trxAmount" type="xs:decimal"/>
+                                <xs:element name="posting">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:minLength value="0"/>
+                                            <xs:maxLength value="1"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="trxDateTime">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:dateTime"/>
+                                    </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="trxDesc">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:minLength value="0"/>
+                                            <xs:maxLength value="40"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:element>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="GetMiniStatementReq" type="ns1:GetMiniStatementReqType"/>
+            <xs:element name="GetMiniStatementRes" type="ns1:GetMiniStatementResType"/>
+        </xs:schema>
+        <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fault="http://xml.asyst.co.id/commons/ws/fault" targetNamespace="http://xml.asyst.co.id/commons/ws/fault" elementFormDefault="qualified" attributeFormDefault="unqualified">
+            <xs:complexType name="anydata">
+                <xs:sequence>
+                    <xs:any processContents="skip" namespace="##any"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="BWErrDetails">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="fault:ErrHeader" minOccurs="0"/>
+                        <xs:element ref="fault:ErrReport" minOccurs="0"/>
+                        <xs:element ref="fault:ProviderErrs" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Err">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="ErrCat" type="xs:string" minOccurs="0"/>
+                        <xs:element name="ErrCatDesc" type="xs:string" minOccurs="0"/>
+                        <xs:element name="ErrCode" type="xs:string" minOccurs="0"/>
+                        <xs:element name="ErrDesc" type="xs:string" minOccurs="0"/>
+                        <xs:element name="ErrSev" type="xs:string" minOccurs="0"/>
+                        <xs:element name="ErrSrc" type="xs:string"/>
+                        <xs:element name="ErrTgt" type="xs:string"/>
+                        <xs:element name="ErrDateTime" type="xs:dateTime"/>
+                        <xs:element name="ErrDetail" type="xs:string" minOccurs="0"/>
+                        <xs:element ref="fault:BWErrDetails" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ErrHeader">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="BWTxnID" type="xs:string"/>
+                        <xs:element name="ClientTxnID" type="xs:string"/>
+                        <xs:element name="ClientID" type="xs:string"/>
+                        <xs:element name="BWProcess" type="xs:string"/>
+                        <xs:element name="BWActivity" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ErrList">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="fault:Err" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ErrReport">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="StackTrace" type="xs:string" minOccurs="0"/>
+                        <xs:element name="Msg" type="xs:string"/>
+                        <xs:element name="FullClass" type="xs:string" minOccurs="0"/>
+                        <xs:element name="Class" type="xs:string" minOccurs="0"/>
+                        <xs:element name="ProcessStack" type="xs:string" minOccurs="0"/>
+                        <xs:element name="MsgCode" type="xs:string" minOccurs="0"/>
+                        <xs:element name="Data" type="fault:anydata" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ProviderErrs">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="faultcode" type="xs:string"/>
+                        <xs:element name="faultstring" type="xs:string"/>
+                        <xs:element name="faultactor" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:head="http://xml.asyst.co.id/commons/ws/header" targetNamespace="http://xml.asyst.co.id/commons/ws/header" elementFormDefault="qualified" attributeFormDefault="unqualified">
+            <xs:complexType name="HeaderRQ">
+                <xs:sequence>
+                    <xs:element name="ReqDateTime" type="xs:dateTime"/>
+                    <xs:element name="ClientTxnID" type="xs:string"/>
+                    <xs:element name="IsLastTxn" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="Credentials">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="ClientID" type="xs:string"/>
+                                <xs:element name="Identity" minOccurs="0">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                            <xs:element name="UserID" type="xs:string"/>
+                                            <xs:element name="Password" type="xs:string"/>
+                                        </xs:sequence>
+                                    </xs:complexType>
+                                </xs:element>
+                                <xs:element name="Session" minOccurs="0">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                            <xs:element name="SessionID" type="xs:string"/>
+                                            <xs:element name="SequenceNumber" type="xs:int"/>
+                                        </xs:sequence>
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="HeaderRS">
+                <xs:sequence>
+                    <xs:element name="ResDateTime" type="xs:dateTime"/>
+                    <xs:element name="ClientTxnID" type="xs:string"/>
+                    <xs:element name="IsLastTxn" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="Session" minOccurs="0">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="SessionID" type="xs:string"/>
+                                <xs:element name="SequenceNumber" type="xs:int"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="ResCode" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="HeaderRQ" type="head:HeaderRQ"/>
+            <xs:element name="HeaderRS" type="head:HeaderRS"/>
+        </xs:schema>
+        <xs:schema xmlns="http://xml.asyst.co.id/cbs/listing/statement/getstatementbydaterange/v1_0" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xml.asyst.co.id/cbs/listing/statement/getstatementbydaterange/v1_0" elementFormDefault="qualified" attributeFormDefault="unqualified">
+            <xs:complexType name="GetStatementByDateRangeReqType">
+                <xs:sequence>
+                    <xs:element name="accNo" type="xs:string"/>
+                    <xs:element name="accType" type="xs:string"/>
+                    <xs:element name="dateFrom" type="xs:date"/>
+                    <xs:element name="dateTo" type="xs:date"/>
+                    <xs:element name="pagingInfo" minOccurs="0">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="startIndex" type="xs:integer"/>
+                                <xs:element name="itemsPerPage" type="xs:integer"/>
+                                <xs:element name="totalResult" type="xs:integer" minOccurs="0"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="GetStatementByDateRangeResType">
+                <xs:sequence>
+                    <xs:element name="accInfo" minOccurs="0">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="accNo">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:minLength value="0"/>
+                                            <xs:maxLength value="20"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="name">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:minLength value="0"/>
+                                            <xs:maxLength value="60"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="lastBalance">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:decimal"/>
+                                    </xs:simpleType>
+                                </xs:element>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="transaction" minOccurs="0" maxOccurs="unbounded">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="batchNo">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:minLength value="0"/>
+                                            <xs:maxLength value="4"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="monthDay">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:minLength value="0"/>
+                                            <xs:maxLength value="4"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="trxNo">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:minLength value="0"/>
+                                            <xs:maxLength value="7"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="acc1">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:minLength value="1"/>
+                                            <xs:maxLength value="19"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="acc2">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:minLength value="1"/>
+                                            <xs:maxLength value="19"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="trxAmount">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:minLength value="0"/>
+                                            <xs:maxLength value="16"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="rateExchange">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:minLength value="0"/>
+                                            <xs:maxLength value="16"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="valasTrxAmount">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:minLength value="0"/>
+                                            <xs:maxLength value="16"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="trxDesc1">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:minLength value="0"/>
+                                            <xs:maxLength value="40"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="trxDesc2">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:minLength value="0"/>
+                                            <xs:maxLength value="40"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="trxDateTime">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:dateTime"/>
+                                    </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="posting">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:minLength value="0"/>
+                                            <xs:maxLength value="1"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:element>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="pagingInfo" minOccurs="0">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="startIndex" type="xs:integer"/>
+                                <xs:element name="itemsPerPage" type="xs:integer"/>
+                                <xs:element name="totalResult" type="xs:integer"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="GetStatementByDateRangeReq" type="ns3:GetStatementByDateRangeReqType"/>
+            <xs:element name="GetStatementByDateRangeRes" type="ns3:GetStatementByDateRangeResType"/>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:service name="StatementService-service">
+        <wsdl:port name="StatementPTEndpointBinding" binding="tns:StatementPTEndpointBindingBinding">
+            <soap:address location="${soap.url.bukopin.statement}"/>
+        </wsdl:port>
+    </wsdl:service>
+    <wsdl:portType name="StatementPT">
+        <wsdl:operation name="GetMiniStatement">
+            <wsdl:input message="tns:GetMiniStatementRQ"/>
+            <wsdl:output message="tns:GetMiniStatementRS"/>
+            <wsdl:fault name="fault1" message="tns:Fault"/>
+        </wsdl:operation>
+        <wsdl:operation name="GetStatementByDateRange">
+            <wsdl:input message="tns:GetStatementRQ"/>
+            <wsdl:output message="tns:GetStatementRS"/>
+            <wsdl:fault name="fault1" message="tns:Fault"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="StatementPTEndpointBindingBinding" type="tns:StatementPT">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="GetMiniStatement">
+            <soap:operation style="document" soapAction="http://ws.bukopin.co.id/cbs/listing/statement/getministatement"/>
+            <wsdl:input>
+                <soap:body use="literal" parts="GetMiniStatementRQ"/>
+                <soap:header use="literal" message="tns:GetMiniStatementRQ" part="headerRQ"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" parts="GetMiniStatementRS"/>
+                <soap:header use="literal" message="tns:GetMiniStatementRS" part="headerRS"/>
+            </wsdl:output>
+            <wsdl:fault name="fault1">
+                <soap:fault use="literal" name="fault1"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="GetStatementByDateRange">
+            <soap:operation style="document" soapAction="http://ws.bukopin.co.id/cbs/listing/statement/getstatementbydate"/>
+            <wsdl:input>
+                <soap:body use="literal" parts="statementRQ"/>
+                <soap:header use="literal" message="tns:GetStatementRQ" part="headerRQ"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" parts="statementRS"/>
+                <soap:header use="literal" message="tns:GetStatementRS" part="headerRS"/>
+            </wsdl:output>
+            <wsdl:fault name="fault1">
+                <soap:fault use="literal" name="fault1"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:message name="GetMiniStatementRQ">
+        <wsdl:part name="headerRQ" element="ns0:HeaderRQ"/>
+        <wsdl:part name="GetMiniStatementRQ" element="ns1:GetMiniStatementReq"/>
+    </wsdl:message>
+    <wsdl:message name="GetMiniStatementRS">
+        <wsdl:part name="headerRS" element="ns0:HeaderRS"/>
+        <wsdl:part name="GetMiniStatementRS" element="ns1:GetMiniStatementRes"/>
+    </wsdl:message>
+    <wsdl:message name="Fault">
+        <wsdl:part name="fault" element="ns2:ErrList"/>
+    </wsdl:message>
+    <wsdl:message name="GetStatementRQ">
+        <wsdl:part name="headerRQ" element="ns0:HeaderRQ"/>
+        <wsdl:part name="statementRQ" element="ns3:GetStatementByDateRangeReq"/>
+    </wsdl:message>
+    <wsdl:message name="GetStatementRS">
+        <wsdl:part name="headerRS" element="ns0:HeaderRS"/>
+        <wsdl:part name="statementRS" element="ns3:GetStatementByDateRangeRes"/>
+    </wsdl:message>
+</wsdl:definitions>

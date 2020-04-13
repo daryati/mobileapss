@@ -1,0 +1,63 @@
+#################################################
+# DEVELOPMENT Server Profile                    #
+#################################################
+
+## Application configurations:
+server:
+   port: 8084
+   servlet:
+      context-path: /bukopinmobile-payment
+
+
+## Database configuration:
+#spring.jpa.hibernate.ddl-auto=create
+spring:
+   datasource:
+      url: jdbc:sqlserver://10.2.62.51:1433;databaseName=DB_MBANKING 
+      username: sa
+      password: Bukopin@2020
+      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+      maxActive: 10
+      initialization-mode: never # always (on) or never (off)
+   jpa:
+      hibernate:
+         ddl-auto: update # update, create, none
+         naming.physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl      
+         #spring.jpa.hibernate.ddl-auto=none
+      properties:
+         hibernate.dialect: org.hibernate.dialect.SQLServerDialect
+         #hibernate.jdbc.lob.non_contextual_creation: true
+   mail:
+      host: smtp.office365.com
+      port: 587
+      username: noreply_mobile@bukopin.co.id
+      password: Bukopin@2019
+      properties:
+         mail:
+            smtp:
+               auth: true
+               connectiontimeout: 60000
+               timeout: 60000
+               writeout: 60000
+               starttls:
+                  enable: true
+
+## LIQUIBASE (LiquibaseProperties)
+# spring.liquibase.enabled=false
+
+## LOGGING
+logging:
+   level:
+      root: ERROR
+      id.co.asyst: TRACE
+      
+config:
+   pln:
+      forwarding-institution-code: 4411338
+   ## IP CONFIG
+   ip:
+      passtrough: # client ip no need token
+         10.2.62.163,
+         10.2.62.164, 
+         0:0:0:0:0:0:0:1,
+         127.0.0.1

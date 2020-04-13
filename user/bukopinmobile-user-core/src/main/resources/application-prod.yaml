@@ -1,0 +1,87 @@
+#################################################
+# DEVELOPMENT Server Profile                    #
+#################################################
+
+## Application configurations:
+server:
+   port: 8080
+   servlet:
+      context-path: /bukopinmobile-user
+
+
+## Database configuration:
+spring:
+   datasource:
+      url: jdbc:sqlserver://10.0.24.83:1433;databaseName=DB_MBANKING 
+      username: dbapp
+      password: 'Bukopin20@$*#'
+      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+      maxActive: 10
+      initialization-mode: never # always (on) or never (off)
+   jpa:
+      hibernate:
+         ddl-auto: update # update, create, none
+         naming.physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      properties:
+         hibernate.dialect: org.hibernate.dialect.SQLServerDialect
+   mail:
+      host: smtp.office365.com
+      port: 587
+      username: noreply_mobile@bukopin.co.id
+      password: Bukopin@2019
+      properties:
+         mail:
+            smtp:
+               auth: true
+               connectiontimeout: 5000
+               timeout: 5000
+               writeout: 5000
+               starttls:
+                  enable: true
+
+## BUKOPIN INTERNAL DATABASE
+bukopin:
+   datasource:
+      url: jdbc:sqlserver://10.0.24.110:1433;databaseName=bukopin
+      username: x
+      password: x1
+      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+   hibernate:
+      #ddl-auto: none,
+      dialect: org.hibernate.dialect.SQLServerDialect
+
+## LIQUIBASE (LiquibaseProperties)
+# spring.liquibase.enabled=false
+
+## LOGGING
+logging:
+   level:
+      root: ERROR
+      id.co.asyst: TRACE
+
+jwt:
+   header: Authorization
+   
+## CENTAGATE CONFIG
+centagate:
+   user:
+      admin: bmobile-prod
+   password:
+      admin: BkPnMBL2020
+   key:
+      secret: qwMgN5Fy9On1
+      integration: 25675f943ad0cb6b03363ff1bf97162dcf433b78a48b1305382bc672ce2fa85d
+      
+## IP CONFIG
+config:
+   ip:
+      passtrough: # client ip no need token
+         10.0.13.61, 
+         0:0:0:0:0:0:0:1,
+         127.0.0.1
+
+## url for other module
+url:
+   masterdata:
+      configuration: http://10.0.13.61:8082/
+   user: http://10.0.13.61:8080/

@@ -1,0 +1,33 @@
+===============================================================================
+   Bukopin-Mobile-Common 1.1.Alpha1 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Common - Version 1.1.Alpha1
+
+Initial prototype, features:
+- 
+
+** Notes
+	* Release for phase 1a.1 (Feb 18, 2020)
+
+** Story
+	* Crypto Util support encrypt and decrypt AES in hexadecimal and base64.
+	* Bkpm Common Service
+	* Get Configuration Service
+
+	
+===============================================================================
+   Bukopin-Mobile-Common 1.0.Alpha1 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Common - Version 1.0.Alpha1
+
+** Notes
+	* Release first phase to production Bukopin.
+
+** Story
+	* Bkpm Util
+	* Bkpm Constant
+	* Connection Util
+	* Json Util
+	* Message Util
+	* Crypto Util
+	* Regex Util

@@ -1,0 +1,98 @@
+===============================================================================
+   Bukopin-Mobile-User 1.1.Alpha2 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-User - Version 1.1.Alpha2
+
+** Notes
+	* Release for phase ...
+	* Add Device-ID in Http Header for each request.
+	* Reactivate service [BKPM-4] /SMSToken/{phonenumber} with param change to {username} instead {phonenumber}.
+	  To avoid IDOR issue, add Verify Phone and Token [BKPM-156] for each request.
+	* Reactivate service [BKPM-5] /OTP/verify
+	* Add column USER.IS_LOGIN
+	* Add column USER.PHONE_IDENTITY
+
+** Story
+	* [BKPM-156] Security: Verify User Phone Identity. Implement to:
+		- /api/getAccountBalanceQR (POST)
+		- /api/getAccountInfo/{username}/preHandle (POST)
+		- /api/userProfile/getUserProfile/{username} (GET)
+	* [BKPM-2] Reopen due to add OTP verify in log in.
+	* [BKPM-171] Email: New Device Login
+	* [BKPM-184] Login Session
+
+** Bug Fixed
+	*   
+	
+** Deprecated Service
+	* 
+
+
+===============================================================================
+   Bukopin-Mobile-User 1.1.Alpha1 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-User - Version 1.0.Alpha1
+
+** Notes
+	* Release for phase 1a.1 (Feb 18, 2020)
+	* Password & PIN encryption.
+	* Add Token Owner validation in:
+		- /getAccountInfo/{username}/preHandle
+		- /getUserProfile/{username}
+    * Add verify PIN in /getAccountBalance/preHandle service, to fix Bypass PIN bug.
+    * Send OTP by SMS requires App Signature which needed by frontend to autofill SMS OTP.
+
+** Story
+	* [BKPM-99] Verify Account Owner
+
+** Bug Fixed:
+	* [BKPM-106] Security Penetration Test
+	*  
+	
+** Deprecated Service :
+	* /SMSToken/{phonenumber}
+	* /OTP/verify
+	
+
+===============================================================================
+   Bukopin-Mobile-User 1.0.Alpha1 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-User - Version 1.0.Alpha1
+
+Initial prototype, features:
+- Authentication.
+- Security.
+- Session Management.
+- User Management.
+
+** Notes
+    * Added Liquibase DB load-data Support.
+    * Supported Databases (Generation Type AUTO): MySQL.
+
+** Story
+	* [BKPM-1] - User Registration
+    * [BKPM-2] - User Login
+    * [BKPM-3] - Forgot Password
+    * [BKPM-4] - Create SMS OTP
+    * [BKPM-5] - OTP Authentication
+    * [BKPM-6] - Register User's PIN to Centagate Server (Question & Answer)
+    * [BKPM-7] - Verify User's PIN
+    * [BKPM-9] - Update User Status
+    * [BKPM-10] - Verify Debit Card (Pre Verification)
+    * [BKPM-11] - List Bank Account (Verification)
+    * [BKPM-12] - Get Account Info
+    * [BKPM-13] - Transaction History
+    * [BKPM-19] - Email OTP
+    * [BKPM-20] - Unlock User
+    * [BKPM-29] - Main Account Activation
+    * [BKPM-34] - Change Password
+    * [BKPM-36] - Logout Centagate User
+    * [BKPM-50] - Get Profile  
+    * [BKPM-51] - Change Main Account
+    * [BKPM-56] - Change User's PIN
+    * [BKPM-57] - Get Account Info Service
+    * [BKPM-59] - Get Account Balance by Account Number   
+    
+    * add feature Get Inquiry Transaction
+    * add feature Get Account Balance
+    * add feature Get Account Info

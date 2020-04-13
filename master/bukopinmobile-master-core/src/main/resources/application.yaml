@@ -1,0 +1,51 @@
+#################################################
+# DEFAULT (localhost) Profile                   #
+#################################################
+
+## Application configurations:
+server:
+   port: 8082
+   servlet:
+      context-path: /bukopinmobile-master
+
+
+## Database configuration:
+#spring.jpa.hibernate.ddl-auto=create
+spring:
+   #batch:
+    #  initialize-schema: never # always (on) or never (off)
+   datasource:
+      url: jdbc:mysql://localhost:3306/bkpm_master_local
+      username: apps
+      password: Apps*2013
+      driver-class-name: com.mysql.jdbc.Driver
+      initialization-mode: never # always (on) or never (off)
+   jpa:
+      hibernate:
+         ddl-auto: update      
+         #spring.jpa.hibernate.ddl-auto=none
+         naming:
+            physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      properties:
+         hibernate.dialect: org.hibernate.dialect.MySQL5Dialect
+         hibernate.jdbc.lob.non_contextual_creation: true
+## LIQUIBASE (LiquibaseProperties)
+#spring.
+   liquibase:
+      enabled: false
+
+## LOGGING
+logging:
+   level:
+      root: ERROR
+      id.co.asyst: TRACE
+      #org.hibernate.SQL: DEBUG
+      #org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+jwt:
+   header: Authorization
+
+config:
+   status:
+      redis: 0 #1 is active, 0 is disable
+   

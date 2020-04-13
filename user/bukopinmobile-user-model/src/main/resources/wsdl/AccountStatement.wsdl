@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="Untitled" targetNamespace="http://xmlns.example.com/1535711330238" xmlns:ns2="http://xml.asyst.co.id/commons/ws/fault" xmlns:ns1="http://xml.asyst.co.id/cbs/listing/statement/getinquirytransaction/v1_0" xmlns:ns3="http://xml.asyst.co.id/cbs/listing/statement/getaccountbalance/v1_0" xmlns:tns="http://xmlns.example.com/1535711330238" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns0="http://xml.asyst.co.id/commons/ws/header" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <wsdl:types>
+    <xs:schema targetNamespace="http://xml.asyst.co.id/commons/ws/header" elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:head="http://xml.asyst.co.id/commons/ws/header">
+      <xs:complexType name="HeaderRQ">
+        <xs:sequence>
+          <xs:element name="ReqDateTime" type="xs:dateTime"/>
+          <xs:element name="ClientTxnID" type="xs:string"/>
+          <xs:element name="IsLastTxn" type="xs:boolean" minOccurs="0"/>
+          <xs:element name="Credentials">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="ClientID" type="xs:string"/>
+                <xs:element name="Identity" minOccurs="0">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="UserID" type="xs:string"/>
+                      <xs:element name="Password" type="xs:string"/>
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+                <xs:element name="Session" minOccurs="0">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="SessionID" type="xs:string"/>
+                      <xs:element name="SequenceNumber" type="xs:int"/>
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="HeaderRS">
+        <xs:sequence>
+          <xs:element name="ResDateTime" type="xs:dateTime"/>
+          <xs:element name="ClientTxnID" type="xs:string"/>
+          <xs:element name="IsLastTxn" type="xs:boolean" minOccurs="0"/>
+          <xs:element name="Session" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="SessionID" type="xs:string"/>
+                <xs:element name="SequenceNumber" type="xs:int"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="ResCode" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="HeaderRQ" type="head:HeaderRQ"/>
+      <xs:element name="HeaderRS" type="head:HeaderRS"/>
+    </xs:schema>
+    <xs:schema targetNamespace="http://xml.asyst.co.id/cbs/listing/statement/getinquirytransaction/v1_0" elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns="http://xml.asyst.co.id/cbs/listing/statement/getinquirytransaction/v1_0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:complexType name="GetInquiryTransactionReqType">
+        <xs:sequence>
+          <xs:element name="accNo">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:minLength value="0"/>
+                <xs:maxLength value="20"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="accType" type="xs:integer"/>
+          <!--xs:choice>
+                        <xs:element name="Date" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="dateFrom" type="xs:date"/>
+                                    <xs:element name="dateTo" type="xs:date"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="nTrx" type="xs:integer" minOccurs="0"/>
+                    </xs:choice-->
+          <xs:element name="Date" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="dateFrom" type="xs:date"/>
+                <xs:element name="dateTo" type="xs:date"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="nTrx" type="xs:integer" minOccurs="0"/>
+          <xs:element name="pagingInfo" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="startIndex" type="xs:integer"/>
+                <xs:element name="itemsPerPage" type="xs:integer"/>
+                <xs:element name="totalResult" type="xs:integer" minOccurs="0"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="GetInquiryTransactionResType">
+        <xs:sequence>
+          <xs:element name="response">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="resCode">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string"/>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="desc">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="255"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="accInfo">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="accNo">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="20"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="accType" type="xs:integer"/>
+                <xs:element name="name" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="60"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="accStatus" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="10"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="Currency" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="10"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="Branch" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="50"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="Location" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="50"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="productID" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="15"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="cifNumber" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:integer"/>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="cifStatus" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="10"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="trxSummary" type="ns1:trxSummaryType" minOccurs="0"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="transaction" minOccurs="0" maxOccurs="unbounded">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="postingDate">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:dateTime"/>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="effectiveDate">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:dateTime"/>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="trxDesc1">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="40"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="trxDesc2">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="1"/>
+                      <xs:maxLength value="40"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="trxDesc3">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="1"/>
+                      <xs:maxLength value="60"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="amtDebit">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:decimal"/>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="amtCredit">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:decimal"/>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="balanceAmt">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:decimal"/>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="reffNumber">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="40"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="trxSummary" type="ns1:trxSummaryType" minOccurs="0"/>
+          <xs:element name="pagingInfo" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="startIndex" type="xs:integer"/>
+                <xs:element name="itemsPerPage" type="xs:integer"/>
+                <xs:element name="totalResult" type="xs:integer"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="trxSummaryType">
+        <xs:sequence>
+          <xs:element name="totalDebitAmt">
+            <xs:simpleType>
+              <xs:restriction base="xs:decimal"/>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="totalCreditAmt">
+            <xs:simpleType>
+              <xs:restriction base="xs:decimal"/>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="endingBalance">
+            <xs:simpleType>
+              <xs:restriction base="xs:decimal"/>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="startingBalance">
+            <xs:simpleType>
+              <xs:restriction base="xs:decimal"/>
+            </xs:simpleType>
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="GetInquiryTransactionReq" type="ns1:GetInquiryTransactionReqType"/>
+      <xs:element name="GetInquiryTransactionRes" type="ns1:GetInquiryTransactionResType"/>
+    </xs:schema>
+    <xs:schema targetNamespace="http://xml.asyst.co.id/cbs/listing/statement/getaccountbalance/v1_0" elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns="http://xml.asyst.co.id/cbs/listing/statement/getaccountbalance/v1_0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:complexType name="GetAccountBalanceReqType">
+        <xs:sequence>
+          <xs:element name="accType" type="xs:integer"/>
+          <xs:element name="account">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="accNo" maxOccurs="unbounded">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="20"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="GetAccountBalanceResType">
+        <xs:sequence>
+          <xs:element name="response">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="resCode" type="xs:string"/>
+                <xs:element name="desc">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="255"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="transaction" maxOccurs="unbounded">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="accNo">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="20"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="accType" type="xs:integer"/>
+                <xs:element name="name" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="60"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="accStatus" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="10"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="currency" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="10"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="branch" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="50"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="lokasi" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="50"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="productID" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="25"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="cifNumber" type="xs:integer" minOccurs="0"/>
+                <xs:element name="cifStatus" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:minLength value="0"/>
+                      <xs:maxLength value="10"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="effectiveBalance" type="xs:decimal" minOccurs="0"/>
+                <xs:element name="holdAmt" type="xs:decimal" minOccurs="0"/>
+                <xs:element name="availableBalance" type="xs:decimal" minOccurs="0"/>
+                <xs:element name="plafon" type="xs:decimal" minOccurs="0"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="totalBalance" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="totalEffectiveBalance" type="xs:decimal"/>
+                <xs:element name="totalAvailableBalance" type="xs:decimal"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="GetAccountBalanceReq" type="ns3:GetAccountBalanceReqType"/>
+      <xs:element name="GetAccountBalanceRes" type="ns3:GetAccountBalanceResType"/>
+    </xs:schema>
+    <xs:schema targetNamespace="http://xml.asyst.co.id/commons/ws/fault" elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fault="http://xml.asyst.co.id/commons/ws/fault">
+      <xs:complexType name="anydata">
+        <xs:sequence>
+          <xs:any processContents="skip" namespace="##any"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="BWErrDetails">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element ref="fault:ErrHeader" minOccurs="0"/>
+            <xs:element ref="fault:ErrReport" minOccurs="0"/>
+            <xs:element ref="fault:ProviderErrs" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Err">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ErrCat" type="xs:string" minOccurs="0"/>
+            <xs:element name="ErrCatDesc" type="xs:string" minOccurs="0"/>
+            <xs:element name="ErrCode" type="xs:string" minOccurs="0"/>
+            <xs:element name="ErrDesc" type="xs:string" minOccurs="0"/>
+            <xs:element name="ErrSev" type="xs:string" minOccurs="0"/>
+            <xs:element name="ErrSrc" type="xs:string"/>
+            <xs:element name="ErrTgt" type="xs:string"/>
+            <xs:element name="ErrDateTime" type="xs:dateTime"/>
+            <xs:element name="ErrDetail" type="xs:string" minOccurs="0"/>
+            <xs:element ref="fault:BWErrDetails" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ErrHeader">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="BWTxnID" type="xs:string"/>
+            <xs:element name="ClientTxnID" type="xs:string"/>
+            <xs:element name="ClientID" type="xs:string"/>
+            <xs:element name="BWProcess" type="xs:string"/>
+            <xs:element name="BWActivity" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ErrList">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element ref="fault:Err" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ErrReport">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="StackTrace" type="xs:string" minOccurs="0"/>
+            <xs:element name="Msg" type="xs:string"/>
+            <xs:element name="FullClass" type="xs:string" minOccurs="0"/>
+            <xs:element name="Class" type="xs:string" minOccurs="0"/>
+            <xs:element name="ProcessStack" type="xs:string" minOccurs="0"/>
+            <xs:element name="MsgCode" type="xs:string" minOccurs="0"/>
+            <xs:element name="Data" type="fault:anydata" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ProviderErrs">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="faultcode" type="xs:string"/>
+            <xs:element name="faultstring" type="xs:string"/>
+            <xs:element name="faultactor" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:service name="AccountStatementServices">
+    <wsdl:port name="AccountStatementPTEndpointBinding" binding="tns:AccountStatementPTEndpointBindingBinding">
+      <soap:address location="${soap.url.bukopin.accountInfo}"/>
+      <!-- <soap:address location="http://10.2.62.80:55580/cbs/listing/accountstatement"/> -->
+    </wsdl:port>
+  </wsdl:service>
+  <wsdl:portType name="PortType">
+    <wsdl:operation name="GetInquiryTransaction">
+      <wsdl:input message="tns:GetInquiryTransactionRQ"/>
+      <wsdl:output message="tns:GetInquiryTransactionRS"/>
+      <wsdl:fault name="fault1" message="tns:Fault"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAccountBalance">
+      <wsdl:input message="tns:GetAccountBalanceRQ"/>
+      <wsdl:output message="tns:GetAccountBalanceRS"/>
+      <wsdl:fault name="fault1" message="tns:Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="AccountStatementPTEndpointBindingBinding" type="tns:PortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="GetInquiryTransaction">
+      <soap:operation style="document" soapAction="http://ws.bukopin.co.id/cbs/listing/accountstatement/inquirytransaction"/>
+      <wsdl:input>
+        <soap:body use="literal" parts="GetInquiryTransactionRQ"/>
+        <soap:header use="literal" message="tns:GetInquiryTransactionRQ" part="HeaderRQ"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" parts="GetInquiryTransactionRS"/>
+        <soap:header use="literal" message="tns:GetInquiryTransactionRS" part="HeaderRS"/>
+      </wsdl:output>
+      <wsdl:fault name="fault1">
+        <soap:fault use="literal" name="fault1"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetAccountBalance">
+      <soap:operation style="document" soapAction="http://ws.bukopin.co.id/cbs/listing/accountstatement/accountbalance"/>
+      <wsdl:input>
+        <soap:body use="literal" parts="GetAccountBalanceRQ"/>
+        <soap:header use="literal" message="tns:GetAccountBalanceRQ" part="HeaderRQ"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" parts="GetAccountBalanceRS"/>
+        <soap:header use="literal" message="tns:GetAccountBalanceRS" part="HeaderRS"/>
+      </wsdl:output>
+      <wsdl:fault name="fault1">
+        <soap:fault use="literal" name="fault1"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:message name="GetInquiryTransactionRQ">
+    <wsdl:part name="HeaderRQ" element="ns0:HeaderRQ"/>
+    <wsdl:part name="GetInquiryTransactionRQ" element="ns1:GetInquiryTransactionReq"/>
+  </wsdl:message>
+  <wsdl:message name="GetInquiryTransactionRS">
+    <wsdl:part name="HeaderRS" element="ns0:HeaderRS"/>
+    <wsdl:part name="GetInquiryTransactionRS" element="ns1:GetInquiryTransactionRes"/>
+  </wsdl:message>
+  <wsdl:message name="Fault">
+    <wsdl:part name="Fault" element="ns2:ErrList"/>
+  </wsdl:message>
+  <wsdl:message name="GetAccountBalanceRQ">
+    <wsdl:part name="HeaderRQ" element="ns0:HeaderRQ"/>
+    <wsdl:part name="GetAccountBalanceRQ" element="ns3:GetAccountBalanceReq"/>
+  </wsdl:message>
+  <wsdl:message name="GetAccountBalanceRS">
+    <wsdl:part name="HeaderRS" element="ns0:HeaderRS"/>
+    <wsdl:part name="GetAccountBalanceRS" element="ns3:GetAccountBalanceRes"/>
+  </wsdl:message>
+</wsdl:definitions>
+   

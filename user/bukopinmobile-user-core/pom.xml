@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+~ Copyright (c) 2019 Aero Systems Indonesia, PT.
+~ All rights reserved.
+~ 
+~ AERO SYSTEMS INDONESIA PROPRIETARY/CONFIDENTIAL. Use is subject to
+~ license terms.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>bukopinmobile-user-core</artifactId>
+	<name>Bukopin Mobile - User Core</name>
+	<description>Bukopin Mobile -- User Core.</description>
+	<parent>
+		<groupId>id.co.asyst.bukopin.mobile</groupId>
+		<artifactId>bukopinmobile-user</artifactId>
+		<version>1.1.Alpha1</version>
+	</parent>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.liquibase</groupId>
+				<artifactId>liquibase-maven-plugin</artifactId>
+				<version>${liquibase.version}</version>
+				<configuration>
+					<changeLogFile>${project.basedir}/src/main/resources/config/liquibase/initial.xml</changeLogFile>
+					<diffChangeLogFile>${project.basedir}/src/main/resources/config/liquibase/changelog/${maven.build.timestamp}_changelog.xml</diffChangeLogFile>
+					<driver>com.mysql.jdbc.Driver</driver>
+					<url>jdbc:mysql://localhost:3306/bkm_user_local</url>
+					<defaultSchemaName>bkpm_user_local</defaultSchemaName>
+					<username>apps</username>
+					<password>Apps*2013</password>
+					<referenceUrl>hibernate:spring:id.co.asyst.wfm.opt.domain?dialect=org.hibernate.dialect.MySQL5InnoDBDialect&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
+					<verbose>true</verbose>
+					<logging>debug</logging>
+				</configuration>
+				<dependencies>
+				<!-- The javassist version should match the one used by https://mvnrepository.com/artifact/org.hibernate/hibernate-core/5.3.7.Final -->
+					<dependency>
+						<groupId>org.javassist</groupId>
+						<artifactId>javassist</artifactId>
+						<version>3.23.1-GA</version>
+					</dependency>
+					<dependency>
+						<groupId>org.liquibase.ext</groupId>
+						<artifactId>liquibase-hibernate5</artifactId>
+						<version>3.6</version>
+					</dependency>
+					<dependency>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-starter-data-jpa</artifactId>
+						<version>${spring-boot.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>javax.validation</groupId>
+						<artifactId>validation-api</artifactId>
+						<version>${validation.api.version}</version>
+					</dependency>					
+				</dependencies>
+			</plugin>
+		</plugins>		
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>${foundation.groupId}</groupId>
+			<artifactId>foundation-starter-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bukopinmobile-common-core</artifactId>
+			<version>${bukopin.common.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>${foundation.groupId}</groupId>
+					<artifactId>foundation-starter-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bukopinmobile-user-model</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>id.co.asyst.bukopin.mobile</groupId>
+			<artifactId>bukopinmobile-service-core</artifactId>
+			<version>1.1.Alpha1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>${jdbc.groupId}</groupId>
+			<artifactId>${jdbc.artifactId}</artifactId>
+			<version>${jdbc.version}</version>
+		</dependency>
+
+		<!-- Swagger -->
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>${springfox.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>io.springfox</groupId>
+		    <artifactId>springfox-swagger-ui</artifactId>
+		    <version>${springfox.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+			<version>1.4.194</version>
+		</dependency>
+		<!-- jasper reports -->
+       	<dependency>
+		    <groupId>net.sf.jasperreports</groupId>
+		    <artifactId>jasperreports</artifactId>
+		    <version>5.6.0</version>
+		</dependency>
+		<!-- send email -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+        <!-- template email -->
+        <dependency>
+            <groupId>org.thymeleaf</groupId>
+            <artifactId>thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.thymeleaf</groupId>
+            <artifactId>thymeleaf-spring5</artifactId>
+        </dependency>
+        <dependency>
+		  <groupId>com.googlecode.json-simple</groupId>
+		  <artifactId>json-simple</artifactId>
+		  <version>1.1.1</version>
+		</dependency>
+	</dependencies>
+</project>

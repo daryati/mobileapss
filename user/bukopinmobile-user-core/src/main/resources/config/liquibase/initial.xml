@@ -1,0 +1,69 @@
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd 
+   http://www.liquibase.org/xml/ns/dbchangelog 
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+	<!-- catalogName="bkpm_user_local" -->
+	<changeSet author="stephen.dharma" id="insert-user_token">
+		<insert tableName="user_token">
+			<column name="USERNAME" type="varchar(32)" value="stephen" />
+			<column name="UID_CODE" type="varchar(36)" value="db0a1ad9063310472709b980d628fe5211c8" />
+			<column name="TOKEN" type="varchar(64)" value="$2a$10$07nUSDSfKRfkPLwDyWwCdeRD/n4OKAMQH5RUgLDxvkklC4RR/RvKm" />
+			<column name="CREATE_DATE" type="datetime" value="2015-01-15 10:05:00" />
+			<column name="ACTIVE" type="char(1)" value="N" />
+		</insert>
+	</changeSet>
+
+	<!--
+	<changeSet author="stephen.dharma" id="loadData-aircraft_type_group">
+		<delete tableName="aircraft_type_group">
+			<where></where>
+		</delete>
+		<loadData encoding="UTF-8"
+		separator=";"
+			file="data/aircraft type group.csv" tableName="aircraft_type_group">
+			<column header="Aircraft Types" name="aircraft_type" type="STRING" />
+			<column header="Aircraft Type Groups" name="group_code" type="STRING" />
+		</loadData>
+	</changeSet>
+	-->
+	 
+	<!-- 
+	<changeSet author="kartika.handini" id="loadData-sla_single">
+		<delete tableName="sla_single">
+			<where></where>
+		</delete>
+		<loadData encoding="UTF-8"
+		separator=","
+			file="data/Single Task Rules OPS.csv" tableName="sla_single">
+			<column header="ruleActivation" name="rule_activation" type="STRING" />
+			<column header="ruleDescription" name="rule_description" type="STRING" />
+			<column header="ac-type group" name="ac_type_group" type="STRING" />
+			<column header="airline" name="airline" type="STRING" />
+			<column header="min flight time" name="min_flight_time" type="STRING" />
+			<column header="max flight time" name="max_flight_time" type="STRING" />			
+			<column header="flight concat" name="flight_concat" type="STRING" />
+			<column header="max ground" name="max_ground_time" type="STRING" />
+			<column header="min ground" name="min_ground_time" type="STRING" />
+			<column header="flight no" name="flight_no" type="STRING" />
+			<column header="not flight no" name="not_flight_no" type="STRING" />
+			<column header="not ac-type group" name="not_ac_type_group" type="STRING" />
+			<column header="rulePhase" name="rule_phase" type="STRING" />
+			<column header="weekday" name="weekday" type="STRING" />
+			<column header="ResourceType" name="resource_type" type="STRING" />			
+			<column header="begin" name="begin" type="STRING" />
+			<column header="cleanup" name="cleanup" type="STRING" />
+			<column header="count" name="count" type="STRING" />
+			<column header="end" name="end" type="STRING" />
+			<column header="setup" name="setup" type="STRING" />
+			<column header="mandQual1" name="mand_qual1" type="STRING" />
+			<column header="priority" name="priority" type="STRING" />
+			<column header="flexibleTeam" name="flexible_team" type="STRING" />			
+		</loadData>
+	</changeSet>
+ 	-->
+</databaseChangeLog>

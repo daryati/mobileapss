@@ -1,0 +1,49 @@
+===============================================================================
+   Bukopin-Mobile-Purchase 1.1.Alpha1 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Purchase - Version 1.1.Alpha1
+
+** Notes
+    * Release for phase 1a.1 (Feb 18, 2020)
+    
+** Features
+	* Logging Request & Response
+	* Verify PIN and Token Owner in /purchase service. 
+
+** Story
+	* 
+	
+===============================================================================
+   Bukopin-Mobile-Purchase 1.0.Alpha2 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Purchase - Version 1.0.Alpha2
+
+features:
+- 
+
+** Notes
+    * Tagging for rollout January 14, 2019.
+    * Using bukopinmobile-common version 1.0.Alpha2.
+    * Generate "clienttxnid" (12 random char) for each purchase transaction.
+    * Set PLN Institution Code in each environment, dev, prod etc.
+
+** Story
+	* 
+
+===============================================================================
+   Bukopin-Mobile-Purchase 1.0.Alpha1 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Purchase - Version 1.0.Alpha1
+
+features:
+- Purchase PLN Prepaid.
+
+** Notes
+    * Added Liquibase DB load-data Support.
+    * Supported Databases (Generation Type AUTO): MySQL.
+
+** Story
+	* [BKPM-62] - Inquiry Purchasing
+	* [BKPM-63] - Purchasing PLN (Token)
+	* [BKPM-74] - Get Subscriber Name PLN Prepaid
+	* [BKPM-75] - Advice Posting PLN

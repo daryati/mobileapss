@@ -1,0 +1,91 @@
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd 
+   http://www.liquibase.org/xml/ns/dbchangelog 
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+	
+	  
+	<changeSet author="kartika.handini" id="loadData-currency-data">
+		<delete tableName="currency">
+		</delete>
+		<!-- <addDefaultValue columnDataType="STRING"
+			columnName="schedule_type" defaultValue="MPA"
+			tableName="schedule" /> -->
+		<loadData encoding="UTF-8"
+			separator=","
+			file="data/currencyList.csv" tableName="currency">
+			<column header="currency_no" name="CURRENCY_NO" type="STRING" />
+			<column header="code" name="CODE" type="STRING" />	
+			<column header="description" name="DESCRIPTION" type="STRING" />	
+			
+		</loadData>
+	</changeSet>  
+	
+<!-- 
+	<changeSet author="stephen.dharma" id="update-schedule-cleanup-time">
+		<sql dbms="mysql" endDelimiter="\nGO" splitStatements="true"
+			stripComments="true">
+			UPDATE schedule SET arrival_time   = IF(  arrival_time="", NULL,   LPAD(  REPLACE(arrival_time  , ":", "")  , 4, "0")   );
+			<comment>Formatting Time field(s).</comment>
+		</sql>
+		<sql dbms="mysql" endDelimiter="\nGO" splitStatements="true"
+			stripComments="true">
+			UPDATE schedule SET departure_time = IF(departure_time="", NULL,   LPAD(  REPLACE(departure_time, ":", "")  , 4, "0")   );
+			<comment>Formatting Time field(s).</comment>
+		</sql>   
+		
+		<sql dbms="mysql" endDelimiter="\nGO" splitStatements="true"
+			stripComments="true">
+			UPDATE schedule SET arrival_time   = IF(  arrival_time="", NULL,   
+                                        CONCAT(
+                                       SUBSTR(
+                                        LPAD(  arrival_time  , 4, "0")  
+                                       , 1, 2)
+                                          ,":"
+                                       ,
+                                       
+                                       SUBSTR(
+                                        LPAD(  arrival_time  , 4, "0")  
+                                       , 3, 2)
+                                       )
+                                       );
+			<comment>Formatting Time field(s).</comment>
+		</sql>
+		
+		<sql dbms="mysql" endDelimiter="\nGO" splitStatements="true"
+			stripComments="true">
+			UPDATE schedule SET departure_time   = IF(  departure_time="", NULL,   
+                                        CONCAT(
+                                       SUBSTR(
+                                        LPAD(  departure_time  , 4, "0")  
+                                       , 1, 2)
+                                          ,":"
+                                       ,
+                                       
+                                       SUBSTR(
+                                        LPAD(  departure_time  , 4, "0")  
+                                       , 3, 2)
+                                       )
+                                       );
+			<comment>Formatting Time field(s).</comment>
+		</sql>
+		
+		
+	</changeSet>
+	
+	<changeSet author="stephen.dharma" id="insert-aircraft_type_group">
+		<insert catalogName="cat" dbms="mysql, h2, oracle"
+			tableName="aircraft_type_group">
+			<column name="aircraft_type" type="varchar(4)" />
+			<column name="group_code" type="varchar(9)" />
+		</insert>
+	</changeSet>
+	
+	
+	 -->
+
+</databaseChangeLog>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+~ Copyright (c) 2019 Aero Systems Indonesia, PT.
+~ All rights reserved.
+~ 
+~ AERO SYSTEMS INDONESIA PROPRIETARY/CONFIDENTIAL. Use is subject to
+~ license terms.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+		<groupId>id.co.asyst.bukopin.mobile</groupId>
+		<artifactId>bukopinmobile-service</artifactId>
+        <version>1.1.Alpha1</version>
+	</parent>
+
+	<name>Bukopin Mobile - Service Core</name>
+	<artifactId>bukopinmobile-service-core</artifactId>
+	<version>${parent.version}</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>id.co.asyst.foundation</groupId>
+            <artifactId>foundation-service-connector</artifactId>
+            <version>${foundation.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+			<groupId>id.co.asyst.bukopin.mobile</groupId>
+			<artifactId>bukopinmobile-service-model</artifactId>
+			<version>${parent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bukopinmobile-common-core</artifactId>
+			<version>${parent.version}</version>
+		</dependency>
+    </dependencies>
+
+    <description>Bukopin Mobile - Service Core</description>
+</project>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+~ Copyright (c) 2019 Aero Systems Indonesia, PT.
+~ All rights reserved.
+~ 
+~ AERO SYSTEMS INDONESIA PROPRIETARY/CONFIDENTIAL. Use is subject to
+~ license terms.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>bukopinmobile-transfer-model</artifactId>
+	<name>Bukopin Mobile - Transfer Model</name>
+	<description>Bukopin Mobile -- Transfer Model.</description>
+	<parent>
+		<groupId>id.co.asyst.bukopin.mobile</groupId>
+		<artifactId>bukopinmobile-transfer</artifactId>
+		<version>1.1.Alpha1</version>
+	</parent>
+	
+	<build>
+		<plugins>
+			<!-- Convert wsdl to java -->
+			<!-- <plugin>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-codegen-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>generate-sources</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<sourceRoot>src/main/java</sourceRoot>
+							<wsdlOptions>
+								Please disable wsdlOption for exising generated wsdl
+								<wsdlOption>
+									<wsdl>${project.basedir}/src/main/resources/wsdl/AccountStatement.wsdl</wsdl>
+									<extraargs>
+	                                    <extraarg>-p</extraarg>
+	                                    <extraarg>id.co.asyst.bukopin.mobile.user.model.soap.account</extraarg>
+	                                </extraargs>
+								</wsdlOption>
+								<wsdlOption>
+									<wsdl>${project.basedir}/src/main/resources/wsdl/InquiryCIFWS-concrete.wsdl</wsdl>
+									<extraargs>
+	                                    <extraarg>-p</extraarg>
+	                                    <extraarg>id.co.asyst.bukopin.mobile.user.model.soap.cif</extraarg>
+	                                </extraargs>
+								</wsdlOption>
+							</wsdlOptions>
+						</configuration>
+						<goals>
+							<goal>wsdl2java</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin> -->
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>${foundation.groupId}</groupId>
+			<artifactId>foundation-starter-model</artifactId>
+		</dependency>
+		
+		 <dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bukopinmobile-user-model</artifactId>
+			<version>${project.version}</version>
+		</dependency> 
+		
+		 <dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bukopinmobile-master-model</artifactId>
+			<version>${project.version}</version>
+		</dependency> 
+		
+		<!-- FOR WHAT ??? -->
+		<!-- <dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bukopinmobile-user-model</artifactId>
+            <version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bukopinmobile-user-core</artifactId>
+            <version>${project.version}</version>
+		</dependency> -->
+	</dependencies>
+</project>

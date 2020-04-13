@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title th:remove="all">Bukopin email template</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<style>
+		div.outset {
+			border-style: outset;
+			border-radius: 15px
+		}
+		
+		#table1 th, td {
+			font-family: Arial;
+			font-size: 9px;
+			text-align: left;
+			border-bottom: 1px solid black;
+		}
+		
+		#table2 td {
+			font-family: Arial;
+			font-size: 9px;
+			padding: 2px 2px 2px 40px;
+			border: 1px solid black;
+			border-collapse: collapse;
+		}
+		
+		#innerbox {
+		   	width:250px;
+		   	max-width:250px;
+		   	display: inline-block;
+		}
+		
+		div.header{
+			padding: 25px;
+			background-image: url(cid:header);
+			background-repeat: no-repeat;
+		    background-position: center; 
+		    background-size: 100% 100%;
+		    height:50px;
+		}
+		
+		div.footer{
+			padding: 25px;
+			background-image: url(cid:footer);
+			background-repeat: no-repeat;
+		    background-position: center; 
+		    background-size: 100% 100%;
+		    height:50px;
+		}
+		</style>
+	</head>
+    <body>
+	<table width="400">
+	    <tr>
+	    	<td>
+	    		<div align="center">
+					<img src="cid:header" />
+				</div>
+	    	</td>
+	    </tr>
+	    <tr>
+			<td align="center" bgcolor="white" style="padding: 40px 30px 10px 30px;">
+				<div class="outset" style="padding: 10px 10px">
+                	<p align="right" style="font-family:Arial; font-size:10px">Listrik PLN Pascabayar</p>
+					<p align="left" style="font-family:Arial; font-size:12px">Hai <span style="font-weight:bold" th:text ="${fullname}"></span>,</p>
+					<br>
+					<table id="table1" style="width:100%">
+                    <tr>
+                    <td>Tanggal & Waktu</td>
+                    <th><span th:text ="${date}"></span>, <span th:text ="${time}"></span></th>
+                    </tr>
+                    <tr>
+                    <td>Referensi</td>
+                    <th><span th:text ="${reference}"></span></th>
+                    </tr>
+                    <tr>
+                    <td>Sumber dana</td>
+                    <th><span th:text ="${accountNumber}"></span></th>
+                    </tr>
+                    </table>
+                    <br>
+                    <table id="table2" style="width:100%">
+                    <tr>
+                    <td style="text-align:center; font-weight:bold">STRUK PEMBAYARAN TAGIHAN LISTRIK</td>
+                    </tr>
+                    <tr>
+                    <td style="color:white">.</td>
+                    </tr>
+                    <tr>
+                    <td>IDPEL : <span th:text ="${subscriberID}"></span></td>
+                    </tr>
+                    <tr>
+                    <td>NAMA : <span th:text ="${subscriberName}"></span></td>
+                    </tr>
+                    <tr>
+                    <td>TARIF/DAYA : <span th:text ="${powerConsuming}"></span></td>
+                    </tr>
+                    <tr>
+                    <td>BL/TH : <span th:text ="${billPeriod}"></span></td>
+                    </tr>
+                    <tr>
+                    <td>STAND METER : <span th:text ="${standMeter}"></span></td>
+                    </tr>
+                    <tr>
+                    <td style="color:white">.</td>
+                    </tr>
+                    <tr>
+                    <td>RP TAG PLN : Rp <span style="color:#FC2222" th:text ="${amount}"></span></td>
+                    </tr>
+                    <tr>
+                    <td>NO REF *) : <span th:text ="${reference}"></span></td>
+                    </tr>
+                    <tr>
+                    <td style="text-align:center; font-weight:bold">PLN menyatakan struk ini sbg bukti</td>
+                    </tr>
+                    <tr>
+                    <td style="text-align:center; font-weight:bold">pembayaran yg sah.</td>
+                    </tr>
+                    <tr>
+                    <td style="color:white">.</td>
+                    </tr>
+                    <tr>
+                    <tr>
+                    <td>ADMIN/CA *) : <span th:text ="${adminCharge}"></span></td>
+                    </tr>
+                    <tr>
+                    <td>TOTAL BAYAR : <span th:text ="${totalAmount}"></span></td>
+                    </tr>
+                    <tr>
+                    <td style="text-align:center; font-weight:bold">Anda masih memiliki tunggakan <span th:text ="${outstandingBill}"></span> bulan.</td>
+                    </tr>
+                    <tr>
+                    <td style="text-align:center; font-weight:bold; color: #FC2222"><span th:text ="${footnoteLine1}"></span></td>
+                    </tr>
+                    </table>
+				</div>
+				<br>
+                <br>
+                <br>
+                <hr size="2px" color="#d3d3d3">
+                <p style="color:#828282">Email ini dibuat secara otomatis. Mohon tidak mengirimkan balasan ke email ini.</p>
+                <p style="background-color:#FFE4E7; padding: 5px 5px	"><b>Perhatian!</b> Kata sandi, verifikasi, kode OTP bersifat rahasia. Dimohon untuk tidak memberikan data keamanan anda kepada pihak yang mengatasnamakan Bukopin.</p>
+			</td>
+	    </tr>
+	    <tr>
+			<td align="left">
+				<div class="footer">
+					<br />
+					<a href="https://www.facebook.com/bukopinsiaga/">
+						<img src="cid:fb"/>
+					</a>
+					<a href="https://www.instagram.com/bukopinsiaga/">
+						<img src="cid:ig"/>
+					</a>
+					<a href="https://twitter.com/bukopinsiaga">
+						<img src="cid:twitter"/>
+					</a>
+					<img align="right" src="cid:halo"/>
+				</div>
+			</td>
+		</tr>
+    </table>
+    </body>
+</html>

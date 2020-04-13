@@ -1,0 +1,16 @@
+#################################################
+# DOCKER (localhost) Profile                    #
+#################################################
+
+## Application configurations:
+server:
+   port: 8080
+
+
+## Database configuration:
+spring:
+   datasource:
+      url: jdbc:mysql://host.docker.internal:3306/bkpm_user_local
+   jpa:
+      hibernate:
+         ddl-auto: update      

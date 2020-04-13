@@ -1,0 +1,42 @@
+#################################################
+# DEVELOPMENT Server Profile                    #
+#################################################
+
+## Application configurations:
+server:
+   port: 8082
+   servlet:
+      context-path: /bukopinmobile-master
+
+
+## Database configuration:
+#spring.jpa.hibernate.ddl-auto=create
+spring:
+   datasource:
+      url: jdbc:sqlserver://10.0.24.83:1433;databaseName=DB_MBANKING 
+      username: dbapp
+      password: 'Bukopin20@$*#'
+      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+      maxActive: 10
+      initialization-mode: never # always (on) or never (off)
+   jpa:
+      hibernate:
+         ddl-auto: update # update, create, none
+         naming.physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      properties:
+         hibernate.dialect: org.hibernate.dialect.SQLServerDialect
+## LIQUIBASE (LiquibaseProperties)
+# spring.liquibase.enabled=false
+
+## LOGGING
+logging:
+   level:
+      root: ERROR
+      id.co.asyst: TRACE
+
+jwt:
+   header: Authorization
+   
+config:
+   status:
+      redis: 0 #1 is active, 0 is disable

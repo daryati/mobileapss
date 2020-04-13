@@ -1,0 +1,65 @@
+#################################################
+# DEFAULT (localhost) Profile                   #
+#################################################
+
+## Application configurations:
+server:
+   port: 8085
+   servlet:
+      context-path: /bukopinmobile-telco
+
+
+## Database configuration:
+#spring.jpa.hibernate.ddl-auto=create
+spring:
+   #batch:
+    #  initialize-schema: never # always (on) or never (off)
+   datasource:
+      url: jdbc:mysql://localhost:3306/bkpm_telco_local
+      username: apps
+      password: Apps*2013
+      driver-class-name: com.mysql.jdbc.Driver
+      initialization-mode: never # always (on) or never (off)
+   jpa:
+      hibernate:
+         ddl-auto: update      
+         #spring.jpa.hibernate.ddl-auto=none
+         naming:
+            physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      properties:
+         hibernate.dialect: org.hibernate.dialect.MySQL5Dialect
+         hibernate.jdbc.lob.non_contextual_creation: true
+## LIQUIBASE (LiquibaseProperties)
+#spring.
+   liquibase:
+      enabled: false
+## Redis (redisProperties)
+   cache:
+      type:redis
+   redis:
+      host:localhost
+      port:6379
+
+## LOGGING
+logging:
+   level:
+      root: ERROR
+      id.co.asyst: TRACE
+      org:
+         springframework:
+            web: DEBUG
+         ws:
+            client:
+               MessageTracing: DEBUG
+            server:
+               MessageTracing: DEBUG
+      
+     
+
+jwt:
+   header: Authorization
+
+config:
+    status:
+       redis: 1
+   

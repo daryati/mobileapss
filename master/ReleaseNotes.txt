@@ -1,0 +1,34 @@
+===============================================================================
+   Bukopin-Mobile-Transfer 1.1.Alpha1 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Transfer - Version 1.0.Alpha1
+
+** Notes
+    * Release for phase 1a.1 (Feb 18, 2020)
+    * /saveToDestination move to /saveToDestinationCommon
+
+** Story
+	- [BKPM-145] Product Info
+	- [BKPM-146] Exchange Rate
+	
+===============================================================================
+   Bukopin-Mobile-Transfer 1.0.Alpha1 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Transfer - Version 1.0.Alpha1
+
+Initial prototype, features:
+- Transfer Management.
+
+** Notes
+    * Added Liquibase DB load-data Support.
+    * Supported Databases (Generation Type AUTO): MySQL.
+
+** Story
+	- [BKPM-33] CRUD Frequently Asked Question
+	- [BKPM-35] Mobilo Persistent System Configuration (database table).
+	- [BKPM-60] Favorite Payment/Purchase (CRUD)
+	- [BKPM-76] save Data Purchase to Destination Database Table
+	- [BKPM-77] save Data Purchase to Transaction Database Table
+	- [BKPM-78] save Data Purchase to PLN Pre Paid Database Table
+	
+	* add CRUD for Configuration

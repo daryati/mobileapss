@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>bukopinmobile-purchase-model</artifactId>
+  <name>Bukopin Mobile - Purchase Model</name>
+  <description>Bukopin Mobile -- Purchase Model.</description>
+  <parent>
+    <groupId>id.co.asyst.bukopin.mobile</groupId>
+    <artifactId>bukopinmobile-purchase</artifactId>
+    <version>1.1.Alpha1</version>
+  </parent>
+  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+<dependencies>
+	<dependency>
+		<groupId>${foundation.groupId}</groupId>
+		<artifactId>foundation-starter-model</artifactId>
+	</dependency>
+	
+	<dependency>
+		<groupId>${project.groupId}</groupId>
+		<artifactId>bukopinmobile-master-model</artifactId>
+		<version>${project.version}</version>
+	</dependency>
+  </dependencies>
+</project>

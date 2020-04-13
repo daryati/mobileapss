@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Created by TIBCO WSDL-->
+<wsdl:definitions xmlns:ns2="http://xml.asyst.co.id/commons/ws/fault" xmlns:ns1="http://xml.asyst.co.id/cbs/posting/proxy" xmlns:ns3="http://xml.asyst.co.id/commons/iso8583" xmlns:tns="http://wsdl.bukopin.co.id/cbs/posting" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns0="http://xml.asyst.co.id/commons/ws/header" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" name="Untitled" targetNamespace="http://wsdl.bukopin.co.id/cbs/posting">
+    <wsdl:types>
+        <xs:schema xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:head="http://xml.asyst.co.id/commons/ws/header" targetNamespace="http://xml.asyst.co.id/commons/ws/header" elementFormDefault="qualified" attributeFormDefault="unqualified">
+            <xs:complexType name="HeaderRQ">
+                <xs:sequence>
+                    <xs:element name="ReqDateTime" type="xs:dateTime"/>
+                    <xs:element name="ClientTxnID" type="xs:string"/>
+                    <xs:element name="IsLastTxn" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="Credentials">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="ClientID" type="xs:string"/>
+                                <xs:element name="Identity" minOccurs="0">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                            <xs:element name="UserID" type="xs:string"/>
+                                            <xs:element name="Password" type="xs:string"/>
+                                        </xs:sequence>
+                                    </xs:complexType>
+                                </xs:element>
+                                <xs:element name="Session" minOccurs="0">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                            <xs:element name="SessionID" type="xs:string"/>
+                                            <xs:element name="SequenceNumber" type="xs:int"/>
+                                        </xs:sequence>
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="HeaderRS">
+                <xs:sequence>
+                    <xs:element name="ResDateTime" type="xs:dateTime"/>
+                    <xs:element name="ClientTxnID" type="xs:string"/>
+                    <xs:element name="IsLastTxn" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="Session" minOccurs="0">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="SessionID" type="xs:string"/>
+                                <xs:element name="SequenceNumber" type="xs:int"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="ResCode" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="HeaderRQ" type="head:HeaderRQ"/>
+            <xs:element name="HeaderRS" type="head:HeaderRS"/>
+        </xs:schema>
+        <xs:schema xmlns="http://xml.asyst.co.id/commons/iso8583" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xml.asyst.co.id/commons/iso8583" elementFormDefault="qualified" attributeFormDefault="unqualified">
+            <xs:complexType name="Elements">
+                <xs:sequence>
+                    <xs:element name="Element_01" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_02" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_03" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_04" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_05" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_06" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_07" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_08" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_09" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_10" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_11" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_12" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_13" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_14" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_15" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_16" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_17" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_18" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_19" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_20" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_21" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_22" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_23" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_24" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_25" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_26" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_27" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_28" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_29" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_30" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_31" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_32" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_33" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_34" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_35" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_36" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_37" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_38" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_39" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_40" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_41" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_42" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_43" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_44" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_45" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_46" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_47" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_48" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_49" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_50" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_51" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_52" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_53" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_54" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_55" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_56" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_57" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_58" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_59" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_60" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_61" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_62" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_63" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_64" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_65" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_66" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_67" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_68" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_69" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_70" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_71" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_72" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_73" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_74" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_75" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_76" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_77" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_78" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_79" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_80" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_81" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_82" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_83" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_84" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_85" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_86" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_87" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_88" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_89" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_90" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_91" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_92" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_93" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_94" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_95" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_96" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_97" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_98" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_99" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_100" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_101" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_102" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_103" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_104" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_105" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_106" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_107" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_108" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_109" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_110" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_111" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_112" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_113" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_114" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_115" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_116" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_117" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_118" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_119" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_120" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_121" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_122" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_123" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_124" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_125" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_126" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_127" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Element_128" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="BinaryData" type="xs:string"/>
+            <xs:element name="Data">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="ns3:BinaryData" minOccurs="0"/>
+                        <xs:element ref="ns3:StringData" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="DataElement" type="ns3:Elements"/>
+            <xs:element name="ISOHeader">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="ns3:MTI"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ISOMessages">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="ns3:Data" minOccurs="0"/>
+                        <xs:element ref="ns3:MTI" minOccurs="0"/>
+                        <xs:element ref="ns3:DataElement" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ISOTemplate">
+                <xs:complexType/>
+            </xs:element>
+            <xs:element name="MTI" type="xs:string"/>
+            <xs:element name="StringData" type="xs:string"/>
+        </xs:schema>
+        <xs:schema xmlns="http://xml.asyst.co.id/cbs/posting/proxy" xmlns:iso="http://xml.asyst.co.id/commons/iso8583" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xml.asyst.co.id/cbs/posting/proxy" elementFormDefault="qualified" attributeFormDefault="unqualified">
+            <xs:import namespace="http://xml.asyst.co.id/commons/iso8583"/>
+            <xs:element name="Posting">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="ns1:Type" minOccurs="0"/>
+                        <xs:element ref="iso:ISOMessages" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Type" type="xs:string"/>
+        </xs:schema>
+        <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fault="http://xml.asyst.co.id/commons/ws/fault" targetNamespace="http://xml.asyst.co.id/commons/ws/fault" elementFormDefault="qualified" attributeFormDefault="unqualified">
+            <xs:complexType name="anydata">
+                <xs:sequence>
+                    <xs:any processContents="skip" namespace="##any"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="BWErrDetails">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="fault:ErrHeader" minOccurs="0"/>
+                        <xs:element ref="fault:ErrReport" minOccurs="0"/>
+                        <xs:element ref="fault:ProviderErrs" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Err">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="ErrCat" type="xs:string" minOccurs="0"/>
+                        <xs:element name="ErrCatDesc" type="xs:string" minOccurs="0"/>
+                        <xs:element name="ErrCode" type="xs:string" minOccurs="0"/>
+                        <xs:element name="ErrDesc" type="xs:string" minOccurs="0"/>
+                        <xs:element name="ErrSev" type="xs:string" minOccurs="0"/>
+                        <xs:element name="ErrSrc" type="xs:string"/>
+                        <xs:element name="ErrTgt" type="xs:string"/>
+                        <xs:element name="ErrDateTime" type="xs:dateTime"/>
+                        <xs:element name="ErrDetail" type="xs:string" minOccurs="0"/>
+                        <xs:element ref="fault:BWErrDetails" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ErrHeader">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="BWTxnID" type="xs:string"/>
+                        <xs:element name="ClientTxnID" type="xs:string"/>
+                        <xs:element name="ClientID" type="xs:string"/>
+                        <xs:element name="BWProcess" type="xs:string"/>
+                        <xs:element name="BWActivity" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ErrList">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="fault:Err" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ErrReport">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="StackTrace" type="xs:string" minOccurs="0"/>
+                        <xs:element name="Msg" type="xs:string"/>
+                        <xs:element name="FullClass" type="xs:string" minOccurs="0"/>
+                        <xs:element name="Class" type="xs:string" minOccurs="0"/>
+                        <xs:element name="ProcessStack" type="xs:string" minOccurs="0"/>
+                        <xs:element name="MsgCode" type="xs:string" minOccurs="0"/>
+                        <xs:element name="Data" type="fault:anydata" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ProviderErrs">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="faultcode" type="xs:string"/>
+                        <xs:element name="faultstring" type="xs:string"/>
+                        <xs:element name="faultactor" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:service name="CBSPostingHTTP">
+        <wsdl:port name="PostingPTEndpoint0" binding="tns:PostingPTEndpoint0Binding">
+            <soap:address location="http://10.2.62.81:55589/cbs/posting/service"/>
+        </wsdl:port>
+    </wsdl:service>
+    <wsdl:portType name="PostingPT">
+        <wsdl:operation name="PostTransaction">
+            <wsdl:input message="tns:PostingReq"/>
+            <wsdl:output message="tns:PostingRes"/>
+            <wsdl:fault name="fault1" message="tns:Fault"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="PostingPTEndpoint0Binding" type="tns:PostingPT">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="PostTransaction">
+            <soap:operation style="document" soapAction="http://ws.bukopin.co.id/cbs/posting/posttransaction"/>
+            <wsdl:input>
+                <soap:body use="literal" parts="postingReq"/>
+                <soap:header use="literal" message="tns:PostingReq" part="headerReq"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" parts="postingRes"/>
+                <soap:header use="literal" message="tns:PostingRes" part="headerRes"/>
+            </wsdl:output>
+            <wsdl:fault name="fault1">
+                <soap:fault use="literal" name="fault1"/>
+                <soap:header use="literal" message="tns:Fault" part="fault"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:message name="PostingReq">
+        <wsdl:part name="headerReq" element="ns0:HeaderRQ"/>
+        <wsdl:part name="postingReq" element="ns1:Posting"/>
+    </wsdl:message>
+    <wsdl:message name="PostingRes">
+        <wsdl:part name="headerRes" element="ns0:HeaderRS"/>
+        <wsdl:part name="postingRes" element="ns1:Posting"/>
+    </wsdl:message>
+    <wsdl:message name="Fault">
+        <wsdl:part name="fault" element="ns2:Err"/>
+    </wsdl:message>
+</wsdl:definitions>

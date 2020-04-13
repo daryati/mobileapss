@@ -1,0 +1,23 @@
+#################################################
+# STAGING Server Profile                           #
+#################################################
+
+## Application configurations:
+server:
+   port: 8080
+
+
+## Database configuration:
+#spring.jpa.hibernate.ddl-auto=create
+spring:
+   datasource:
+      url: jdbc:postgresql://172.25.230.12:5432/wfm_opt
+      username: apps
+      password: Apps*2013
+      driver-class-name: org.postgresql.Driver
+   jpa:
+      hibernate:
+         ddl-auto: none      
+         #spring.jpa.hibernate.ddl-auto=none
+      properties:
+         hibernate.dialect: org.hibernate.dialect.PostgreSQL9Dialect

@@ -1,0 +1,29 @@
+===============================================================================
+   Bukopin-Mobile-Service 1.1.Alpha1 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Service - Version 1.1.Alpha1
+
+** Notes
+	* Release for phase 1a.1 (Feb 18, 2020)
+
+** Story
+	* PLN Service (postpaid)
+	* Emoney Module Service
+	* Telco Module Service
+
+
+===============================================================================
+   Bukopin-Mobile-Service 1.0.Alpha1 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Service - Version 1.0.Alpha1
+
+** Notes
+	* Release first phase to production Bukopin.
+
+** Story
+	* Centagate Service
+	* SMS Service
+	* User Module Service
+	* PLN Service (prepaid)
+	* Master Module Service
+	

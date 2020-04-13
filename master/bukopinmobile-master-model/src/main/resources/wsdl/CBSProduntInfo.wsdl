@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Created by TIBCO WSDL-->
+<wsdl:definitions xmlns:ns2="http://xml.asyst.co.id/commons/ws/fault" xmlns:ns1="http://xml.asyst.co.id/cbs/product/productinformation" xmlns:tns="http://xmlns.example.com/1571383336914" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns0="http://xml.asyst.co.id/commons/ws/header" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" name="Untitled" targetNamespace="http://xmlns.example.com/1571383336914">
+    <wsdl:types>
+        <xs:schema xmlns="http://xml.asyst.co.id/cbs/product/productinformation" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xml.asyst.co.id/cbs/product/productinformation" elementFormDefault="qualified" attributeFormDefault="unqualified">
+            <xs:complexType name="productInformationType">
+                <xs:sequence>
+                    <xs:element name="productcode" type="xs:int"/>
+                    <xs:element name="productname" type="xs:string" minOccurs="0"/>
+                    <xs:element name="productdescription" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="productdetailType">
+                <xs:sequence>
+                    <xs:element name="giro">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="rateprecentage1" type="xs:string"/>
+                                <xs:element name="ratedescription1" type="xs:string"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="deposito">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="productdescription1" type="xs:string"/>
+                                <xs:element name="rateprecentage11" type="xs:string"/>
+                                <xs:element name="ratedescription11" type="xs:string"/>
+                                <xs:element name="rateprecentage12" type="xs:string"/>
+                                <xs:element name="ratedescription12" type="xs:string"/>
+                                <xs:element name="rateprecentage13" type="xs:string"/>
+                                <xs:element name="ratedescription13" type="xs:string"/>
+                                <xs:element name="rateprecentage14" type="xs:string"/>
+                                <xs:element name="ratedescription14" type="xs:string"/>
+                                <xs:element name="rateprecentage15" type="xs:string"/>
+                                <xs:element name="ratedescription15" type="xs:string"/>
+                                <xs:element name="productdescription2" type="xs:string"/>
+                                <xs:element name="rateprecentage21" type="xs:string"/>
+                                <xs:element name="ratedescription21" type="xs:string"/>
+                                <xs:element name="rateprecentage22" type="xs:string"/>
+                                <xs:element name="ratedescription22" type="xs:string"/>
+                                <xs:element name="rateprecentage23" type="xs:string"/>
+                                <xs:element name="ratedescription23" type="xs:string"/>
+                                <xs:element name="rateprecentage24" type="xs:string"/>
+                                <xs:element name="ratedescription24" type="xs:string"/>
+                                <xs:element name="rateprecentage25" type="xs:string"/>
+                                <xs:element name="ratedescription25" type="xs:string"/>
+                                <xs:element name="productdescription3" type="xs:string"/>
+                                <xs:element name="rateprecentage31" type="xs:string"/>
+                                <xs:element name="ratedescription31" type="xs:string"/>
+                                <xs:element name="rateprecentage32" type="xs:string"/>
+                                <xs:element name="ratedescription32" type="xs:string"/>
+                                <xs:element name="rateprecentage33" type="xs:string"/>
+                                <xs:element name="ratedescription33" type="xs:string"/>
+                                <xs:element name="rateprecentage34" type="xs:string"/>
+                                <xs:element name="ratedescription34" type="xs:string"/>
+                                <xs:element name="rateprecentage35" type="xs:string"/>
+                                <xs:element name="ratedescription35" type="xs:string"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="tabungan">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="rateprecentage1" type="xs:string"/>
+                                <xs:element name="ratedescription1" type="xs:string"/>
+                                <xs:element name="rateprecentage2" type="xs:string"/>
+                                <xs:element name="ratedescription2" type="xs:string"/>
+                                <xs:element name="rateprecentage3" type="xs:string"/>
+                                <xs:element name="ratedescription3" type="xs:string"/>
+                                <xs:element name="rateprecentage4" type="xs:string"/>
+                                <xs:element name="ratedescription4" type="xs:string"/>
+                                <xs:element name="rateprecentage5" type="xs:string"/>
+                                <xs:element name="ratedescription5" type="xs:string"/>
+                                <xs:element name="limitbalance1" type="xs:string"/>
+                                <xs:element name="interestrate1" type="xs:string"/>
+                                <xs:element name="limitbalance2" type="xs:string"/>
+                                <xs:element name="interestrate2" type="xs:string"/>
+                                <xs:element name="limitbalance3" type="xs:string"/>
+                                <xs:element name="interestrate3" type="xs:string"/>
+                                <xs:element name="limitbalance4" type="xs:string"/>
+                                <xs:element name="interestrate4" type="xs:string"/>
+                                <xs:element name="limitbalance5" type="xs:string"/>
+                                <xs:element name="interestrate5" type="xs:string"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="responsemessageType">
+                <xs:sequence>
+                    <xs:element name="responsecode" type="xs:string"/>
+                    <xs:element name="errormessage" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="productInformation" type="ns1:productInformationType"/>
+            <xs:element name="productdetail" type="ns1:productdetailType"/>
+            <xs:element name="reqproductinformation">
+                <xs:annotation>
+                    <xs:documentation>Comment describing your root element</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="ns1:productInformation"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="responsemessage" type="ns1:responsemessageType"/>
+            <xs:element name="resproductinformation">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="ns1:productInformation"/>
+                        <xs:element ref="ns1:productdetail"/>
+                        <xs:element ref="ns1:responsemessage"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:head="http://xml.asyst.co.id/commons/ws/header" targetNamespace="http://xml.asyst.co.id/commons/ws/header" elementFormDefault="qualified" attributeFormDefault="unqualified">
+            <xs:complexType name="HeaderRQ">
+                <xs:sequence>
+                    <xs:element name="ReqDateTime" type="xs:dateTime"/>
+                    <xs:element name="ClientTxnID" type="xs:string"/>
+                    <xs:element name="IsLastTxn" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="Credentials">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="ClientID" type="xs:string"/>
+                                <xs:element name="Identity" minOccurs="0">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                            <xs:element name="UserID" type="xs:string"/>
+                                            <xs:element name="Password" type="xs:string"/>
+                                        </xs:sequence>
+                                    </xs:complexType>
+                                </xs:element>
+                                <xs:element name="Session" minOccurs="0">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                            <xs:element name="SessionID" type="xs:string"/>
+                                            <xs:element name="SequenceNumber" type="xs:int"/>
+                                        </xs:sequence>
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="HeaderRS">
+                <xs:sequence>
+                    <xs:element name="ResDateTime" type="xs:dateTime"/>
+                    <xs:element name="ClientTxnID" type="xs:string"/>
+                    <xs:element name="IsLastTxn" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="Session" minOccurs="0">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="SessionID" type="xs:string"/>
+                                <xs:element name="SequenceNumber" type="xs:int"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="ResCode" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="HeaderRQ" type="head:HeaderRQ"/>
+            <xs:element name="HeaderRS" type="head:HeaderRS"/>
+        </xs:schema>
+        <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fault="http://xml.asyst.co.id/commons/ws/fault" targetNamespace="http://xml.asyst.co.id/commons/ws/fault" elementFormDefault="qualified" attributeFormDefault="unqualified">
+            <xs:complexType name="anydata">
+                <xs:sequence>
+                    <xs:any processContents="skip" namespace="##any"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="BWErrDetails">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="fault:ErrHeader" minOccurs="0"/>
+                        <xs:element ref="fault:ErrReport" minOccurs="0"/>
+                        <xs:element ref="fault:ProviderErrs" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Err">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="ErrCat" type="xs:string" minOccurs="0"/>
+                        <xs:element name="ErrCatDesc" type="xs:string" minOccurs="0"/>
+                        <xs:element name="ErrCode" type="xs:string" minOccurs="0"/>
+                        <xs:element name="ErrDesc" type="xs:string" minOccurs="0"/>
+                        <xs:element name="ErrSev" type="xs:string" minOccurs="0"/>
+                        <xs:element name="ErrSrc" type="xs:string"/>
+                        <xs:element name="ErrTgt" type="xs:string"/>
+                        <xs:element name="ErrDateTime" type="xs:dateTime"/>
+                        <xs:element name="ErrDetail" type="xs:string" minOccurs="0"/>
+                        <xs:element ref="fault:BWErrDetails" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ErrHeader">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="BWTxnID" type="xs:string"/>
+                        <xs:element name="ClientTxnID" type="xs:string"/>
+                        <xs:element name="ClientID" type="xs:string"/>
+                        <xs:element name="BWProcess" type="xs:string"/>
+                        <xs:element name="BWActivity" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ErrList">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="fault:Err" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ErrReport">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="StackTrace" type="xs:string" minOccurs="0"/>
+                        <xs:element name="Msg" type="xs:string"/>
+                        <xs:element name="FullClass" type="xs:string" minOccurs="0"/>
+                        <xs:element name="Class" type="xs:string" minOccurs="0"/>
+                        <xs:element name="ProcessStack" type="xs:string" minOccurs="0"/>
+                        <xs:element name="MsgCode" type="xs:string" minOccurs="0"/>
+                        <xs:element name="Data" type="fault:anydata" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ProviderErrs">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="faultcode" type="xs:string"/>
+                        <xs:element name="faultstring" type="xs:string"/>
+                        <xs:element name="faultactor" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:service name="CBSProductInfo">
+        <wsdl:port name="ProductInfoPTEndpoint1" binding="tns:ProductInfoPTEndpoint1Binding">
+            <soap:address location="${soap.url.bukopin.productInfo}"/>
+        </wsdl:port>
+    </wsdl:service>
+    <wsdl:portType name="ProductInfoPT">
+        <wsdl:operation name="GetProductInfo">
+            <wsdl:input message="tns:ProductInfoRQ"/>
+            <wsdl:output message="tns:ProductInfoRS"/>
+            <wsdl:fault name="fault1" message="tns:Fault"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="ProductInfoPTEndpoint1Binding" type="tns:ProductInfoPT">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="GetProductInfo">
+            <soap:operation style="document" soapAction="http://ws.bukopin.co.id/cbs/productinfo/getproductinfo"/>
+            <wsdl:input>
+                <soap:body use="literal" parts="productInfoRQ"/>
+                <soap:header use="literal" message="tns:ProductInfoRQ" part="headerRQ"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" parts="productInfoRS"/>
+                <soap:header use="literal" message="tns:ProductInfoRS" part="headerRS"/>
+            </wsdl:output>
+            <wsdl:fault name="fault1">
+                <soap:fault use="literal" name="fault1"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:message name="ProductInfoRQ">
+        <wsdl:part name="headerRQ" element="ns0:HeaderRQ"/>
+        <wsdl:part name="productInfoRQ" element="ns1:reqproductinformation"/>
+    </wsdl:message>
+    <wsdl:message name="ProductInfoRS">
+        <wsdl:part name="headerRS" element="ns0:HeaderRS"/>
+        <wsdl:part name="productInfoRS" element="ns1:resproductinformation"/>
+    </wsdl:message>
+    <wsdl:message name="Fault">
+        <wsdl:part name="fault" element="ns2:Err"/>
+    </wsdl:message>
+</wsdl:definitions>

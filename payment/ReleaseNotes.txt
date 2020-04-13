@@ -1,0 +1,21 @@
+===============================================================================
+   Bukopin-Mobile-Payment 1.1.Alpha1 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Payment - Version 1.0.Alpha1-SNAPSHOT
+
+Initial prototype, features:
+- Payment Management.
+
+** Notes
+	* Release for phase 1a.1 (Feb 18, 2020)
+    * Added Liquibase DB load-data Support.
+    * Supported Databases (Generation Type AUTO): MySQL.
+    
+** Features
+	* Logging Request & Response
+	* Verify PIN and Token Owner in /payment service. 
+
+** Story
+	* [BKPM-61] PLN Postpaid: Inquiry service
+	* [BKPM-79] PLN Postpaid: Payment service
+	* [BKPM-88] PLN Postpaid: Send Email Receipt
