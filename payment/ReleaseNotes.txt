@@ -1,6 +1,32 @@
 ===============================================================================
    Bukopin-Mobile-Payment 1.1.Alpha1 Release Notes
 ===============================================================================
+Release Notes - Bukopin-Mobile-Payment - Version 1.1.Alpha1
+
+** Notes
+    * Release for phase 2.a, Emoney (Apr 9, 2020)
+    * Using database MS SQL Server
+    
+** Features
+	* Logging Request & Response
+	* Verify PIN and Token Owner in /purchase service.
+	* Login Session 
+
+** Story
+	* OVO Services
+	* Gopay Services
+	* Link Aja Services
+	
+** Bug Fixed
+	*   
+	
+** Deprecated Service
+	*
+	
+	
+===============================================================================
+   Bukopin-Mobile-Payment 1.1.Alpha1 Release Notes
+===============================================================================
 Release Notes - Bukopin-Mobile-Payment - Version 1.0.Alpha1-SNAPSHOT
 
 Initial prototype, features:

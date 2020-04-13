@@ -1,7 +1,29 @@
 ===============================================================================
-   Bukopin-Mobile-Transfer 1.1.Alpha1 Release Notes
+   Bukopin-Mobile-Master 1.1.Alpha1 Release Notes
 ===============================================================================
-Release Notes - Bukopin-Mobile-Transfer - Version 1.0.Alpha1
+Release Notes - Bukopin-Mobile-Master - Version 1.1.Alpha1
+** Notes
+	* Release for phase 2.a, Emoney (Apr 9, 2020)
+    * Using database MS SQL Server
+
+** Features
+	* Logging Request & Response
+	* Login Session 
+
+** Story
+	* 
+
+** Bug Fixed
+	*   
+	
+** Deprecated Service
+	* 
+
+
+===============================================================================
+   Bukopin-Mobile-Master 1.1.Alpha1 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Master - Version 1.0.Alpha1
 
 ** Notes
     * Release for phase 1a.1 (Feb 18, 2020)
@@ -12,9 +34,9 @@ Release Notes - Bukopin-Mobile-Transfer - Version 1.0.Alpha1
 	- [BKPM-146] Exchange Rate
 	
 ===============================================================================
-   Bukopin-Mobile-Transfer 1.0.Alpha1 Release Notes
+   Bukopin-Mobile-Master 1.0.Alpha1 Release Notes
 ===============================================================================
-Release Notes - Bukopin-Mobile-Transfer - Version 1.0.Alpha1
+Release Notes - Bukopin-Mobile-Master - Version 1.0.Alpha1
 
 Initial prototype, features:
 - Transfer Management.

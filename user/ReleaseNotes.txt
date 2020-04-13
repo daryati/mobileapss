@@ -1,16 +1,21 @@
 ===============================================================================
-   Bukopin-Mobile-User 1.1.Alpha2 Release Notes
+   Bukopin-Mobile-User 1.1.Alpha1 Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-User - Version 1.1.Alpha2
 
 ** Notes
-	* Release for phase ...
+	* Release for phase 2.a, Emoney (Apr 9, 2020)
+    * Using database MS SQL Server
 	* Add Device-ID in Http Header for each request.
 	* Reactivate service [BKPM-4] /SMSToken/{phonenumber} with param change to {username} instead {phonenumber}.
 	  To avoid IDOR issue, add Verify Phone and Token [BKPM-156] for each request.
 	* Reactivate service [BKPM-5] /OTP/verify
 	* Add column USER.IS_LOGIN
 	* Add column USER.PHONE_IDENTITY
+
+** Features
+	* Logging Request & Response
+	* Login Session 
 
 ** Story
 	* [BKPM-156] Security: Verify User Phone Identity. Implement to:

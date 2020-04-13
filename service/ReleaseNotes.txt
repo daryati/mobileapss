@@ -2,6 +2,28 @@
    Bukopin-Mobile-Service 1.1.Alpha1 Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Service - Version 1.1.Alpha1
+** Notes
+	* Release for phase 2.a, Emoney (Apr 9, 2020)
+    * Using database MS SQL Server
+
+** Features
+	* Logging Request & Response
+	* Login Session 
+
+** Story
+	* 
+
+** Bug Fixed
+	*   
+	
+** Deprecated Service
+	* 
+	
+
+===============================================================================
+   Bukopin-Mobile-Service 1.1.Alpha1 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Service - Version 1.1.Alpha1
 
 ** Notes
 	* Release for phase 1a.1 (Feb 18, 2020)
