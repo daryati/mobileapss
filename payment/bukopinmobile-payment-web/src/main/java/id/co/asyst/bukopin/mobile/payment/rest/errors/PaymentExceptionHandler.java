@@ -163,7 +163,7 @@ public class PaymentExceptionHandler extends ResponseEntityExceptionHandler {
 
 	CommonResponse response = new CommonResponse();
 	response.setCode(String.valueOf(HttpStatus.BAD_REQUEST.value()));
-	response.setMessage(messageUtil.get("invalid.request.body", servletRequest.getLocale()));
+	response.setMessage(messageUtil.get("error.invalid.request", servletRequest.getLocale()));
 
 	return new ResponseEntity<>(response, HttpStatus.OK);
     }

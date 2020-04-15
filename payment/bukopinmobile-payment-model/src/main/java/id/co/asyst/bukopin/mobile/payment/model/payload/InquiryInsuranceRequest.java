@@ -11,6 +11,10 @@ package id.co.asyst.bukopin.mobile.payment.model.payload;
 
 import java.math.BigDecimal;
 import java.util.List;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import org.json.JSONArray;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,12 +30,15 @@ public class InquiryInsuranceRequest {
     /* Constants: */
 
     /* Attributes: */
+	@NotBlank(message = "code insurance is Required!")
 	@JsonProperty("codeIns")
     private String codeIns;
 	
+	@NotBlank(message = "subscriber number is Required!")
 	@JsonProperty("subscriberNumber")
     private String subscriberNumber;
 	
+	@NotNull(message = "month is Required!")
 	@JsonProperty("month")
     private Integer month;
 
