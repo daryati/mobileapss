@@ -105,6 +105,7 @@ public class InsuranceController {
    
     private static final String SYSTEM_BROKEN_189 = "189";
     private static final String SYSTEM_BROKEN_196 = "196";
+    private static final String PASSIVE_ACCOUNT = "839";
     private DateFormat paymentTelkomselDate = new SimpleDateFormat("dd MMM yyyy");
     
     
@@ -220,18 +221,18 @@ public class InsuranceController {
 	    log.error("not enough balance");
 	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
 	    response.setMessage(messageUtil.get("error.amount.not.enough", httpServletRequest.getLocale()));
+	} else if (PASSIVE_ACCOUNT.equals(codeRes)) {
+	    log.error("passive account");
+	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
+	    response.setMessage(messageUtil.get("error.inactive.bank.account", httpServletRequest.getLocale()));
 	} else if (INVALID_INTERVAL.equals(codeRes) ) {
 	    log.error("invalid interval");
 	    response.setCode(ResponseMessage.ERROR_INVALID_INTERVAL.getCode());
 	    response.setMessage(messageUtil.get("error.invalid.interval", httpServletRequest.getLocale()));
 	} else	if (!SUCCESS_CODE.equals(codeRes)) {
-	    log.error("Error from tibco with code : "+codeRes);
-	    response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
-	    response.setMessage(messageUtil.get("error.internal.server", httpServletRequest.getLocale()));
-	    
-	    /*log.error("Error (result) PLN Postpaid: "+codeRes);
+		log.error("Error (result) Insurance inquiry : "+codeRes);
 	    // Throw middleware error
-	    throw new MiddlewareException(codeRes);*/
+	    throw new MiddlewareException(codeRes);
 	} else {
 	    log.debug("Inquiry Insurance success");
 
@@ -458,12 +459,16 @@ public class InsuranceController {
 	    log.error("not enough balance");
 	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
 	    response.setMessage(messageUtil.get("error.amount.not.enough", httpServletRequest.getLocale()));
+	} else if (PASSIVE_ACCOUNT.equals(codeRes)) {
+	    log.error("passive account");
+	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
+	    response.setMessage(messageUtil.get("error.inactive.bank.account", httpServletRequest.getLocale()));
 	} else if (INVALID_INTERVAL.equals(codeRes) ) {
 	    log.error("invalid interval");
 	    response.setCode(ResponseMessage.ERROR_INVALID_INTERVAL.getCode());
 	    response.setMessage(messageUtil.get("error.invalid.interval", httpServletRequest.getLocale()));
 	} else {
-		log.error("Error (result) Prepaid Telco : "+codeRes);
+		log.error("Error (result) Insurance payment : "+codeRes);
 	    // Throw middleware error
 	    throw new MiddlewareException(codeRes);
 	}

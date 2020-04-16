@@ -10,6 +10,10 @@
 package id.co.asyst.bukopin.mobile.payment.model.payload;
 
 import java.math.BigDecimal;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -23,51 +27,67 @@ public class PaymentInsuranceRequest {
     /* Constants: */
 
     /* Attributes: */
+	@NotBlank(message = "username number is Required!")
 	@JsonProperty("username")
     private String username;
 
+	@NotBlank(message = "pin number is Required!")
 	@JsonProperty("pin")
 	private String pin;
 	
+	@NotBlank(message = "code insurance number is Required!")
 	@JsonProperty("codeIns")
 	private String codeIns;
 	
+	@NotBlank(message = "account number number is Required!")
 	@JsonProperty("accountNumber")
 	private String accountNumber;
 	
+	@NotNull(message = "month number is Required!")
 	@JsonProperty("month")
 	private Integer month;
 	
+	@NotNull(message = "amount number is Required!")
 	@JsonProperty("amount")
     private BigDecimal amount;
 	
+	@NotNull(message = "prepaidInsurance number is Required!")
 	@JsonProperty("prepaidInsurance")
     private BigDecimal prepaidInsurance;
 	
+	@NotNull(message = "admin fee number is Required!")
 	@JsonProperty("adminFee")
     private BigDecimal adminFee;
 	
+	@NotNull(message = "total amount number is Required!")
 	@JsonProperty("totalAmount")
     private BigDecimal totalAmount;
 	
+	@NotBlank(message = "subscriber number is Required!")
 	@JsonProperty("subscriberNumber")
     private String subscriberNumber;
 	
+	@NotBlank(message = "element4 is Required!")
 	@JsonProperty("element4")
     private String element4;
 	
+	@NotBlank(message = "element11 is Required!")
 	@JsonProperty("element11")
     private String element11;
 
+	@NotBlank(message = "element37 is Required!")
 	@JsonProperty("element37")
     private String element37;
 	
+	@NotBlank(message = "element48 is Required!")
 	@JsonProperty("element48")
     private String element48;
 	
+	@NotBlank(message = "element63 is Required!")
 	@JsonProperty("element63")
     private String element63;
 	
+	@NotBlank(message = "element120 is Required!")
 	@JsonProperty("element120")
     private String element120;
 
