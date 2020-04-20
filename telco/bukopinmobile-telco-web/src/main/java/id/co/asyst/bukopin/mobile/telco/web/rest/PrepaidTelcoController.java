@@ -538,7 +538,7 @@ public class PrepaidTelcoController {
 		CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(), 
 			messageUtil.get("success", httpServletRequest.getLocale()));
 		String providerGroup = resTelco.getpGroup();
-		String provider = resTelco.getProvider();
+		String provider = "PRE"+resTelco.getProvider();
 		try {
 		    // save to Destination and Transaction
 		    
