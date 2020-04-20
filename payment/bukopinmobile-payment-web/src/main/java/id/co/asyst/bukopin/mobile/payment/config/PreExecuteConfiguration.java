@@ -48,6 +48,6 @@ public class PreExecuteConfiguration implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
 	// add paths which needs token to access.
 	registry.addInterceptor(controllerInterceptor)
-		.addPathPatterns("/**/PLN/**","/**/insurance/**");
+		.addPathPatterns("/**/PLN/**","/**/insurance/**","/**/listCredit/**");
     }
 }

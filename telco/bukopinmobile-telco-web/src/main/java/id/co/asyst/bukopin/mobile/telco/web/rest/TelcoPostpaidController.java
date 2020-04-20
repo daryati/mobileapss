@@ -649,13 +649,14 @@ public class TelcoPostpaidController {
 	}
 
 	ObjectMapper mapper = new ObjectMapper();
-	InstitutionMapper findInstitution = mapper.convertValue(institutionRes.getData(), InstitutionMapper.class);
-
-	String codeArra = findInstitution.getCodeArra();
-	String codeCbs = findInstitution.getCodeCbs();
+	
+	String codeArra = req.getData().getCodeArra();
+	String codeCbs = req.getData().getCodeCbs();
+	
+	String accType = verifyAccOwnRespObj.getAccountInfo().getAccountType().name();
 
 	TelkomPSTNSpeedyPurchaseTibcoRequest purchaseTelkomPostpaidReq = TelcoUtils
-		.generateTelkomPSTNSPeedyPurchaseRequest(req.getData(), forwardInsCode, codeArra, codeCbs);
+		.generateTelkomPSTNSPeedyPurchaseRequest(req.getData(), forwardInsCode, codeArra, codeCbs, accType);
 
 	log.debug("Request to Tibco : " + BkpmUtil.convertToJson(purchaseTelkomPostpaidReq));
 
