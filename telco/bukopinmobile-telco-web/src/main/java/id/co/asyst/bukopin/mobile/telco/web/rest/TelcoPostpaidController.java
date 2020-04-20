@@ -278,10 +278,11 @@ public class TelcoPostpaidController {
 	    return response;
 	}
 	User user = verifyAccOwnRespObj.getUser();
+	String accType = verifyAccOwnRespObj.getAccountInfo().getAccountType().name();
 
 	String forwardInsCode = env.getProperty("config.forwarding-institution-code");
 	TelcoPostpaidPaymentTibcoRequest reqPaymentTibco = TelcoUtils.generateTelcoPostpaidPaymentReq(req.getData(),
-		forwardInsCode, group, codeArra, codeCbs);
+		forwardInsCode, group, codeArra, codeCbs, accType);
 	log.debug("Request payment postpaid " + type + " to tibco : " + BkpmUtil.convertToJson(reqPaymentTibco));
 
 	TelcoPostpaidPaymentTibcoResponse resPaymentTibco = Services.create(TelcoModuleService.class)

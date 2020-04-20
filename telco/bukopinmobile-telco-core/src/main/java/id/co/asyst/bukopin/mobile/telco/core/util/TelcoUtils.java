@@ -45,6 +45,7 @@ import id.co.asyst.bukopin.mobile.telco.model.payload.TelcoPostpaidPaymentReques
 import id.co.asyst.bukopin.mobile.telco.model.payload.TelcoPostpaidPaymentResponse;
 import id.co.asyst.bukopin.mobile.telco.model.payload.TelkomPSTNSpeedyInquiryReq;
 import id.co.asyst.bukopin.mobile.telco.model.payload.TelkomPSTNSpeedyInquiryRes;
+import id.co.asyst.bukopin.mobile.user.model.AccountTypeEnum;
 
 /**
  * 
@@ -62,6 +63,8 @@ public class TelcoUtils {
     private static final String MTI_PAYMENT = "2200";
     private static final String PROCCESSING_CODE_INQUIRY = "380000";
     private static final String PROCCESSING_CODE_PAYMENT = "500000";
+    private static final String PROCCESSING_CODE_PAYMENT_TABUNGAN = "501000";
+    private static final String PROCCESSING_CODE_PAYMENT_GIRO = "502000";
     private static final String MERCHANT_TYPE_MOBILE = "6017";
     private static final String ACQUIRING_INSTITUTION_CODE = "4410010";
     private static final String RECEIVING_INSTITUTION_CODE = "441001";
@@ -118,11 +121,17 @@ public class TelcoUtils {
     private static SimpleDateFormat dateLocal = new SimpleDateFormat("MMdd");
     private static SimpleDateFormat dateYear = new SimpleDateFormat("yyyyMMdd");
     
-    private static String PGROUP_INDOSAT = "INDOSAT";
-    private static String PGROUP_TELKOMSEL = "TELKOMSEL";
-    private static String PGROUP_XL = "XL";
-    private static String PGROUP_TRI = "TRI";
-    private static String PGROUP_SMARTFREN = "SMARTFREN";
+    private static final String PGROUP_INDOSAT = "INDOSAT";
+    private static final String PGROUP_TELKOMSEL = "TELKOMSEL";
+    private static final String PGROUP_XL = "XL";
+    private static final String PGROUP_TRI = "TRI";
+    private static final String PGROUP_SMARTFREN = "SMARTFREN";
+    
+    private static final String HALO = "HALO";
+    private static final String MATRIX = "MATRIX";
+    private static final String XPLOR = "XPLOR";
+    private static final String TRI = "TRI";
+    private static final String SMARTFREN = "SMARTFREN";
 
     /* Attributes: */
 
@@ -234,7 +243,7 @@ public class TelcoUtils {
      * @return
      */
     public static TelcoPostpaidPaymentTibcoRequest generateTelcoPostpaidPaymentReq(TelcoPostpaidPaymentRequest dataReq,
-	    String forwardInsCode, String group, String codeArra, String codeCbs) {
+	    String forwardInsCode, String group, String codeArra, String codeCbs, String accType) {
 	TelcoPostpaidPaymentTibcoRequest req = new TelcoPostpaidPaymentTibcoRequest();
 
 	String element37 = dataReq.getElement37();
@@ -266,7 +275,13 @@ public class TelcoUtils {
 	// set param
 	TelcoPostpaidPaymentDataTibcoRequest param = new TelcoPostpaidPaymentDataTibcoRequest();
 	param.setMti(MTI_PAYMENT);
-	param.setElement3(PROCCESSING_CODE_PAYMENT);
+	
+	if(accType.equalsIgnoreCase(AccountTypeEnum.SAVING.name())) {
+	    param.setElement3(PROCCESSING_CODE_PAYMENT_TABUNGAN);
+	} else if (accType.equalsIgnoreCase(AccountTypeEnum.GIRO.name())) {
+	    param.setElement3(PROCCESSING_CODE_PAYMENT_GIRO);
+	}
+	
 	param.setElement4(StringUtils.leftPad(amount + "00", 20));
 	param.setElement7(element7Format.format(date));
 	param.setElement11(STAN);
@@ -360,15 +375,15 @@ public class TelcoUtils {
 	String pstn = "Telkom";
 
 	// set destination type
-	if (DestinationTypeEnum.POSTHALO.name().equalsIgnoreCase(reqPay.getType())) {
+	if (HALO.equalsIgnoreCase(reqPay.getType())) {
 	    destReq.setDestinationType(DestinationTypeEnum.POSTHALO.name());
-	} else if (DestinationTypeEnum.POSTMATRIX.name().equalsIgnoreCase(reqPay.getType())) {
+	} else if (MATRIX.equalsIgnoreCase(reqPay.getType())) {
 	    destReq.setDestinationType(DestinationTypeEnum.POSTMATRIX.name());
-	} else if (DestinationTypeEnum.POSTXPLOR.name().equalsIgnoreCase(reqPay.getType())) {
+	} else if (XPLOR.equalsIgnoreCase(reqPay.getType())) {
 	    destReq.setDestinationType(DestinationTypeEnum.POSTXPLOR.name());
-	} else if (DestinationTypeEnum.POSTTRI.name().equalsIgnoreCase(reqPay.getType())) {
+	} else if (TRI.equalsIgnoreCase(reqPay.getType())) {
 	    destReq.setDestinationType(DestinationTypeEnum.POSTTRI.name());
-	} else if (DestinationTypeEnum.POSTSMARTFREN.name().equalsIgnoreCase(reqPay.getType())) {
+	} else if (SMARTFREN.equalsIgnoreCase(reqPay.getType())) {
 	    destReq.setDestinationType(DestinationTypeEnum.POSTSMARTFREN.name());
 	} else if (speedy.equalsIgnoreCase(reqPay.getType())) {
 	    destReq.setDestinationType(DestinationTypeEnum.POSTSPEEDY.name());
