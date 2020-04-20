@@ -405,11 +405,20 @@ public class AuthenticationController {
 				messageUtil.get("register.failed", servletRequest.getLocale()));
 			deleteUser(regRequest.getUsername());
 		    }
-		} else {
-		    log.error("Duplicate username: " + regRequest.getUsername());
+		} else if (BkpmConstants.CODE_CTG_DUPLICATE_USERNAME.equals(ctgResponse.getCode())) {
+		    log.error("Duplicate username CTG: " + regRequest.getUsername());
 		    response = new CommonResponse(ResponseMessage.DUPLICATE_DATA.getCode(),
 			    messageUtil.get("register.duplicate.username", new Object[] { regRequest.getUsername() },
 				    servletRequest.getLocale()));
+		} else if (BkpmConstants.CODE_CTG_DUPLICATE_EMAIL.equals(ctgResponse.getCode())) {
+		    log.error("Duplicate email CTG: " + regRequest.getEmail());
+		    response = new CommonResponse(ResponseMessage.DUPLICATE_DATA.getCode(),
+				messageUtil.get("register.duplicate.email", servletRequest.getLocale()));
+		} else {
+		    log.error("Registration failed CTG: " + regRequest.getUsername()
+		    	+". CTG: "+ctgResponse.getCode()+ " - "+ctgResponse.getMessage());
+		    response = new CommonResponse(ResponseMessage.ERROR_EXTERNAL.getCode(),
+			    ctgResponse.getMessage());
 		}
 	    }
 	} else {
