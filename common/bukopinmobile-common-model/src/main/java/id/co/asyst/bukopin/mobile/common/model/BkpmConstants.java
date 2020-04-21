@@ -33,7 +33,9 @@ public class BkpmConstants {
     public static final String CODE_CTG_USER_NOT_FOUND = "22002";
     public static final String CODE_CTG_PASSWORD_NOT_ALLOWED_LAST = "28003";
     public static final String CODE_CTG_DUPLICATE_EMAIL = "22001";
+    public static final String CODE_CTG_USER_LIMIT_REACH = "22013";
     public static final String CODE_CTG_DUPLICATE_USERNAME = "22025";
+    public static final String CODE_CTG_INVALID_LICENSE_FILE = "27001";
     // Fields
     public static final String FIELD_HMAC = "hmac";
     public static final String FIELD_SERIAL_UID = "serialVersionUID";
