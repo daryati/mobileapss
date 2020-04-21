@@ -62,8 +62,8 @@ public class TelcoService {
     private static final String TELCO_PULSA_TEMPLATE_NAME = "html/PrepaidTelcoPulsaTemplate";
     private static final String TELCO_DATA_TEMPLATE_NAME = "html/PrepaidTelcoDataTemplate";
     private static final String TELCO_POSTPAID_TEMPLATE_NAME = "html/PostpaidTelcoTemplate";
-    private static final String CATEGORY_TELEPHONE_TV = "4";
-    private static final String CATEGORY_PULSA_DATA = "1";
+    private static final String CATEGORY_TELEPHONE_TV = "Telepon & TV Kabel";
+   
     
     /* Attributes: */
     
@@ -249,13 +249,14 @@ public class TelcoService {
 	    
 	    String subject = " ";
 	    String desc = "";
-	    if(category.contains(CATEGORY_PULSA_DATA)) {
+	    if(category.equalsIgnoreCase(CATEGORY_TELEPHONE_TV)) {
 		// send struk emoney by email
-		subject = "Pulsa Pascabayar";
-		desc ="Pulsa Pascabayar";
+	    	subject = "Telepon & TV Kabel";
+			desc ="Telepon & TV Kabel";
+		
 	    } else {
-		subject = "Telepon & TV Kabel";
-		desc ="Telepon & TV Kabel";
+	    	subject = "Pulsa Pascabayar";
+			desc ="Pulsa Pascabayar";
 	    }
 	    
 	    //set full name
