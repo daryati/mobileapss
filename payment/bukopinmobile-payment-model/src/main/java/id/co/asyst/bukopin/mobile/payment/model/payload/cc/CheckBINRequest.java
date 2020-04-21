@@ -10,6 +10,7 @@
 package id.co.asyst.bukopin.mobile.payment.model.payload.cc;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 /**
  * 
@@ -29,6 +30,7 @@ public class CheckBINRequest {
     private String name;
     
     @NotBlank
+    @Size(min = 8, max = 8, message="{error.invalid.input}")
     private String subscriberNumber;
 
 
