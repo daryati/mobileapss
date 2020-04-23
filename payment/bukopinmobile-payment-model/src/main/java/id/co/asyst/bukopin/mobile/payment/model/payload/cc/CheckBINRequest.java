@@ -30,10 +30,11 @@ public class CheckBINRequest {
     private String name;
     
     @NotBlank
-    @Size(min = 8, max = 8, message="{error.invalid.input}")
+    @Size(min = 16, max = 16, message="{error.invalid.input}")
     private String subscriberNumber;
 
-
+    @NotBlank
+    private String amount;
 
     /* Transient Attributes: */
 
@@ -90,19 +91,34 @@ public class CheckBINRequest {
     public void setSubscriberNumber(String subscriberNumber) {
         this.subscriberNumber = subscriberNumber;
     }
+    
+    /**
+	 * @return the amount
+	 */
+	public String getAmount() {
+		return amount;
+	}
 
+	/**
+	 * @param amount the amount to set
+	 */
+	public void setAmount(String amount) {
+		this.amount = amount;
+	}
 
     /* Getters & setters for transient attributes: */
 
     /* Functionalities: */
 
-    /* Overrides: */
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-	return "CheckBINRequest [codeCc=" + codeCc + ", name=" + name + ", subscriberNumber=" + subscriberNumber + "]";
-    }
+	/* Overrides: */
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "CheckBINRequest [codeCc=" + codeCc + ", name=" + name + ", subscriberNumber=" + subscriberNumber
+				+ ", amount=" + amount + "]";
+	}
+
 
 }

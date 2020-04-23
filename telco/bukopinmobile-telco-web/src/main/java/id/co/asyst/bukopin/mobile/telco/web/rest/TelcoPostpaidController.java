@@ -446,15 +446,7 @@ public class TelcoPostpaidController {
 	log.debug("REST request to inquiry Telkom PSTN/SPEEDY Postpaid : {}" + BkpmUtil.convertToJson(req.getData()));
 	CommonResponse response = new CommonResponse();
 
-	String pstn = "TELKOM_PSTN";
-	String telkom = "TELKOM";
-	String type = "";
-	
-	if(telkom.equalsIgnoreCase(req.getData().getType())) {
-	    type = pstn;
-	} else {
-	    type = req.getData().getType();
-	}
+	String type = req.getData().getType();
 	
 	String custNo = req.getData().getCustNo();
 
@@ -583,18 +575,11 @@ public class TelcoPostpaidController {
 	log.debug("REST request to Payment TELKOM/SPEEDY Postpaid : {}", req.getData());
 	CommonResponse response = new CommonResponse();
 	
-	String pstn = "TELKOM_PSTN";
-	String telkom = "TELKOM";
-	String type = "";
+	String type = req.getData().getType();
 	
 	String pin = req.getData().getPin();
 	String username = req.getData().getUsername();
 	
-	if(telkom.equalsIgnoreCase(req.getData().getType())) {
-	    type = pstn;
-	} else {
-	    type = req.getData().getType();
-	}
 	
 	// verify pin
 	GetVerifyPINRequest verifyPinData = new GetVerifyPINRequest();
