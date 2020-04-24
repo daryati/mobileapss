@@ -66,9 +66,9 @@ public class UserMailService {
     private static final String EMAIL_CHANGE_PIN = "html/changePin";
     private static final String EMAIL_FORGOT_PASSWORD = "html/forgotpasswordtemplate";
     
-    private static final String PWD = "Password";
+    private static final String PWD = "Akun";
     private static final String PIN = "PIN";
-    private static final String PASSWORD_DESC = " akun Bukopin Mobile Anda telah\n terkunci sementara, coba lagi setelah 60 menit";
+    private static final String PASSWORD_DESC = " Bukopin Mobile Anda telah\n terkunci sementara, coba lagi setelah 60 menit setelah percobaan login / transaksi terakhir";
     private static final String PIN_DESC = " akun Bukopin Mobile Anda telah terblokir,\n harap menghubungi customer service kami";
     private static final String PIN_DESC2 = "diblokir";
     private static final String PASSWORD_DESC2 = "dikunci untuk sementara waktu";
@@ -182,15 +182,16 @@ public class UserMailService {
 	    String subject = "";
 	    if (type.equalsIgnoreCase(PIN)) {
 		subject = SUBJECT_PIN;
-		ctx.setVariable("desc", PIN);
-		ctx.setVariable("desc1", PIN_DESC);
-		ctx.setVariable("desc2", PIN_DESC2);
+		/*ctx.setVariable("desc", PIN);
+		ctx.setVariable("desc1", PASSWORD_DESC);
+		ctx.setVariable("desc2", PASSWORD_DESC2);*/
 	    } else {
 		subject = SUBJECT_PASSWORD;
-		ctx.setVariable("desc", PWD);
+		/*ctx.setVariable("desc", PWD);
 		ctx.setVariable("desc1", PASSWORD_DESC);
-		ctx.setVariable("desc2", PASSWORD_DESC2);
+		ctx.setVariable("desc2", PASSWORD_DESC2);*/
 	    }
+		ctx.setVariable("desc2", PASSWORD_DESC2);
 
 	    final MimeMessage mimeMessage = this.javaMailSender.createMimeMessage();
 	    final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, StandardCharsets.UTF_8.name());

@@ -37,6 +37,8 @@ local.properties
 .loadpath
 .recommenders
 .project
+*.sh
+*.bat
 .classpath
 
 # External tool builders

@@ -67,6 +67,10 @@ public interface UserModuleService {
     
     @GET("bukopinmobile-user/api/validateSession/{token}")
     Call<CommonResponse> validateLoginSession(@Path(value="token") String token);
+        
+    @GET("bukopinmobile-user/account/getAccountCard/{username}")
+    Call<CommonResponse> getAccountCardByUsername(@Path(value = "username") String username);
+
 }
 
 

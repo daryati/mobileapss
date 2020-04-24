@@ -827,5 +827,32 @@ public class AccountController {
 	return response;
     }
 
+    
+    /**
+     * find Account Card by Username
+     * @param username 
+     * @return Http Status 200 with body contains data of Account Card
+     */
+    @GetMapping("/getAccountCard/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse getAccountCardByUsername(@PathVariable String username) {
+	log.debug("REST request to get account card by username");
+        CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(), messageUtil.get("success", servletRequest.getLocale()));
+        
+        AccountCard result = accountCardService.findByUsername(username);
+        if(result == null) {
+            log.error("Data Account Card not found for user : " + username);
+            response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+            response.setMessage(messageUtil.get("error.not.found", servletRequest.getLocale()));
+            
+            return response;
+        }
+        
+        log.debug("Data Account Card {} " + BkpmUtil.convertToJson(result));
+        response.setData(result);
+        
+        return response;
+    }
+
     /* Overrides: */
 }
