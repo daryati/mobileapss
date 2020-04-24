@@ -27,6 +27,11 @@ public class LoginRequest {
 
     @NotBlank
     private String password;
+    
+    /**
+     * is Login from biometrik or form? true if using biometrik, else false.
+     */
+    private Boolean isBio;
 
     /* Constructors: */
 
@@ -69,8 +74,23 @@ public class LoginRequest {
 	this.password = password;
     }
     
-    /* Functionalities: */
+    /**
+     * Gets <code>isBio</code>.
+     * @return The <code>isBio</code>.
+     */
+    public Boolean getIsBio() {
+        return isBio;
+    }
 
+    /**
+     * Sets <code>isBio</code>.
+     * @param isBio The <code>isBio</code> to set.
+     */
+    public void setIsBio(Boolean isBio) {
+        this.isBio = isBio;
+    }
+    
+    /* Functionalities: */
 
     /* Overrides: */
     /*
@@ -80,6 +100,7 @@ public class LoginRequest {
      */
     @Override
     public String toString() {
-	return "LoginRequest [username=" + username + ", password=" + password + "]";
+	return "LoginRequest [username=" + username + ", password=" + password 
+		+ ", isBio=" + isBio + "]";
     }
 }
