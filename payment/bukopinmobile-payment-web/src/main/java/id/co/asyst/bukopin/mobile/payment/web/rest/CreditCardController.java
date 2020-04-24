@@ -62,6 +62,7 @@ import id.co.asyst.bukopin.mobile.service.model.payload.cc.InquiryCreditCardTibc
 import id.co.asyst.bukopin.mobile.service.model.payload.cc.InquiryCreditCardTibcoResponse;
 import id.co.asyst.bukopin.mobile.service.model.payload.cc.PaymentCreditCardTibcoReq;
 import id.co.asyst.bukopin.mobile.service.model.payload.cc.PaymentCreditCardTibcoResponse;
+import id.co.asyst.bukopin.mobile.service.model.payload.cc.RequestCheckBin;
 import id.co.asyst.bukopin.mobile.service.model.payload.pln.GetVerifyPINRequest;
 import id.co.asyst.bukopin.mobile.user.model.entity.AccountCard;
 import id.co.asyst.bukopin.mobile.user.model.entity.User;
@@ -309,7 +310,25 @@ public class CreditCardController {
 	InstitutionMapper findInstitution = oMapper.convertValue(institutionRes.getData(), InstitutionMapper.class);
 	String codeCbs = findInstitution.getCodeCbs();
 
-	// if (codeCc.equalsIgnoreCase(CODE_CC_BKP)) {
+	if (!codeCc.equalsIgnoreCase(CODE_CC_BKP)) {
+		CheckBINRequest checkBinData = new CheckBINRequest();
+		checkBinData.setCodeCc(codeCc);
+		checkBinData.setName(name);
+		checkBinData.setSubscriberNumber(regCard.substring(0, 8));
+		
+		CommonRequest<CheckBINRequest> binReq = new CommonRequest<>();
+		binReq.setIdentity(request.getIdentity());
+		binReq.setData(checkBinData);
+		
+		CommonResponse checkBin = checkBin(binReq);
+		
+		if(!SUCCESS_CODE.equals(checkBin.getCode())) {
+			response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+			response.setMessage(messageUtil.get("error.data.not.match", servletRequest.getLocale()));
+			
+			return response;
+		}
+	}
 	PaymentCreditCardTibcoReq tibcoRequest = CreditCardUtil.generatePaymentCreditCardTibcoReq(request.getData(),
 		name, regCard, accType, forwardInsCode, codeCbs);
 	log.debug("Request Payment credit card to Tibco {}" + BkpmUtil.convertToJson(tibcoRequest));
@@ -480,8 +499,10 @@ public class CreditCardController {
 	
 	ObjectMapper mapper = new ObjectMapper();
 
-	String subscriberNum = request.getData().getSubscriberNumber();
-		
+	String subsNum = request.getData().getSubscriberNumber();
+	
+	String subscriberNum = subsNum.substring(0, 8);
+	
 	CommonResponse prefixCheck = Services.create(MasterModuleService.class)
 		.findOneByPrefixNo(subscriberNum).execute().body();
 	
@@ -491,7 +512,7 @@ public class CreditCardController {
 	if(prefixCheck.getData() != null) {
 	    List<String> prefix = mapper.convertValue(prefixCheck.getData(), ArrayList.class);
 	    if(codeCc.equalsIgnoreCase(prefix.get(0))) {
-		
+		response.setData(request.getData());
 		return response;
 		
 	    } else {
@@ -505,10 +526,10 @@ public class CreditCardController {
 	    
 	    prefixCheck = Services.create(MasterModuleService.class)
 			.findOneByPrefixNo(digit6).execute().body();
-	    if(prefixCheck != null) {
+	    if(prefixCheck.getData() != null) {
 		List<String> prefix6 = mapper.convertValue(prefixCheck.getData(), ArrayList.class);
 		    if(codeCc.equalsIgnoreCase(prefix6.get(0))) {
-			
+			response.setData(request.getData());
 			return response;
 			
 		    }else {

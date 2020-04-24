@@ -25,6 +25,7 @@ import id.co.asyst.bukopin.mobile.master.model.CategoryEnum;
 import id.co.asyst.bukopin.mobile.master.model.TransactionTypeEnum;
 import id.co.asyst.bukopin.mobile.master.model.entity.Destination;
 import id.co.asyst.bukopin.mobile.master.model.payload.DestinationCommonRequest;
+import id.co.asyst.bukopin.mobile.payment.model.payload.cc.CheckBINRequest;
 import id.co.asyst.bukopin.mobile.payment.model.payload.cc.InquiryCreditCardRequest;
 import id.co.asyst.bukopin.mobile.payment.model.payload.cc.InquiryCreditCardResponse;
 import id.co.asyst.bukopin.mobile.payment.model.payload.cc.PaymentCreditCardRequest;
@@ -407,4 +408,5 @@ public class CreditCardUtil {
 
 	return aplhaNumber;
     }
+    
 }
