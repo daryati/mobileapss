@@ -4,6 +4,7 @@
 Release Notes - Bukopin-Mobile-Transfer - Version 1.2.Alpha1
 ** Notes
 	* Release for phase ...
+	* Upgrade foundation version to 3.0.Beta1-SNAPSHOT
 
 ** Features
 	* 
