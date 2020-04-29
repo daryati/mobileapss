@@ -272,7 +272,7 @@ public class CreditCardUtil {
 	    param.setElement33(forwardInsCode);
 	    param.setElement37(randAlphaNum);
 
-	    element120 = "000000004413014016017441";
+	    element120 = "00000000441".concat(codeCbs+"6017441");
 
 	    des = StringUtils.rightPad(TRDES_CC_NON_BKP + " " + bankName.concat(req.getSubscriberNumber()), 40);
 	    des2 = StringUtils.rightPad(TRDES2.concat(trdes2.format(today)), 40);
