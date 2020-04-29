@@ -62,7 +62,6 @@ import id.co.asyst.bukopin.mobile.service.model.payload.cc.InquiryCreditCardTibc
 import id.co.asyst.bukopin.mobile.service.model.payload.cc.InquiryCreditCardTibcoResponse;
 import id.co.asyst.bukopin.mobile.service.model.payload.cc.PaymentCreditCardTibcoReq;
 import id.co.asyst.bukopin.mobile.service.model.payload.cc.PaymentCreditCardTibcoResponse;
-import id.co.asyst.bukopin.mobile.service.model.payload.cc.RequestCheckBin;
 import id.co.asyst.bukopin.mobile.service.model.payload.pln.GetVerifyPINRequest;
 import id.co.asyst.bukopin.mobile.user.model.entity.AccountCard;
 import id.co.asyst.bukopin.mobile.user.model.entity.User;
@@ -108,6 +107,7 @@ public class CreditCardController {
     private static final String ERROR_ACCOUNT_INACTIVE = "839";
     private static final String CODE_CC_BKP = "CCBKP";
     private static final String NAME_BKP = "Bukopin";
+    private static final String TRANSACTION_TYPE_POST = "POST";
 
     /* Attributes: */
     @Autowired
@@ -314,7 +314,8 @@ public class CreditCardController {
 		CheckBINRequest checkBinData = new CheckBINRequest();
 		checkBinData.setCodeCc(codeCc);
 		checkBinData.setName(name);
-		checkBinData.setSubscriberNumber(regCard.substring(0, 8));
+		checkBinData.setAmount(request.getData().getAmount());
+		checkBinData.setSubscriberNumber(request.getData().getSubscriberNumber());
 		
 		CommonRequest<CheckBINRequest> binReq = new CommonRequest<>();
 		binReq.setIdentity(request.getIdentity());
@@ -431,7 +432,7 @@ public class CreditCardController {
 
 	    // Prepare data request to save transaction
 	    DestinationCommonRequest dataReq = new DestinationCommonRequest();
-	    dataReq.setCategoryId(CategoryEnum.E_MONEY.getId());
+	    dataReq.setCategoryId(CategoryEnum.KARTU_KREDIT.getId());
 	    dataReq.setUsername(username);
 	    dataReq.setSubscriberNumber(res.getSubscriberNumber());
 	    dataReq.setSubscriberName(res.getSubscriberName());
@@ -444,7 +445,7 @@ public class CreditCardController {
 	    CommonRequest<DestinationCommonRequest> destinationReq = new CommonRequest<>();
 	    destinationReq.setIdentity(identity);
 	    destinationReq.setData(dataReq);
-	    dataReq.setDestinationType(DestinationTypeEnum.PRELINKAJA.name());
+	    dataReq.setDestinationType(TRANSACTION_TYPE_POST.concat(codeCc));
 
 	    CommonResponse resSaveFav = Services.create(MasterModuleService.class).saveToFavouriteCommon(destinationReq)
 		    .execute().body();
