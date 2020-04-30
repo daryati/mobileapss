@@ -62,7 +62,6 @@ import id.co.asyst.bukopin.mobile.service.model.payload.cc.InquiryCreditCardTibc
 import id.co.asyst.bukopin.mobile.service.model.payload.cc.InquiryCreditCardTibcoResponse;
 import id.co.asyst.bukopin.mobile.service.model.payload.cc.PaymentCreditCardTibcoReq;
 import id.co.asyst.bukopin.mobile.service.model.payload.cc.PaymentCreditCardTibcoResponse;
-import id.co.asyst.bukopin.mobile.service.model.payload.cc.RequestCheckBin;
 import id.co.asyst.bukopin.mobile.service.model.payload.pln.GetVerifyPINRequest;
 import id.co.asyst.bukopin.mobile.user.model.entity.AccountCard;
 import id.co.asyst.bukopin.mobile.user.model.entity.User;

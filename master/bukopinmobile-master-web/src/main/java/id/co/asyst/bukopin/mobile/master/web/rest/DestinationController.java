@@ -99,6 +99,8 @@ public class DestinationController {
 	private static final String NOTE_EN_INSURANCEPOST = "PAY INSURANCE ";
 	private static final String NOTE_ID_CREDITCARDPOST = "BAYAR KARTU KREDIT ";
 	private static final String NOTE_EN_CREDITCARDPOST = "PAY CREDIT CARD ";
+	private static final String NOTE_ID_SAMOLNAS = "BAYAR SAMOLNAS ";
+	private static final String NOTE_EN_SAMOLNAS = "PAY SAMOLNAS ";
 
 	/* Attributes: */
 
@@ -558,6 +560,9 @@ public class DestinationController {
 			} else if (TransactionTypeEnum.CREDITCARD.name().equalsIgnoreCase(transactionType)) {
 				transaction.setNoteId(NOTE_ID_CREDITCARDPOST.concat(subNumber));
 				transaction.setNoteEn(NOTE_EN_CREDITCARDPOST.concat(subNumber));
+			} else if (TransactionTypeEnum.SAMOLNAS.name().equalsIgnoreCase(transactionType)) {
+			    transaction.setNoteId(NOTE_ID_SAMOLNAS.concat(subNumber));
+			    transaction.setNoteEn(NOTE_EN_SAMOLNAS.concat(subNumber));
 			}
 
 			log.info("Save to Transaction");
