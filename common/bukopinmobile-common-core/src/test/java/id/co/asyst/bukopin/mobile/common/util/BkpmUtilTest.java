@@ -39,6 +39,7 @@ public class BkpmUtilTest {
     /* Constants: */
     private static final String FIELD_NAME = "phoneNumber";
     private static final String FIELD_NAME_RESULT = "Phone Number";
+    private static final int LENGTH_RANDOM_CHAR = 52;
     
 
     /* Attributes: */
@@ -55,10 +56,14 @@ public class BkpmUtilTest {
     
     @Test
     public void testConvertReadableField() {
-	System.out.println(FIELD_NAME);
 	String str = BkpmUtil.convertReadableField(FIELD_NAME);
-	System.out.println(str);
 	assertTrue(FIELD_NAME_RESULT.equals(str));
+    }
+    
+    @Test
+    public void testGenerateAlphaNumeric() {
+	String random = BkpmUtil.generateAlphaNumeric(LENGTH_RANDOM_CHAR);
+	assertTrue(random.length()==LENGTH_RANDOM_CHAR);
     }
 
     /* Overrides: */
