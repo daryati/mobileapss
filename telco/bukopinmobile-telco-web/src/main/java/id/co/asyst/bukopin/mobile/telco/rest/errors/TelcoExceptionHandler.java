@@ -10,11 +10,15 @@
 package id.co.asyst.bukopin.mobile.telco.rest.errors;
 
 import java.io.IOException;
+import java.net.NoRouteToHostException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.crypto.DataLengthException;
+import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.exception.JDBCConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,7 +138,9 @@ public class TelcoExceptionHandler extends ResponseEntityExceptionHandler {
     }
     
     // 500 - Null Pointer, Entity Not Found.
-    @ExceptionHandler({ NullPointerException.class, EntityNotFoundException.class})
+    @ExceptionHandler({NullPointerException.class, EntityNotFoundException.class, 
+	NoRouteToHostException.class, JDBCConnectionException.class, IllegalArgumentException.class,
+	DataLengthException.class, StringIndexOutOfBoundsException.class, ConstraintViolationException.class})
     protected ResponseEntity<Object> handleInternal(final RuntimeException ex, final WebRequest request) {
 	log.error("Internal Error, caused by: " + ex.getCause(), ex);
 
