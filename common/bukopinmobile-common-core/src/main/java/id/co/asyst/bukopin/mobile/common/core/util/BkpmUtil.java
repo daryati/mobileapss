@@ -11,6 +11,7 @@ package id.co.asyst.bukopin.mobile.common.core.util;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Random;
 import java.util.UUID;
 
 import javax.xml.bind.JAXBContext;
@@ -142,6 +143,24 @@ public class BkpmUtil {
 	String uuid = generateTrxId();
 	uuid = uuid.substring(0,length);
 	return uuid;
+    }
+    
+    /**
+     * Generator random alpha numeric
+     * 
+     * @param length of alpha numeric
+     * @return string, new combination of alpha numeric
+     */
+    public static String generateAlphaNumeric(int length) {
+	String charNumber = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+	StringBuilder salt = new StringBuilder();
+	Random rnd = new Random();
+	while (salt.length() < length) { // length of the random string.
+	    int index = (int) (rnd.nextFloat() * charNumber.length());
+	    salt.append(charNumber.charAt(index));
+	}
+	String aplhaNumber = salt.toString();
+	return aplhaNumber;
     }
 
     /* Overrides: */

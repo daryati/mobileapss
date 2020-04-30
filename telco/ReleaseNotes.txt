@@ -1,5 +1,5 @@
 ===============================================================================
-   Bukopin-Mobile-Telco 1.0.Alpha1 Release Notes
+   Bukopin-Mobile-Telco 1.2.Alpha1 Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Telco - Version 1.0.Alpha1-SNAPSHOT
 
@@ -9,6 +9,7 @@ Initial prototype, features:
 ** Notes
     * Added Liquibase DB load-data Support.
     * Supported Databases (Generation Type AUTO): MySQL.
+    * Upgrade foundation version to 3.0.Beta1-SNAPSHOT
 
 ** Story
 	* Logging Request & Response

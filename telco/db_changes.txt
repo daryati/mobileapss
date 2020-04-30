@@ -1,7 +1,7 @@
 ===============================================================================
    Bukopin-Mobile-Telco 1.0.Alpha2 Database Structure Changes
 ===============================================================================
-
+- Change column TYPE length in table TELCO_POSTPAID from 10 to 20
 
 ===============================================================================
    Bukopin-Mobile-Telco 1.0.Alpha1 Database Structure Changes
