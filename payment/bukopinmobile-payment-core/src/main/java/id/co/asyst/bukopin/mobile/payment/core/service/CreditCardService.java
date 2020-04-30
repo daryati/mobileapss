@@ -206,7 +206,7 @@ public class CreditCardService {
 	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-M.png"));
 
 	    javaMailSender.send(mimeMessage);
-	    log.debug("EMoney receipt has been sent successfully");
+	    log.debug("Payment receipt has been sent successfully");
 
 	} catch (MailAuthenticationException e) {
 	    log.error(e.getMessage(), e);
