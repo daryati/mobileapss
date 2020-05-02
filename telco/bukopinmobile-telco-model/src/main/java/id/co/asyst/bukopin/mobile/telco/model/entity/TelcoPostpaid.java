@@ -51,7 +51,7 @@ public class TelcoPostpaid extends IdBasedObject{
     @Column(name = "PRODUCT_NAME", length = 20)
     private String productName;
     
-    @Column(name = "TYPE", length = 10)
+    @Column(name = "TYPE", length = 20)
     private String type;
     
     @Column(name = "AMOUNT")

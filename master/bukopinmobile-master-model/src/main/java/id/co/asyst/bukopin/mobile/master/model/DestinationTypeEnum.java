@@ -37,5 +37,6 @@ public enum DestinationTypeEnum {
     POSTTRI,
     POSTSMARTFREN,
     POSTBPJSKES,
-    POSTINHEALTH
+    POSTINHEALTH,
+    POSTSAMOLNAS
 }

@@ -71,6 +71,7 @@ public class TelcoUtils {
     private static final String TERMINAL_IDENTIFICATION = "TERMINALID123456";
     private static final String ROUTING_INFO_PART_1 = "00000441001";
     private static final String ROUTING_INFO_PART_2 = "6017441";
+    
     private static final String CREDENTIALS_MBUKOPIN = "MBUKOPIN";
     private static final int TELCO_LENGTH_TRXID = 12;
 
@@ -549,7 +550,7 @@ public class TelcoUtils {
      * @return Data Request to Tibco
      */
     public static TelkomPSTNSpeedyPurchaseTibcoRequest generateTelkomPSTNSPeedyPurchaseRequest(
-	    TelcoPostpaidPaymentRequest dataReq, String forwardInsCode, String codeArra, String codeCbs) {
+    		TelcoPostpaidPaymentRequest dataReq, String forwardInsCode, String codeArra, String codeCbs, String accType) {
 	TelkomPSTNSpeedyPurchaseTibcoRequest request = new TelkomPSTNSpeedyPurchaseTibcoRequest();
 
 	Date today = new Date();
@@ -595,10 +596,18 @@ public class TelcoUtils {
 
 	String element123 = IDR_CURRENCY_CODE + CONVENTION_RATE + FEE_CODE + codeCbs + OPERATION_CODE + MIA_POST
 		+ BIT_43_52 + BIT_53_72 + BIT_73_76 + BIT_77_96 + username + NOT_BRANCH + NOT_LOCATION + space118_147;
-
+	
+	//element3
+	String elm3 = "";
+	if (accType.equalsIgnoreCase(AccountTypeEnum.SAVING.name())) {
+	    elm3 = PROCCESSING_CODE_PAYMENT_TABUNGAN;
+	} else if (accType.equalsIgnoreCase(AccountTypeEnum.GIRO.name())) {
+	    elm3 = PROCCESSING_CODE_PAYMENT_GIRO;
+	}
+	
 	TelkomPSTNSpeedyPurchaseTibcoDataReq param = new TelkomPSTNSpeedyPurchaseTibcoDataReq();
 	param.setMti(MTI_PAYMENT);
-	param.setElement3(PROCCESSING_CODE_PAYMENT);
+	param.setElement3(elm3);
 	param.setElement4(element4);
 	param.setElement7(element7Format.format(today));
 	param.setElement11(STAN);

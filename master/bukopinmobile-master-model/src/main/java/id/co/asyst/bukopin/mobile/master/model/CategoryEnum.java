@@ -23,7 +23,8 @@ public enum CategoryEnum {
     KARTU_KREDIT(3),
     TELEPON_TV(4),
     E_MONEY(5),
-    ASURANSI(6);
+    ASURANSI(6),
+    SAMOLNAS(7);
     
     private long id;
     

@@ -318,7 +318,7 @@ public class CryptoUtil {
 	String toEncrypt = randomKey+password;
 	
 	// 2. Insert random characters between "toEncrypt"
-	String randomString = BkpmUtil.generateTrxId(toEncrypt.length());
+	String randomString = BkpmUtil.generateAlphaNumeric(toEncrypt.length());
 	StringBuilder sb = new StringBuilder();
 	for(int i=toEncrypt.length()-1; i >= 0; i--) {
 	    sb.append(toEncrypt.charAt(i));
