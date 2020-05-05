@@ -20,79 +20,88 @@ import javax.validation.constraints.Size;
  * @since 2.0
  */
 public class CheckBINRequest {
-    /* Constants: */
+	/* Constants: */
 
-    /* Attributes: */
-    @NotBlank
-    private String codeCc;
-    
-    @NotBlank
-    private String name;
-    
-    @NotBlank
-    @Size(min = 16, max = 16, message="{error.invalid.input}")
-    private String subscriberNumber;
+	/* Attributes: */
+	@NotBlank
+	private String username;
 
-    @NotBlank
-    private String amount;
+	@NotBlank
+	private String codeCc;
 
-    /* Transient Attributes: */
+	@NotBlank
+	private String name;
 
-    /* Constructors: */
-    public CheckBINRequest() {
-	
-    }
-    
-    /* Getters & setters for attributes: */
-    /**
-     * Gets <code>codeCc</code>.
-     * @return The <code>codeCc</code>.
-     */
-    public String getCodeCc() {
-        return codeCc;
-    }
+	@NotBlank
+	@Size(min = 16, max = 16, message = "{error.invalid.input}")
+	private String subscriberNumber;
 
-    /**
-     * Sets <code>codeCc</code>.
-     * @param codeCc The <code>codeCc</code> to set.
-     */
-    public void setCodeCc(String codeCc) {
-        this.codeCc = codeCc;
-    }
+	@NotBlank
+	private String amount;
 
-    /**
-     * Gets <code>name</code>.
-     * @return The <code>name</code>.
-     */
-    public String getName() {
-        return name;
-    }
+	/* Transient Attributes: */
 
-    /**
-     * Sets <code>name</code>.
-     * @param name The <code>name</code> to set.
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+	/* Constructors: */
+	public CheckBINRequest() {
 
-    /**
-     * Gets <code>subscriberNumber</code>.
-     * @return The <code>subscriberNumber</code>.
-     */
-    public String getSubscriberNumber() {
-        return subscriberNumber;
-    }
+	}
 
-    /**
-     * Sets <code>subscriberNumber</code>.
-     * @param subscriberNumber The <code>subscriberNumber</code> to set.
-     */
-    public void setSubscriberNumber(String subscriberNumber) {
-        this.subscriberNumber = subscriberNumber;
-    }
-    
-    /**
+	/* Getters & setters for attributes: */
+	/**
+	 * Gets <code>codeCc</code>.
+	 * 
+	 * @return The <code>codeCc</code>.
+	 */
+	public String getCodeCc() {
+		return codeCc;
+	}
+
+	/**
+	 * Sets <code>codeCc</code>.
+	 * 
+	 * @param codeCc The <code>codeCc</code> to set.
+	 */
+	public void setCodeCc(String codeCc) {
+		this.codeCc = codeCc;
+	}
+
+	/**
+	 * Gets <code>name</code>.
+	 * 
+	 * @return The <code>name</code>.
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Sets <code>name</code>.
+	 * 
+	 * @param name The <code>name</code> to set.
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * Gets <code>subscriberNumber</code>.
+	 * 
+	 * @return The <code>subscriberNumber</code>.
+	 */
+	public String getSubscriberNumber() {
+		return subscriberNumber;
+	}
+
+	/**
+	 * Sets <code>subscriberNumber</code>.
+	 * 
+	 * @param subscriberNumber The <code>subscriberNumber</code> to set.
+	 */
+	public void setSubscriberNumber(String subscriberNumber) {
+		this.subscriberNumber = subscriberNumber;
+	}
+
+	/**
 	 * @return the amount
 	 */
 	public String getAmount() {
@@ -105,20 +114,33 @@ public class CheckBINRequest {
 	public void setAmount(String amount) {
 		this.amount = amount;
 	}
+	
+	/**
+	 * @return the username
+	 */
+	public String getUsername() {
+		return username;
+	}
 
-    /* Getters & setters for transient attributes: */
+	/**
+	 * @param username the username to set
+	 */
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-    /* Functionalities: */
+	/* Getters & setters for transient attributes: */
 
+	/* Functionalities: */
+	
 	/* Overrides: */
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "CheckBINRequest [codeCc=" + codeCc + ", name=" + name + ", subscriberNumber=" + subscriberNumber
-				+ ", amount=" + amount + "]";
+		return "CheckBINRequest [username=" + username + ", codeCc=" + codeCc + ", name=" + name + ", subscriberNumber="
+				+ subscriberNumber + ", amount=" + amount + "]";
 	}
-
 
 }

@@ -52,71 +52,67 @@ import id.co.asyst.foundation.service.connector.Services;
 @RestController
 @RequestMapping("/listCredit")
 public class ListCreditController {
-    /* Constants: */
-    /**
-     * Logger
-     */
-    private final Logger log = LoggerFactory.getLogger(ListCreditController.class);
-    private static final String SUCCESS_CODE = "000";
-    /* Attributes: */
+	/* Constants: */
+	/**
+	 * Logger
+	 */
+	private final Logger log = LoggerFactory.getLogger(ListCreditController.class);
+	private static final String SUCCESS_CODE = "000";
+	/* Attributes: */
 
-    /* Transient Attributes: */
+	/* Transient Attributes: */
 
-    @Autowired
-    ListCreditService listCreditService;
+	@Autowired
+	ListCreditService listCreditService;
 
-    @Autowired
-    ListCreditRepository listCreditRepository;
+	@Autowired
+	ListCreditRepository listCreditRepository;
 
-    @Autowired
-    MessageUtil messageUtil;
+	@Autowired
+	MessageUtil messageUtil;
 
-    @Autowired
-    HttpServletRequest servletRequest;
-    /* Constructors: */
+	@Autowired
+	HttpServletRequest servletRequest;
+	/* Constructors: */
 
-    /* Getters & setters for attributes: */
+	/* Getters & setters for attributes: */
 
-    /* Getters & setters for transient attributes: */
+	/* Getters & setters for transient attributes: */
 
-    /* Functionalities: */
-    @GetMapping("/findListCredit/{username}")
-    @ResponseStatus(HttpStatus.OK)
-    public CommonResponse findCreditByCode(@PathVariable String username) throws IOException {
-	log.debug("Find List Credit...");
-	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
-		messageUtil.get("success", servletRequest.getLocale()));
+	/* Functionalities: */
+	@GetMapping("/findListCredit/{username}")
+	@ResponseStatus(HttpStatus.OK)
+	public CommonResponse findCreditByCode(@PathVariable String username) throws IOException {
+		log.debug("Find List Credit...");
+		CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
+				messageUtil.get("success", servletRequest.getLocale()));
 
-	String decryptedUsername = CryptoUtil.decryptAESHex(username);
-	
-	// Validate Token and Phone Owner
-	CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
-	VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
-	phoneReqData.setUsername(decryptedUsername);
-	phoneReqData.setToken(servletRequest.getHeader(HttpHeaders.AUTHORIZATION));
-	phoneReqData.setPhoneIdentity(servletRequest.getHeader(
-		BkpmConstants.HTTP_HEADER_DEVICE_ID));
-	phoneReq.setData(phoneReqData);
-	
-	CommonResponse resPhone = Services.create(UserModuleService.class)
-		.verifyPhoneOwner(phoneReq).execute().body();
-	
-	if(!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
-	    log.error("Validate Token and Phone owner error..");
-	    return resPhone;
+		String decryptedUsername = CryptoUtil.decryptAESHex(username);
+
+		// Validate Token and Phone Owner
+		CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
+		VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
+		phoneReqData.setUsername(decryptedUsername);
+		phoneReqData.setToken(servletRequest.getHeader(HttpHeaders.AUTHORIZATION));
+		phoneReqData.setPhoneIdentity(servletRequest.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
+		phoneReq.setData(phoneReqData);
+		CommonResponse resPhone = Services.create(UserModuleService.class).verifyPhoneOwner(phoneReq).execute().body();
+		if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
+			log.error("Validate Token and Phone owner error..");
+			return resPhone;
+		}
+
+		List<ListCredit> listCredit = listCreditService.findAll();
+		if (listCredit.isEmpty()) {
+			log.error("List Credit Not Found.");
+			response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+			response.setMessage(messageUtil.get("error.data.not.found", servletRequest.getLocale()));
+			return response;
+		}
+
+		log.debug("Data List Credit {}" + BkpmUtil.convertToJson(listCredit));
+		response.setData(listCredit);
+		return response;
 	}
-	
-	List<ListCredit> listCredit = listCreditService.findAll();
-	if (listCredit.isEmpty()) {
-	    log.error("List Credit Not Found.");
-	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
-	    response.setMessage(messageUtil.get("error.data.not.found", servletRequest.getLocale()));
-	    return response;
-	}
-	
-	log.debug("Data List Credit {}" + BkpmUtil.convertToJson(listCredit));
-	response.setData(listCredit);
-	return response;
-    }
 
-    /* Overrides: */}
+	/* Overrides: */}
