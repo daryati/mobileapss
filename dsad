@@ -1,0 +1,59 @@
+[33md238281[m[33m ([m[1;36mHEAD -> [m[1;32mmerger[m[33m)[m Merge branch 'Ihsan' into merger
+[33m734955d[m[33m ([m[1;31morigin/Ihsan[m[33m, [m[1;32mIhsan[m[33m)[m authorization
+[33m92ff5eb[m[33m ([m[1;31morigin/merger[m[33m)[m Merge branch 'eka' into merger
+[33m86fea5e[m[33m ([m[1;31morigin/eka[m[33m)[m disable insurance and credit card service for Production
+[33mc3cb351[m add param username in check BIN
+[33ma11dc33[m Merge branch 'merger' of https://gitlab.com/asyst-dev/bukopin-mobile-service into merger
+[33m5bb244e[m[33m ([m[1;31morigin/tika[m[33m)[m fix jira 280 typo bpjs error messsage
+[33m6a80ac0[m Merge branch 'merger' into tika
+[33m54ecc2b[m[33m ([m[1;31morigin/gibran[m[33m)[m change url to dev
+[33m13f96e0[m Merge branch 'merger' into gibran
+[33mb13601e[m add inquirt and payment samolnas service
+[33m3d88df9[m Merge remote-tracking branch 'origin/Ihsan' into merger
+[33m08f6fe4[m Merge branch 'merger' of https://gitlab.com/asyst-dev/bukopin-mobile-service into merger
+[33md267220[m create service get Banner
+[33m5b140f4[m Merge branch 'eka' into merger
+[33maf5684a[m Fix encrypt outofbound issue
+[33me3945d4[m Merge remote-tracking branch 'origin/Ihsan' into merger
+[33ma773af4[m change log debug
+[33m176c576[m fix element120 for cc non BKP
+[33mae612f5[m Revert "test merge eka"
+[33m0f8fb22[m test merge eka
+[33m24087ae[m Merge remote-tracking branch 'origin/Ihsan' into merger
+[33m424aa10[m fix process check BIN in payment, fix save to Destination
+[33m2efbec2[m Merge branch 'gibran' into merger
+[33mda509be[m Merge remote-tracking branch 'origin/merger' into gibran
+[33m2115ca3[m change length TYPE column in telco_postpaid table
+[33m7b6a3b2[m Merge branch 'eka' into merger
+[33mbd7db38[m Add isBiometric in login request
+[33m95f0fb6[m Merge remote-tracking branch 'origin/Ihsan' into merger
+[33m2ec06eb[m fix jira 241, change type telkom_pstn into telkom
+[33m8aa5b20[m Upgrade Foundation
+[33mf9b9d84[m Merge remote-tracking branch 'origin/Ihsan' into merger
+[33m752f18e[m change wording in email blocked password and blocked pin
+[33mb776c40[m Merge remote-tracking branch 'origin/Ihsan' into merger
+[33m66864f6[m fix bug jira 270
+[33m1035f5d[m merge eka
+[33ma70fe17[m Fix username duplicate in Registration
+[33m40d3af5[m add destination notes for CC
+[33mab7769b[m add getAccountCardByUsername in UserModuleService.java
+[33m85fa4c8[m cc services and telco postpaid pstn update
+[33m0efa8c7[m add tibco request file for cc
+[33m346301a[m Merge remote-tracking branch 'origin/merger' into tika
+[33m3a02edd[m merge tika
+[33m4f00f2f[m Ignore script file
+[33m2f121b3[m[33m ([m[1;32meka[m[33m)[m Fix username duplicate in Registration.
+[33ma68603c[m Merge branch 'dev' of https://gitlab.com/asyst-dev/bukopin-mobile-service into tika
+[33m89962e6[m update save to destination in payment, add "PRE" in provider for destination type
+[33m2524c7a[m Merge remote-tracking branch 'origin/merger' into gibran
+[33m5f2cf4b[m change version telco 1.2.Alpha1
+[33mb84b848[m add payment telco postpaid with giro
+[33md720273[m[33m ([m[1;31morigin/dev[m[33m, [m[1;32mdev[m[33m)[m Merge remote-tracking branch 'origin/tika' into merger
+[33me6a52b1[m ignore .project
+[33m648c60c[m fixing telco exception handler
+[33m47d337d[m bug fixing jira 250, 251, 252, 253
+[33m6582e20[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m Upgrade Version to 1.2.Alpha1
+[33m7413509[m git ingore
+[33m97b1a5a[m[33m ([m[1;33mtag: 1.1.Alpha1[m[33m)[m release note for 1.1.Alpha1
+[33m87a5322[m 1.1.Alpha1
+[33md9c653c[m Initial commit

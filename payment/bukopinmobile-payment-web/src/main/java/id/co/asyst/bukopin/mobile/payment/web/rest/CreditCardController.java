@@ -148,12 +148,6 @@ public class CreditCardController {
 		CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 				messageUtil.get("success", servletRequest.getLocale()));
 
-		String username = request.getData().getUsername();
-		String codeCc = request.getData().getCodeCc();
-		String name = request.getData().getName();
-
-		ObjectMapper omapper = new ObjectMapper();
-
 		// Validate Token and Phone Owner
 		CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
 		VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
@@ -163,9 +157,15 @@ public class CreditCardController {
 		phoneReq.setData(phoneReqData);
 		CommonResponse resPhone = Services.create(UserModuleService.class).verifyPhoneOwner(phoneReq).execute().body();
 		if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
-		    log.error("Validate Token and Phone owner error..");
-		    return resPhone;
+			log.error("Validate Token and Phone owner error..");
+			return resPhone;
 		}
+
+		String username = request.getData().getUsername();
+		String codeCc = request.getData().getCodeCc();
+		String name = request.getData().getName();
+
+		ObjectMapper omapper = new ObjectMapper();
 
 		// get Registered Card
 		CommonResponse findAccountCard = Services.create(UserModuleService.class).getAccountCardByUsername(username)
