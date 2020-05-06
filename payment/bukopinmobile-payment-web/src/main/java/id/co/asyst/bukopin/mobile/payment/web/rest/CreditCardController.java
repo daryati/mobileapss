@@ -71,6 +71,7 @@ import id.co.asyst.bukopin.mobile.user.model.entity.User;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyAccountOwnerRequest;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyAccountOwnerResponse;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyPhoneOwnerRequest;
+import id.co.asyst.bukopin.mobile.user.model.payload.VerifyTokenOwnerResponse;
 import id.co.asyst.foundation.service.connector.Services;
 
 /**
@@ -82,6 +83,7 @@ import id.co.asyst.foundation.service.connector.Services;
  */
 @RestController
 @RequestMapping("/creditCard")
+@Profile("!prod")
 public class CreditCardController {
 	/* Constants: */
 	private Logger log = LoggerFactory.getLogger(CreditCardController.class);
@@ -112,6 +114,7 @@ public class CreditCardController {
 	private static final String CODE_CC_BKP = "CCBKP";
 	private static final String NAME_BKP = "Bukopin";
 	private static final String TRANSACTION_TYPE_POST = "POST";
+	private static final String ISFALSE = "FALSE";
 
 	/* Attributes: */
 	@Autowired
@@ -141,6 +144,7 @@ public class CreditCardController {
 	/* Getters & setters for transient attributes: */
 
 	/* Functionalities: */
+	@SuppressWarnings("unchecked")
 	@PostMapping("/inquiry")
 	@ResponseStatus(HttpStatus.OK)
 	private CommonResponse inquiryCreditCard(@Valid @RequestBody CommonRequest<InquiryCreditCardRequest> request)
@@ -149,6 +153,8 @@ public class CreditCardController {
 		CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 				messageUtil.get("success", servletRequest.getLocale()));
 
+		ObjectMapper omapper = new ObjectMapper();
+		
 		// Validate Token and Phone Owner
 		CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
 		VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
@@ -157,16 +163,22 @@ public class CreditCardController {
 		phoneReqData.setPhoneIdentity(servletRequest.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
 		phoneReq.setData(phoneReqData);
 		CommonResponse resPhone = Services.create(UserModuleService.class).verifyPhoneOwner(phoneReq).execute().body();
+		Map<String, String> resPhoneData = omapper.convertValue(resPhone.getData(),  Map.class);
+		String valid = String.valueOf(resPhoneData.get("valid"));
 		if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
 			log.error("Validate Token and Phone owner error..");
 			return resPhone;
+		}else if(valid.equalsIgnoreCase(ISFALSE)){
+			log.error("Token owner is not match...");
+			response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+			response.setMessage(messageUtil.get("error.data.not.match", servletRequest.getLocale()));
+
+			return response;
 		}
 
 		String username = request.getData().getUsername();
 		String codeCc = request.getData().getCodeCc();
 		String name = request.getData().getName();
-
-		ObjectMapper omapper = new ObjectMapper();
 
 		// get Registered Card
 		CommonResponse findAccountCard = Services.create(UserModuleService.class).getAccountCardByUsername(username)
@@ -258,6 +270,7 @@ public class CreditCardController {
 		return response;
 	}
 
+	@SuppressWarnings("unchecked")
 	@PostMapping("/payment")
 	@ResponseStatus(HttpStatus.OK)
 	private CommonResponse paymentCreditCard(@Valid @RequestBody CommonRequest<PaymentCreditCardRequest> request)
@@ -270,6 +283,30 @@ public class CreditCardController {
 		String pin = request.getData().getPin();
 		String codeCc = request.getData().getCodeCc();
 		String name = request.getData().getName();
+		
+		ObjectMapper oMapper = new ObjectMapper();
+
+		// Validate Token and Phone Owner
+		CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
+		VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
+		phoneReqData.setUsername(request.getData().getUsername());
+		phoneReqData.setToken(servletRequest.getHeader(HttpHeaders.AUTHORIZATION));
+		phoneReqData.setPhoneIdentity(servletRequest.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
+		phoneReq.setData(phoneReqData);
+		CommonResponse resPhone = Services.create(UserModuleService.class).verifyPhoneOwner(phoneReq).execute().body();
+		
+		Map<String, String> resPhoneData = oMapper.convertValue(resPhone.getData(),  Map.class);
+		String valid = String.valueOf(resPhoneData.get("valid"));
+		if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
+			log.error("Validate Token and Phone owner error..");
+			return resPhone;
+		}else if(valid.equalsIgnoreCase(ISFALSE)){
+			log.error("Token owner is not match...");
+			response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+			response.setMessage(messageUtil.get("error.data.not.match", servletRequest.getLocale()));
+
+			return response;
+		}
 
 		// verify pin
 		GetVerifyPINRequest verifyPinData = new GetVerifyPINRequest();
@@ -286,20 +323,7 @@ public class CreditCardController {
 
 			return verifyPinRes;
 		}
-
-		// Validate Token and Phone Owner
-		CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
-		VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
-		phoneReqData.setUsername(request.getData().getUsername());
-		phoneReqData.setToken(servletRequest.getHeader(HttpHeaders.AUTHORIZATION));
-		phoneReqData.setPhoneIdentity(servletRequest.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
-		phoneReq.setData(phoneReqData);
-		CommonResponse resPhone = Services.create(UserModuleService.class).verifyPhoneOwner(phoneReq).execute().body();
-		if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
-			log.error("Validate Token and Phone owner error..");
-			return resPhone;
-		}
-
+		
 		// validate account number's owner user
 		VerifyAccountOwnerRequest verifyAccountOwnerReqData = new VerifyAccountOwnerRequest();
 		verifyAccountOwnerReqData.setAccountNo(request.getData().getAccountNumber());
@@ -315,7 +339,7 @@ public class CreditCardController {
 			log.error("Error while verify account owner");
 			return verifyAccOwnerResponse;
 		}
-		ObjectMapper oMapper = new ObjectMapper();
+		
 		VerifyAccountOwnerResponse verifyAccOwnRespObj = oMapper.convertValue(verifyAccOwnerResponse.getData(),
 				VerifyAccountOwnerResponse.class);
 		if (!verifyAccOwnRespObj.isValid()) {
