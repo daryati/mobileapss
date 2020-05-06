@@ -114,16 +114,16 @@ public class CreditCardController {
 
 	/* Attributes: */
 	@Autowired
-	MessageUtil messageUtil;
+	private MessageUtil messageUtil;
 
 	@Autowired
-	HttpServletRequest servletRequest;
+	private HttpServletRequest servletRequest;
 
 	@Autowired
-	ListCreditService listCreditService;
+	private ListCreditService listCreditService;
 
 	@Autowired
-	CreditCardService creditCardService;
+	private CreditCardService creditCardService;
 
 	/**
 	 * Environment
@@ -163,8 +163,8 @@ public class CreditCardController {
 		phoneReq.setData(phoneReqData);
 		CommonResponse resPhone = Services.create(UserModuleService.class).verifyPhoneOwner(phoneReq).execute().body();
 		if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
-			log.error("Validate Token and Phone owner error..");
-			return resPhone;
+		    log.error("Validate Token and Phone owner error..");
+		    return resPhone;
 		}
 
 		// get Registered Card
@@ -527,7 +527,7 @@ public class CreditCardController {
 
 	@SuppressWarnings("unchecked")
 	@PostMapping("/checkBin")
-	public CommonResponse checkBin(@RequestBody @Valid CommonRequest<CheckBINRequest> request) throws IOException {
+	public CommonResponse checkBin(@Valid @RequestBody CommonRequest<CheckBINRequest> request) throws IOException {
 		CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 				messageUtil.get("success", servletRequest.getLocale()));
 		log.debug("Check BIN by request {}" + BkpmUtil.convertToJson(request));

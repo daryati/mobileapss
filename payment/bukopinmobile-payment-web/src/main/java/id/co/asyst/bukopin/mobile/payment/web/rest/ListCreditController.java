@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import id.co.asyst.bukopin.mobile.common.core.exception.ForbiddenAccessException;
 import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.CryptoUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
@@ -40,6 +41,8 @@ import id.co.asyst.bukopin.mobile.payment.core.service.repository.ListCreditRepo
 import id.co.asyst.bukopin.mobile.payment.model.entity.ListCredit;
 import id.co.asyst.bukopin.mobile.service.core.UserModuleService;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyPhoneOwnerRequest;
+import id.co.asyst.bukopin.mobile.user.model.payload.VerifyTokenOwnerRequest;
+import id.co.asyst.bukopin.mobile.user.model.payload.VerifyTokenOwnerResponse;
 import id.co.asyst.foundation.service.connector.Services;
 
 /**
@@ -63,16 +66,17 @@ public class ListCreditController {
 	/* Transient Attributes: */
 
 	@Autowired
-	ListCreditService listCreditService;
+	private ListCreditService listCreditService;
 
 	@Autowired
-	ListCreditRepository listCreditRepository;
+	private ListCreditRepository listCreditRepository;
 
 	@Autowired
-	MessageUtil messageUtil;
+	private MessageUtil messageUtil;
 
 	@Autowired
-	HttpServletRequest servletRequest;
+	private HttpServletRequest servletRequest;
+	
 	/* Constructors: */
 
 	/* Getters & setters for attributes: */
