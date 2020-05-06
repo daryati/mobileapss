@@ -161,7 +161,14 @@ public class CreditCardController {
 			log.error("Validate Token and Phone owner error..");
 			return resPhone;
 		}
-
+		
+		CommonResponse validateToken = Services.create(UserModuleService.class)
+				.validateLoginSession(servletRequest.getHeader(HttpHeaders.AUTHORIZATION)).execute().body();
+		if (!ResponseMessage.SUCCESS.getCode().equals(validateToken.getCode())) {
+			log.error("Session error..");
+			return validateToken;
+		}
+		
 		String username = request.getData().getUsername();
 		String codeCc = request.getData().getCodeCc();
 		String name = request.getData().getName();
@@ -298,6 +305,13 @@ public class CreditCardController {
 		if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
 			log.error("Validate Token and Phone owner error..");
 			return resPhone;
+		}
+		
+		CommonResponse validateToken = Services.create(UserModuleService.class)
+				.validateLoginSession(servletRequest.getHeader(HttpHeaders.AUTHORIZATION)).execute().body();
+		if (!ResponseMessage.SUCCESS.getCode().equals(validateToken.getCode())) {
+			log.error("Session error..");
+			return validateToken;
 		}
 
 		// validate account number's owner user
