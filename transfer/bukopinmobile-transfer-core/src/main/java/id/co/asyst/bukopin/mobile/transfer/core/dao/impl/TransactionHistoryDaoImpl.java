@@ -34,6 +34,7 @@ import id.co.asyst.bukopin.mobile.common.core.util.CryptoUtil;
 import id.co.asyst.bukopin.mobile.transfer.core.dao.TransactionHistoryDao;
 import id.co.asyst.bukopin.mobile.transfer.model.PostingFromReq;
 import id.co.asyst.bukopin.mobile.transfer.model.PostingToReq;
+import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryCreditCardResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryEmoneyResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryFTOverbookResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryInsuranceResponse;
@@ -545,4 +546,58 @@ public class TransactionHistoryDaoImpl implements TransactionHistoryDao {
 	
 	return response;
     }
+        
+
+    /* (non-Javadoc)
+     * @see id.co.asyst.bukopin.mobile.transfer.core.dao.TransactionHistoryDao#getDetailCreditCardHistory(java.lang.Long)
+     */
+    @Override
+    public Optional<TransactionHistoryCreditCardResponse> getDetailCreditCardHistory(Long id) {
+	System.out.println("Transaction History Dao - Get Detail Credit Card with id: " + id);
+	Optional<TransactionHistoryCreditCardResponse> response = Optional.empty();
+	TransactionHistoryCreditCardResponse result = new TransactionHistoryCreditCardResponse();
+	
+	String sql = "SELECT" +
+		" A.ID, A.REFERENCE_NUMBER, A.CREATED_DATE, A.ACCOUNT_NUMBER," +
+		" B.TYPE, B.BILLED_AMOUNT, B.MINIMUM_AMOUNT, B.AMOUNT," +
+		" C.SUBSCRIBER_NAME, C.SUBSCRIBER_NUMBER, C.ALIAS" + 
+		" FROM TRX A" +
+		" JOIN CREDIT_CARD B ON B.ID_TRANSACTION = A.ID" +
+		" JOIN DESTINATION C ON C.ID = A.ID_DESTINATION" +
+		" WHERE A.ID = "+id+";";
+
+	
+	// run query
+	Session session = entityManager.unwrap(Session.class);
+	Object thp = session.createSQLQuery(sql).uniqueResult();
+	
+	// data not found handler
+	if(thp == null) {
+	    return response;
+	}
+	ObjectMapper objMapper = new ObjectMapper();
+	List<String> creditCardResp = objMapper.convertValue(thp, ArrayList.class);
+	String dateLong = String.valueOf(creditCardResp.get(2));
+	Date date = new Date(Long.valueOf(dateLong));
+	
+	// Mapping result
+	result.setReferenceNumber(creditCardResp.get(1));
+	result.setDateTime(String.valueOf(sdf.format(date)));
+	result.setAccountNumber(creditCardResp.get(3));
+	result.setName(creditCardResp.get(4));
+	result.setBilledAmount(new BigDecimal(String.valueOf(creditCardResp.get(5)).replace(".00", "")));
+	result.setMinimumPayment(new BigDecimal(String.valueOf(creditCardResp.get(6)).replace(".00", "")));
+	result.setAmount(new BigDecimal(String.valueOf(creditCardResp.get(7)).replace(".00", "")));
+	result.setSubscriberName(creditCardResp.get(8));
+	result.setSubscriberNumber(creditCardResp.get(9));
+	result.setAlias(creditCardResp.get(10));
+	
+	
+	response = Optional.of(result);
+
+	entityManager.close();
+	
+	return response;
+    }
+
 }

@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import id.co.asyst.bukopin.mobile.transfer.core.dao.TransactionHistoryDao;
+import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryCreditCardResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryEmoneyResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryFTOverbookResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryInsuranceResponse;
@@ -122,4 +123,12 @@ public class TransactionHistoryService {
 	return transactionHistoryDao.getDetailInsuranceHistory(id);
     }
 
+    /**
+     * Get Detail Credit Card
+     * @param id transaction
+     * @return detail transaction of Credit Card
+     */
+    public Optional<TransactionHistoryCreditCardResponse> getDetailCreditCard(Long id){
+	return transactionHistoryDao.getDetailCreditCardHistory(id);
+    }
     /* Overrides: */}

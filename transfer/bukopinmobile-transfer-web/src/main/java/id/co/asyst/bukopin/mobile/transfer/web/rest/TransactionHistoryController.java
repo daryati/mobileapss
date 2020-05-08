@@ -44,6 +44,7 @@ import id.co.asyst.bukopin.mobile.master.model.DestinationTypeEnum;
 import id.co.asyst.bukopin.mobile.master.model.TransactionTypeEnum;
 import id.co.asyst.bukopin.mobile.service.core.UserModuleService;
 import id.co.asyst.bukopin.mobile.transfer.core.service.TransactionHistoryService;
+import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryCreditCardResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryEmoneyResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryFTOverbookResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryInsuranceResponse;
@@ -247,6 +248,18 @@ public class TransactionHistoryController {
 		response.setCode(ResponseMessage.SUCCESS.getCode());
 		response.setMessage(messageUtil.get("success", servletRequest.getLocale()));
 		response.setData(respInsuranceData.get());
+	    }
+	} else if(TransactionTypeEnum.CREDITCARD.name().equalsIgnoreCase(type)){
+	    Optional<TransactionHistoryCreditCardResponse> respCreditCardData = transactionHistoryService.getDetailCreditCard(id);
+	    if (!respCreditCardData.isPresent()) {
+		log.error("transaction history "+type+" not found");
+		response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+		response.setMessage(messageUtil.get("data.not.found", servletRequest.getLocale()));
+	    } else {
+		log.debug("get detail transaction history "+type+" success");
+		response.setCode(ResponseMessage.SUCCESS.getCode());
+		response.setMessage(messageUtil.get("success", servletRequest.getLocale()));
+		response.setData(respCreditCardData.get());
 	    }
 	} else {
 	    log.error("type incorrect");
