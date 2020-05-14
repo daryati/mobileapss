@@ -50,6 +50,7 @@ import id.co.asyst.bukopin.mobile.payment.model.payload.SamolnasPaymentResponse;
 import id.co.asyst.bukopin.mobile.service.core.MasterModuleService;
 import id.co.asyst.bukopin.mobile.service.core.SamolnasModuleService;
 import id.co.asyst.bukopin.mobile.service.core.UserModuleService;
+import id.co.asyst.bukopin.mobile.service.model.payload.pln.GetVerifyPINRequest;
 import id.co.asyst.bukopin.mobile.service.model.payload.samolnas.SamolnasInquiryTibcoRequest;
 import id.co.asyst.bukopin.mobile.service.model.payload.samolnas.SamolnasInquiryTibcoResponse;
 import id.co.asyst.bukopin.mobile.service.model.payload.samolnas.SamolnasPaymentTibcoRequest;
@@ -222,6 +223,29 @@ public class SamolnasController {
 	if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
 	    log.error("Validate Token and Phone owner error..");
 	    return resPhone;
+	}
+	ObjectMapper mapper = new ObjectMapper();
+	Map<String, Boolean> resultPhoneObj = mapper.convertValue(resPhone.getData(), Map.class);
+	if (!resultPhoneObj.get("valid")) {
+	    log.error("Token and phone owner invalid");
+	    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+	    response.setMessage(messageUtil.get("error.invalid.token.phone.owner", servletRequest.getLocale()));
+	    return response;
+	}
+
+	// verify PIN
+	GetVerifyPINRequest verifyPINReqData = new GetVerifyPINRequest();
+	verifyPINReqData.setUsername(req.getData().getUsername());
+	verifyPINReqData.setPin(req.getData().getPin());
+
+	CommonRequest<GetVerifyPINRequest> verifyPINReq = new CommonRequest<>();
+	verifyPINReq.setIdentity(req.getIdentity());
+	verifyPINReq.setData(verifyPINReqData);
+
+	CommonResponse verifyPINRes = Services.create(UserModuleService.class).verifyPIN(verifyPINReq).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(verifyPINRes.getCode())) {
+	    log.error("Error while verify PIN");
+	    return verifyPINRes;
 	}
 
 	// validate account number's owner user

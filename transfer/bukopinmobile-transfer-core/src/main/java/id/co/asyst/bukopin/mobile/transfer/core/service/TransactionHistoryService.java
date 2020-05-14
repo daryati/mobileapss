@@ -24,6 +24,7 @@ import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryInsur
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryPLNPostpaidResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryPLNPrepaidResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryResponse;
+import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistorySamolnasResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryTelcoPostpaidResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryTelcoPrepaidResponse;
 
@@ -121,6 +122,15 @@ public class TransactionHistoryService {
      */
     public Optional<TransactionHistoryInsuranceResponse> getDetailInsurance(Long id){
 	return transactionHistoryDao.getDetailInsuranceHistory(id);
+    }
+    
+    /**
+     * Get Detail Samolnas
+     * @param id transaction
+     * @return detail transaction of samolnas
+     */
+    public Optional<TransactionHistorySamolnasResponse> getDetailSamolnas(Long id){
+	return transactionHistoryDao.getDetailSamolnasHistory(id);
     }
 
     /**
