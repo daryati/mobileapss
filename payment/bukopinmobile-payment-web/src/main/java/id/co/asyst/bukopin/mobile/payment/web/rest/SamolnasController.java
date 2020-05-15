@@ -139,6 +139,14 @@ public class SamolnasController {
 	    log.error("Validate Token and Phone owner error..");
 	    return resPhone;
 	}
+	ObjectMapper oMapper = new ObjectMapper();
+	Map<String, Boolean> resultPhoneObj = oMapper.convertValue(resPhone.getData(), Map.class);
+	if (!resultPhoneObj.get("valid")) {
+	    log.error("Token and phone owner invalid");
+	    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+	    response.setMessage(messageUtil.get("error.invalid.token.phone.owner", servletRequest.getLocale()));
+	    return response;
+	}
 
 	String payCode = req.getData().getPayCode();
 	String nik = req.getData().getNik();
