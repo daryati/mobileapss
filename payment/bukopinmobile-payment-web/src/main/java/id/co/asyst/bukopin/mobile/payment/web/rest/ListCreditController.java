@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import id.co.asyst.bukopin.mobile.common.core.exception.ForbiddenAccessException;
 import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.CryptoUtil;
@@ -63,6 +65,7 @@ public class ListCreditController {
 	 */
 	private final Logger log = LoggerFactory.getLogger(ListCreditController.class);
 	private static final String SUCCESS_CODE = "000";
+	private static final String ISFALSE = "FALSE";
 	/* Attributes: */
 
 	/* Transient Attributes: */
@@ -85,7 +88,15 @@ public class ListCreditController {
 
 	/* Getters & setters for transient attributes: */
 
+	
 	/* Functionalities: */
+	/**
+	 * List Credit Service
+	 * @param username
+	 * @return
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
 	@GetMapping("/findListCredit/{username}")
 	@ResponseStatus(HttpStatus.OK)
 	public CommonResponse findCreditByCode(@PathVariable String username) throws IOException {
@@ -94,6 +105,8 @@ public class ListCreditController {
 				messageUtil.get("success", servletRequest.getLocale()));
 
 		String decryptedUsername = CryptoUtil.decryptAESHex(username);
+		
+		ObjectMapper omapper = new ObjectMapper();
 
 		// Validate Token and Phone Owner
 		CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
@@ -103,9 +116,17 @@ public class ListCreditController {
 		phoneReqData.setPhoneIdentity(servletRequest.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
 		phoneReq.setData(phoneReqData);
 		CommonResponse resPhone = Services.create(UserModuleService.class).verifyPhoneOwner(phoneReq).execute().body();
+		Map<String, String> resPhoneData = omapper.convertValue(resPhone.getData(),  Map.class);
+		String valid = String.valueOf(resPhoneData.get("valid"));
 		if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
 			log.error("Validate Token and Phone owner error..");
 			return resPhone;
+		}else if(valid.equalsIgnoreCase(ISFALSE)){
+			log.error("Token owner is not match...");
+			response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+			response.setMessage(messageUtil.get("error.data.not.match", servletRequest.getLocale()));
+
+			return response;
 		}
 
 		List<ListCredit> listCredit = listCreditService.findAll();

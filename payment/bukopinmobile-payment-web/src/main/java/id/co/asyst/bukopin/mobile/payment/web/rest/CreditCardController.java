@@ -43,15 +43,12 @@ import id.co.asyst.bukopin.mobile.common.model.payload.CommonRequest;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
 import id.co.asyst.bukopin.mobile.common.model.payload.Identity;
 import id.co.asyst.bukopin.mobile.master.model.CategoryEnum;
-import id.co.asyst.bukopin.mobile.master.model.DestinationTypeEnum;
 import id.co.asyst.bukopin.mobile.master.model.TransactionTypeEnum;
 import id.co.asyst.bukopin.mobile.master.model.entity.Transaction;
 import id.co.asyst.bukopin.mobile.master.model.payload.DestinationCommonRequest;
 import id.co.asyst.bukopin.mobile.payment.core.service.CreditCardService;
-import id.co.asyst.bukopin.mobile.payment.core.service.ListCreditService;
 import id.co.asyst.bukopin.mobile.payment.core.util.CreditCardUtil;
 import id.co.asyst.bukopin.mobile.payment.model.entity.CreditCard;
-import id.co.asyst.bukopin.mobile.payment.model.entity.ListCredit;
 import id.co.asyst.bukopin.mobile.payment.model.payload.InstitutionMapper;
 import id.co.asyst.bukopin.mobile.payment.model.payload.cc.CheckBINRequest;
 import id.co.asyst.bukopin.mobile.payment.model.payload.cc.InquiryCreditCardRequest;
@@ -108,11 +105,9 @@ public class CreditCardController {
 	private static final String ERROR_CODE_CUSTOMER_NAME = "176";
 	private static final String ERROR_CODE_EXCEED_BILL_LIMIT = "177";
 	private static final String ERROR_CODE_DIFFERENT_BILL = "178";
-	private static final String IRREGULAR_AREA_CODE = "IRREGULAR_AREA_CODE";
 	private static final String ERROR_NOT_ENOUGH_BALANCE = "851";
 	private static final String ERROR_ACCOUNT_INACTIVE = "839";
 	private static final String CODE_CC_BKP = "CCBKP";
-	private static final String NAME_BKP = "Bukopin";
 	private static final String TRANSACTION_TYPE_POST = "POST";
 	private static final String ISFALSE = "FALSE";
 
@@ -122,9 +117,6 @@ public class CreditCardController {
 
 	@Autowired
 	private HttpServletRequest servletRequest;
-
-	@Autowired
-	private ListCreditService listCreditService;
 
 	@Autowired
 	private CreditCardService creditCardService;
@@ -144,6 +136,12 @@ public class CreditCardController {
 	/* Getters & setters for transient attributes: */
 
 	/* Functionalities: */
+	/**
+	 * Credit Card Inquiry (FOR BKP ONLY)
+	 * @param request
+	 * @return
+	 * @throws IOException
+	 */
 	@SuppressWarnings("unchecked")
 	@PostMapping("/inquiry")
 	@ResponseStatus(HttpStatus.OK)
@@ -270,6 +268,12 @@ public class CreditCardController {
 		return response;
 	}
 
+	/**
+	 * Credit Card BKP and NON BKP Payment Service
+	 * @param request
+	 * @return
+	 * @throws IOException
+	 */
 	@SuppressWarnings("unchecked")
 	@PostMapping("/payment")
 	@ResponseStatus(HttpStatus.OK)
@@ -406,8 +410,8 @@ public class CreditCardController {
 			resp = CreditCardUtil.generatePaymentCreditCardResponse(request.getData(), tibcoResponse);
 
 			// save data
-			log.debug("save purchase Credit Card to DB");
-			CommonResponse saveRes = savePurchaseCreditCard(request.getIdentity(), resp, codeCc, username);
+			log.debug("save Payment Credit Card to DB");
+			CommonResponse saveRes = savePaymentCreditCard(request.getIdentity(), resp, codeCc, username);
 
 			if (SUCCESS_CODE.equals(saveRes.getCode())) {
 				log.debug("ID DESTINATION .... " + saveRes.getData().toString());
@@ -485,7 +489,15 @@ public class CreditCardController {
 		return response;
 	}
 
-	public CommonResponse savePurchaseCreditCard(Identity identity, PaymentCreditCardResponse res, String codeCc,
+	/**
+	 * Save Payment Transaction
+	 * @param identity
+	 * @param res
+	 * @param codeCc
+	 * @param username
+	 * @return
+	 */
+	public CommonResponse savePaymentCreditCard(Identity identity, PaymentCreditCardResponse res, String codeCc,
 			String username) {
 		CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 				messageUtil.get("success", servletRequest.getLocale()));
@@ -550,6 +562,12 @@ public class CreditCardController {
 
 	}
 
+	/**
+	 * Check BIN Service 
+	 * @param request
+	 * @return
+	 * @throws IOException
+	 */
 	@SuppressWarnings("unchecked")
 	@PostMapping("/checkBin")
 	public CommonResponse checkBin(@Valid @RequestBody CommonRequest<CheckBINRequest> request) throws IOException {
