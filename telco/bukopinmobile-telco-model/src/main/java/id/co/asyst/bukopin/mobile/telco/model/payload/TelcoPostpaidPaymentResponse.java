@@ -11,6 +11,9 @@ package id.co.asyst.bukopin.mobile.telco.model.payload;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * 
  * 
@@ -18,6 +21,7 @@ import java.math.BigDecimal;
  * @version $Revision$, Feb 17, 2020
  * @since 1.1.Alpha1-SNAPSHOT
  */
+@JsonInclude(Include.NON_NULL)
 public class TelcoPostpaidPaymentResponse {
     /* Constants: */
 
@@ -44,6 +48,8 @@ public class TelcoPostpaidPaymentResponse {
     
     private String accountNo;
     
+    private String npwp;
+    
     private Long destinationId;
 
     /* Transient Attributes: */
@@ -62,6 +68,20 @@ public class TelcoPostpaidPaymentResponse {
     }
 
     /**
+	 * @return the npwp
+	 */
+	public String getNpwp() {
+		return npwp;
+	}
+
+	/**
+	 * @param npwp the npwp to set
+	 */
+	public void setNpwp(String npwp) {
+		this.npwp = npwp;
+	}
+
+	/**
      * Sets <code>custNo</code>.
      * @param custNo The <code>custNo</code> to set.
      */
@@ -245,19 +265,22 @@ public class TelcoPostpaidPaymentResponse {
         this.destinationId = destinationId;
     }
 
+
+
     /* Getters & setters for transient attributes: */
 
     /* Functionalities: */
+    
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "TelcoPostpaidPaymentResponse [custNo=" + custNo + ", custName=" + custName + ", billPeriode="
+				+ billPeriode + ", productName=" + productName + ", amount=" + amount + ", amountFee=" + amountFee
+				+ ", totalAmount=" + totalAmount + ", date=" + date + ", time=" + time + ", referensi=" + referensi
+				+ ", accountNo=" + accountNo + ", npwp=" + npwp + ", destinationId=" + destinationId + "]";
+	}
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-	return "TelcoPostpaidPaymentResponse [custNo=" + custNo + ", custName=" + custName + ", billPeriode="
-		+ billPeriode + ", productName=" + productName + ", amount=" + amount + ", amountFee=" + amountFee
-		+ ", totalAmount=" + totalAmount + ", date=" + date + ", time=" + time + ", referensi=" + referensi
-		+ ", accountNo=" + accountNo + ", destinationId=" + destinationId + "]";
-    }
     
 }

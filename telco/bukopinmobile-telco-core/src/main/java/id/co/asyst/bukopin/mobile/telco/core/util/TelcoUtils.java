@@ -422,6 +422,7 @@ public class TelcoUtils {
 	telco.setAmountFee(resp.getAmountFee());
 	telco.setTotalAmount(resp.getTotalAmount());
 	telco.setIdTransaction(transaction);
+	telco.setNpwp(resp.getNpwp());
 
 	return telco;
     }
@@ -656,6 +657,7 @@ public class TelcoUtils {
 	String referensi = resp.getElement122().substring(144, 159);
 	String accountNo = resp.getElement102();
 	String productName = element61.substring(134, 159);
+	String npwp = element61.substring(120, 134);
 
 	response.setCustNo(custNo.trim());
 	response.setCustName(custName.trim());
@@ -666,6 +668,7 @@ public class TelcoUtils {
 	response.setDate(dateYear.format(today));
 	response.setTime(timeLocal.format(today));
 	response.setReferensi(referensi.trim());
+	response.setNpwp(npwp.trim());
 	response.setAccountNo(accountNo.trim());
 	response.setProductName(productName.trim());
 
