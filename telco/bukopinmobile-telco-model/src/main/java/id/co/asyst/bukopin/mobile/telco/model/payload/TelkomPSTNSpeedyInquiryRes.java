@@ -40,6 +40,8 @@ public class TelkomPSTNSpeedyInquiryRes {
     
     private BigDecimal totalAmount;
     
+    private String npwp;
+    
     private String element11;
     
     private String element37;
@@ -241,22 +243,35 @@ public class TelkomPSTNSpeedyInquiryRes {
     public void setCodeCbs(String codeCbs) {
         this.codeCbs = codeCbs;
     }
+    
+    /**
+	 * @return the npwp
+	 */
+	public String getNpwp() {
+		return npwp;
+	}
+
+	/**
+	 * @param npwp the npwp to set
+	 */
+	public void setNpwp(String npwp) {
+		this.npwp = npwp;
+	}
 
     /* Getters & setters for transient attributes: */
 
     /* Functionalities: */
 
-    /* Overrides: */
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-	return "TelkomPSTNSpeedyInquiryRes [custNo=" + custNo + ", custName=" + custName + ", billPeriode="
-		+ billPeriode + ", productName=" + productName + ", codeArr=" + codeArr + ", codeCbs=" + codeCbs
-		+ ", amountFee=" + amountFee + ", amount=" + amount + ", totalAmount=" + totalAmount + ", element11="
-		+ element11 + ", element37=" + element37 + ", element61=" + element61 + "]";
-    }
-
+	/* Overrides: */
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "TelkomPSTNSpeedyInquiryRes [custNo=" + custNo + ", custName=" + custName + ", billPeriode="
+				+ billPeriode + ", productName=" + productName + ", codeArr=" + codeArr + ", codeCbs=" + codeCbs
+				+ ", amountFee=" + amountFee + ", amount=" + amount + ", totalAmount=" + totalAmount + ", npwp=" + npwp
+				+ ", element11=" + element11 + ", element37=" + element37 + ", element61=" + element61 + "]";
+	}
 
 }

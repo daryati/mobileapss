@@ -525,6 +525,7 @@ public class TelcoUtils {
 	String amountFee = element61.substring(160, 167);
 
 	String codeCbs = element20.substring(11, 17);
+	String npwp = element61.substring(120, 134);
 
 	response.setCustNo(custNo.trim());
 	response.setCustName(custName.trim());
@@ -535,6 +536,7 @@ public class TelcoUtils {
 	response.setAmount(new BigDecimal(amount));
 	response.setAmountFee(new BigDecimal(amountFee));
 	response.setTotalAmount(response.getAmount().add(response.getAmountFee()));
+	response.setNpwp(npwp.trim());
 	response.setElement11(element11);
 	response.setElement37(element37);
 	response.setElement61(element61);
