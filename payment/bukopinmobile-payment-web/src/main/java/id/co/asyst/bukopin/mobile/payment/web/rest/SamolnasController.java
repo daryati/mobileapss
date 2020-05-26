@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -121,7 +122,7 @@ public class SamolnasController {
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping("/inquiry")
+    @PostMapping("/inquiry")
     private CommonResponse inquirySamolnas(@Valid @RequestBody CommonRequest<SamolnasInquiryRequest> req)
 	    throws IOException {
 	log.debug("REST request to inquiry Samolnas : {}", req.getData());
@@ -214,7 +215,14 @@ public class SamolnasController {
 	return response;
     }
 
-    @RequestMapping("/payment")
+    /**
+     * paymentSamolnas
+     * @param req
+     * @return
+     * @throws IOException
+     * @throws ParseException
+     */
+    @PostMapping("/payment")
     private CommonResponse paymentSamolnas(@Valid @RequestBody CommonRequest<SamolnasPaymentRequest> req)
 	    throws IOException, ParseException {
 	log.debug("REST request to payment Samolnas : {}", req.getData());
