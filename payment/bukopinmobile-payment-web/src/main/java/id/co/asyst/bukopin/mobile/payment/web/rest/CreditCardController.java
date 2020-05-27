@@ -26,6 +26,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import id.co.asyst.bukopin.mobile.common.core.exception.MiddlewareException;
 import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
+import id.co.asyst.bukopin.mobile.common.core.util.CryptoUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
@@ -47,8 +49,10 @@ import id.co.asyst.bukopin.mobile.master.model.TransactionTypeEnum;
 import id.co.asyst.bukopin.mobile.master.model.entity.Transaction;
 import id.co.asyst.bukopin.mobile.master.model.payload.DestinationCommonRequest;
 import id.co.asyst.bukopin.mobile.payment.core.service.CreditCardService;
+import id.co.asyst.bukopin.mobile.payment.core.service.ListCreditService;
 import id.co.asyst.bukopin.mobile.payment.core.util.CreditCardUtil;
 import id.co.asyst.bukopin.mobile.payment.model.entity.CreditCard;
+import id.co.asyst.bukopin.mobile.payment.model.entity.ListCredit;
 import id.co.asyst.bukopin.mobile.payment.model.payload.InstitutionMapper;
 import id.co.asyst.bukopin.mobile.payment.model.payload.cc.CheckBINRequest;
 import id.co.asyst.bukopin.mobile.payment.model.payload.cc.InquiryCreditCardRequest;
@@ -120,6 +124,9 @@ public class CreditCardController {
 
 	@Autowired
 	private CreditCardService creditCardService;
+	
+	@Autowired
+	private ListCreditService listCreditService;
 
 	/**
 	 * Environment
@@ -138,6 +145,7 @@ public class CreditCardController {
 	/* Functionalities: */
 	/**
 	 * Credit Card Inquiry (FOR BKP ONLY)
+	 * 
 	 * @param request
 	 * @return
 	 * @throws IOException
@@ -152,7 +160,7 @@ public class CreditCardController {
 				messageUtil.get("success", servletRequest.getLocale()));
 
 		ObjectMapper omapper = new ObjectMapper();
-		
+
 		// Validate Token and Phone Owner
 		CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
 		VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
@@ -161,12 +169,16 @@ public class CreditCardController {
 		phoneReqData.setPhoneIdentity(servletRequest.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
 		phoneReq.setData(phoneReqData);
 		CommonResponse resPhone = Services.create(UserModuleService.class).verifyPhoneOwner(phoneReq).execute().body();
-		Map<String, String> resPhoneData = omapper.convertValue(resPhone.getData(),  Map.class);
-		String valid = String.valueOf(resPhoneData.get("valid"));
+
 		if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
 			log.error("Validate Token and Phone owner error..");
 			return resPhone;
-		}else if(valid.equalsIgnoreCase(ISFALSE)){
+		}
+
+		Map<String, String> resPhoneData = omapper.convertValue(resPhone.getData(), Map.class);
+		String valid = String.valueOf(resPhoneData.get("valid"));
+
+		if (valid.equalsIgnoreCase(ISFALSE)) {
 			log.error("Token owner is not match...");
 			response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
 			response.setMessage(messageUtil.get("error.data.not.match", servletRequest.getLocale()));
@@ -270,6 +282,7 @@ public class CreditCardController {
 
 	/**
 	 * Credit Card BKP and NON BKP Payment Service
+	 * 
 	 * @param request
 	 * @return
 	 * @throws IOException
@@ -287,7 +300,7 @@ public class CreditCardController {
 		String pin = request.getData().getPin();
 		String codeCc = request.getData().getCodeCc();
 		String name = request.getData().getName();
-		
+
 		ObjectMapper oMapper = new ObjectMapper();
 
 		// Validate Token and Phone Owner
@@ -298,13 +311,16 @@ public class CreditCardController {
 		phoneReqData.setPhoneIdentity(servletRequest.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
 		phoneReq.setData(phoneReqData);
 		CommonResponse resPhone = Services.create(UserModuleService.class).verifyPhoneOwner(phoneReq).execute().body();
-		
-		Map<String, String> resPhoneData = oMapper.convertValue(resPhone.getData(),  Map.class);
-		String valid = String.valueOf(resPhoneData.get("valid"));
+
 		if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
 			log.error("Validate Token and Phone owner error..");
 			return resPhone;
-		}else if(valid.equalsIgnoreCase(ISFALSE)){
+		}
+
+		Map<String, String> resPhoneData = oMapper.convertValue(resPhone.getData(), Map.class);
+		String valid = String.valueOf(resPhoneData.get("valid"));
+
+		if (valid.equalsIgnoreCase(ISFALSE)) {
 			log.error("Token owner is not match...");
 			response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
 			response.setMessage(messageUtil.get("error.data.not.match", servletRequest.getLocale()));
@@ -327,7 +343,7 @@ public class CreditCardController {
 
 			return verifyPinRes;
 		}
-		
+
 		// validate account number's owner user
 		VerifyAccountOwnerRequest verifyAccountOwnerReqData = new VerifyAccountOwnerRequest();
 		verifyAccountOwnerReqData.setAccountNo(request.getData().getAccountNumber());
@@ -343,7 +359,7 @@ public class CreditCardController {
 			log.error("Error while verify account owner");
 			return verifyAccOwnerResponse;
 		}
-		
+
 		VerifyAccountOwnerResponse verifyAccOwnRespObj = oMapper.convertValue(verifyAccOwnerResponse.getData(),
 				VerifyAccountOwnerResponse.class);
 		if (!verifyAccOwnRespObj.isValid()) {
@@ -491,6 +507,7 @@ public class CreditCardController {
 
 	/**
 	 * Save Payment Transaction
+	 * 
 	 * @param identity
 	 * @param res
 	 * @param codeCc
@@ -563,7 +580,8 @@ public class CreditCardController {
 	}
 
 	/**
-	 * Check BIN Service 
+	 * Check BIN Service
+	 * 
 	 * @param request
 	 * @return
 	 * @throws IOException
@@ -588,9 +606,21 @@ public class CreditCardController {
 		phoneReqData.setPhoneIdentity(servletRequest.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
 		phoneReq.setData(phoneReqData);
 		CommonResponse resPhone = Services.create(UserModuleService.class).verifyPhoneOwner(phoneReq).execute().body();
+
 		if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
 			log.error("Validate Token and Phone owner error..");
 			return resPhone;
+		}
+
+		Map<String, String> resPhoneData = mapper.convertValue(resPhone.getData(), Map.class);
+		String valid = String.valueOf(resPhoneData.get("valid"));
+
+		if (valid.equalsIgnoreCase(ISFALSE)) {
+			log.error("Token owner is not match...");
+			response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+			response.setMessage(messageUtil.get("error.data.not.match", servletRequest.getLocale()));
+
+			return response;
 		}
 
 		String subsNum = request.getData().getSubscriberNumber();
@@ -639,5 +669,63 @@ public class CreditCardController {
 		return response;
 
 	}
+	
+	/**
+	 * List Credit Service
+	 * 
+	 * @param username
+	 * @return
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	@GetMapping("/findListCredit/{username}")
+	@ResponseStatus(HttpStatus.OK)
+	public CommonResponse findCreditByCode(@PathVariable String username) throws IOException {
+		log.debug("Find List Credit...");
+		CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
+				messageUtil.get("success", servletRequest.getLocale()));
+
+		String decryptedUsername = CryptoUtil.decryptAESHex(username);
+
+		ObjectMapper omapper = new ObjectMapper();
+
+		// Validate Token and Phone Owner
+		CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
+		VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
+		phoneReqData.setUsername(decryptedUsername);
+		phoneReqData.setToken(servletRequest.getHeader(HttpHeaders.AUTHORIZATION));
+		phoneReqData.setPhoneIdentity(servletRequest.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
+		phoneReq.setData(phoneReqData);
+		CommonResponse resPhone = Services.create(UserModuleService.class).verifyPhoneOwner(phoneReq).execute().body();
+
+		if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
+			log.error("Validate Token and Phone owner error..");
+			return resPhone;
+		}
+
+		Map<String, String> resPhoneData = omapper.convertValue(resPhone.getData(), Map.class);
+		String valid = String.valueOf(resPhoneData.get("valid"));
+
+		if (valid.equalsIgnoreCase(ISFALSE)) {
+			log.error("Token owner is not match...");
+			response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+			response.setMessage(messageUtil.get("error.data.not.match", servletRequest.getLocale()));
+
+			return response;
+		}
+
+		List<ListCredit> listCredit = listCreditService.findAll();
+		if (listCredit.isEmpty()) {
+			log.error("List Credit Not Found.");
+			response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+			response.setMessage(messageUtil.get("error.data.not.found", servletRequest.getLocale()));
+			return response;
+		}
+
+		log.debug("Data List Credit {}" + BkpmUtil.convertToJson(listCredit));
+		response.setData(listCredit);
+		return response;
+	}
+
 	/* Overrides: */
 }
