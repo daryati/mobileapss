@@ -12,8 +12,6 @@
  */
 package id.co.asyst.bukopin.mobile.master.web.rest;
 
-import java.util.Calendar;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -86,48 +84,26 @@ public class SystemCutOffController {
 	return response;
     }
     
+    /**
+     * GET: Check Cut Off Status
+     * 
+     * @param id id The Module id of System Cut Off
+     * @return return Code 217 in body, if Cut off is in Progress, else 000.
+     */
     @GetMapping("/checkStatus/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public CommonResponse checkStatus(@PathVariable Long id) {
+    public CommonResponse checkCutOffStatus(@PathVariable Long id) {
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
-	
-	Calendar now = Calendar.getInstance();
-	
-	SystemCutOff cutOff = cutOffService.findById(id);
-	if(cutOff==null) {
-	    log.error("System cut off not found: {}", id);
-	    throw new DataNotFoundException();
-	} else {
-	    // TODO check is cut off in progress?
-	    System.out.println("now");
-	    System.out.println(now.getTime());
-	    
-	    now.setTime(cutOff.getStartTime());
-	    System.out.println("start time");
-	    System.out.println(now.getTime());
-	    
-	    // Prepare Calendar
-	    Calendar start = Calendar.getInstance();
-	    Calendar end = Calendar.getInstance();
-	    
-	    // 1. check is time access before or after 23:59
-	    if (now.get(Calendar.HOUR_OF_DAY) > 0) {
-		// 2a. if before, set start date with today, and end date with tomorrow
-		start.setTime(cutOff.getStartTime());
-		start.set(Calendar.DATE, now.get(Calendar.DATE));
-		start.set(Calendar.MONTH, now.get(Calendar.MONTH));
-		start.set(Calendar.YEAR, now.get(Calendar.YEAR));
-		
-		
-	    } else if(now.get(Calendar.HOUR_OF_DAY) < 1) {
-		// 2b. if after, set start date with yesterday, and end date with today
-	    }
-	    
-	    // 3. Compare
-	    response.setData(cutOff);
+
+	// Check is cut off in progress?
+	boolean isCutOff = cutOffService.isCutOff(id);
+	if(isCutOff) {
+	    // Set cut off message
+	    response = new CommonResponse(ResponseMessage.ERROR_CUT_OFF_PLN.getCode(),
+			messageUtil.get("system.cut.off", servletRequest.getLocale()));
 	}
-	
+
 	return response;
     }
 

@@ -54,4 +54,7 @@ public interface MasterModuleService {
     
     @GET("listInsurance/allInsurance")
     Call<CommonResponse> getListInsurance();
+    
+    @GET("cutOff/{id}")
+    Call<CommonResponse> checkCutOffStatus(@Path(value = "id") Long id);
 }

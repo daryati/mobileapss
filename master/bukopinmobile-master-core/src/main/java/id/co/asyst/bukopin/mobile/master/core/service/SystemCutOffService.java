@@ -12,11 +12,16 @@
  */
 package id.co.asyst.bukopin.mobile.master.core.service;
 
+import java.util.Calendar;
+
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import id.co.asyst.bukopin.mobile.common.core.exception.DataNotFoundException;
 import id.co.asyst.bukopin.mobile.master.core.repository.SystemCutOffRepository;
 import id.co.asyst.bukopin.mobile.master.model.entity.cms.SystemCutOff;
 
@@ -30,6 +35,10 @@ import id.co.asyst.bukopin.mobile.master.model.entity.cms.SystemCutOff;
 @Service
 @Transactional
 public class SystemCutOffService {
+    
+    /* Logger: */
+    private final Logger log = LoggerFactory.getLogger(SystemCutOffService.class);
+    
     /* Constants: */
     
     /* Beans: */
@@ -54,6 +63,79 @@ public class SystemCutOffService {
      */
     public SystemCutOff findById(Long id) {
 	return systemCutOffRepository.findById(id).orElse(null);
+    }
+    
+    /**
+     * Check Status Cut Off
+     * 
+     * @param id The Module id of System Cut Off
+     * @return true if Cut Off is in Progress, else false.
+     */
+    public boolean isCutOff(Long id) {
+	boolean isCutOff = false;
+	
+	SystemCutOff cutOff = this.findById(id);
+	if(cutOff==null) {
+	    log.error("System cut off not found: {}", id);
+	    throw new DataNotFoundException();
+	} else {
+	    // Prepare
+	    Calendar now = Calendar.getInstance(); // current time
+	    Calendar start = Calendar.getInstance(); // Cut Off start time
+	    start.setTime(cutOff.getStartTime());
+	    Calendar end = Calendar.getInstance(); // Cut Off end time
+	    end.setTime(cutOff.getEndTime());
+
+	    // set start & end date
+	    start = copyDate(now, start);
+	    end = copyDate(now, end);
+
+	    int nowHour = now.get(Calendar.HOUR_OF_DAY);
+	    int startHour = start.get(Calendar.HOUR_OF_DAY);
+	    int endHour = end.get(Calendar.HOUR_OF_DAY);
+
+	    if (startHour < endHour) {
+		log.debug("Same Day");
+	    } else {
+		log.debug("Different Day");
+
+		// Check is time access before or after day change?
+		if (nowHour < endHour) { // after day change
+		    System.out.println("after day change");
+		    // set start date with yesterday
+		    start.add(Calendar.DATE, -1);
+		} else { // before day change
+		    System.out.println("before day change");
+		    // set end date with tomorrow
+		    end.add(Calendar.DATE, 1);
+		}
+	    }
+
+	    // Check Cut Off Status
+	    if (now.getTime().after(start.getTime()) && now.getTime().before(end.getTime())) {
+		log.debug("Cut Off");
+		isCutOff = true;
+	    } else {
+		log.debug("No Cut Off");
+	    }
+	}
+	
+	return isCutOff;
+    }
+    
+    /**
+     * Copy Date
+     * 
+     * @param from Source of Copy
+     * @param to Destination of Copy
+     * @return new Destination Calendar
+     */
+    private static Calendar copyDate(Calendar from, Calendar to) {
+	to.set(Calendar.DATE, from.get(Calendar.DATE));
+	to.set(Calendar.MONTH, from.get(Calendar.MONTH));
+	to.set(Calendar.YEAR, from.get(Calendar.YEAR));
+	
+	return to;
     }
 
     /* Overrides: */
