@@ -45,6 +45,8 @@ public class TransactionHistoryTelcoPostpaidResponse {
     private BigDecimal totalAmount;
     
     private String alias;
+    
+    private String npwp;
 
     /* Transient Attributes: */
 
@@ -244,6 +246,22 @@ public class TransactionHistoryTelcoPostpaidResponse {
     public void setAlias(String alias) {
         this.alias = alias;
     }
+    
+    /**
+     * Gets <code>npwp</code>.
+     * @return The <code>npwp</code>.
+     */
+    public String getNpwp() {
+        return npwp;
+    }
+
+    /**
+     * Sets <code>npwp</code>.
+     * @param npwp The <code>npwp</code> to set.
+     */
+    public void setNpwp(String npwp) {
+        this.npwp = npwp;
+    }
 
     /* Getters & setters for transient attributes: */
 
@@ -259,7 +277,7 @@ public class TransactionHistoryTelcoPostpaidResponse {
 	return "TransactionHistoryTelcoPostpaidResponse [date=" + date + ", time=" + time + ", referensi=" + referensi
 		+ ", accountNo=" + accountNo + ", custNo=" + custNo + ", custName=" + custName + ", billPeriode="
 		+ billPeriode + ", productName=" + productName + ", amountFee=" + amountFee + ", amount=" + amount
-		+ ", totalAmount=" + totalAmount + ", alias=" + alias + "]";
+		+ ", totalAmount=" + totalAmount + ", alias=" + alias + ", npwp=" + npwp + "]";
     }
 
 }

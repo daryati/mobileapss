@@ -409,7 +409,7 @@ public class TransactionHistoryDaoImpl implements TransactionHistoryDao {
 	String sql = "SELECT" +
 		" A.ID, A.REFERENCE_NUMBER, A.CREATED_DATE, A.ACCOUNT_NUMBER," +
 		" B.AMOUNT_FEE, B.AMOUNT, B.TOTAL_AMOUNT, B.PERIODE," +
-		" B.PRODUCT_NAME, C.SUBSCRIBER_NAME, C.SUBSCRIBER_NUMBER, C.ALIAS" + 
+		" B.PRODUCT_NAME, C.SUBSCRIBER_NAME, C.SUBSCRIBER_NUMBER, C.ALIAS, B.NPWP" + 
 		" FROM TRX A" +
 		" JOIN TELCO_POSTPAID B ON B.ID_TRANSACTION = A.ID" +
 		" JOIN DESTINATION C ON C.ID = A.ID_DESTINATION" +
@@ -441,6 +441,7 @@ public class TransactionHistoryDaoImpl implements TransactionHistoryDao {
 	result.setCustName(telcoPostpaidResp.get(9).trim());
 	result.setCustNo(telcoPostpaidResp.get(10).trim());
 	result.setAlias(telcoPostpaidResp.get(11));
+	result.setNpwp(telcoPostpaidResp.get(12));
 	response = Optional.of(result);
 
 	entityManager.close();
