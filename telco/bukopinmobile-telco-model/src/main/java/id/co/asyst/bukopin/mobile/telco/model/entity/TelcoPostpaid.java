@@ -18,6 +18,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import id.co.asyst.bukopin.mobile.master.model.entity.Transaction;
 import id.co.asyst.foundation.base.model.IdBasedObject;
 
@@ -66,12 +69,15 @@ public class TelcoPostpaid extends IdBasedObject{
     @OneToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "ID_TRANSACTION", referencedColumnName = "id")
     private Transaction idTransaction;
+    
+    @Column(name = "NPWP")
+    private String npwp;
 
     /* Transient Attributes: */
 
     /* Constructors: */
 
-    /* Getters & setters for attributes: */
+	/* Getters & setters for attributes: */
     /**
      * Gets <code>customerNo</code>.
      * @return The <code>customerNo</code>.
@@ -224,21 +230,32 @@ public class TelcoPostpaid extends IdBasedObject{
         return serialVersionUID;
     }
 
+    /**
+ 	 * @return the npwp
+ 	 */
+ 	public String getNpwp() {
+ 		return npwp;
+ 	}
+
+ 	/**
+ 	 * @param npwp the npwp to set
+ 	 */
+ 	public void setNpwp(String npwp) {
+ 		this.npwp = npwp;
+ 	}
     /* Getters & setters for transient attributes: */
 
     /* Functionalities: */
 
     /* Overrides: */
-
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-	return "TelcoPostpaid [customerNo=" + customerNo + ", customerName=" + customerName + ", periode=" + periode
-		+ ", productName=" + productName + ", type=" + type + ", amount=" + amount + ", amountFee=" + amountFee
-		+ ", totalAmount=" + totalAmount + ", idTransaction=" + idTransaction + "]";
-    }
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "TelcoPostpaid [customerNo=" + customerNo + ", customerName=" + customerName + ", periode=" + periode
+				+ ", productName=" + productName + ", type=" + type + ", amount=" + amount + ", amountFee=" + amountFee
+				+ ", totalAmount=" + totalAmount + ", idTransaction=" + idTransaction + ", npwp=" + npwp + "]";
+	}
 
 }

@@ -34,12 +34,14 @@ import id.co.asyst.bukopin.mobile.common.core.util.CryptoUtil;
 import id.co.asyst.bukopin.mobile.transfer.core.dao.TransactionHistoryDao;
 import id.co.asyst.bukopin.mobile.transfer.model.PostingFromReq;
 import id.co.asyst.bukopin.mobile.transfer.model.PostingToReq;
+import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryCreditCardResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryEmoneyResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryFTOverbookResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryInsuranceResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryPLNPostpaidResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryPLNPrepaidResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryResponse;
+import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistorySamolnasResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryTelcoPostpaidResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryTelcoPrepaidResponse;
 
@@ -407,7 +409,7 @@ public class TransactionHistoryDaoImpl implements TransactionHistoryDao {
 	String sql = "SELECT" +
 		" A.ID, A.REFERENCE_NUMBER, A.CREATED_DATE, A.ACCOUNT_NUMBER," +
 		" B.AMOUNT_FEE, B.AMOUNT, B.TOTAL_AMOUNT, B.PERIODE," +
-		" B.PRODUCT_NAME, C.SUBSCRIBER_NAME, C.SUBSCRIBER_NUMBER, C.ALIAS" + 
+		" B.PRODUCT_NAME, C.SUBSCRIBER_NAME, C.SUBSCRIBER_NUMBER, C.ALIAS, B.NPWP" + 
 		" FROM TRX A" +
 		" JOIN TELCO_POSTPAID B ON B.ID_TRANSACTION = A.ID" +
 		" JOIN DESTINATION C ON C.ID = A.ID_DESTINATION" +
@@ -439,6 +441,7 @@ public class TransactionHistoryDaoImpl implements TransactionHistoryDao {
 	result.setCustName(telcoPostpaidResp.get(9).trim());
 	result.setCustNo(telcoPostpaidResp.get(10).trim());
 	result.setAlias(telcoPostpaidResp.get(11));
+	result.setNpwp(telcoPostpaidResp.get(12));
 	response = Optional.of(result);
 
 	entityManager.close();
@@ -539,6 +542,117 @@ public class TransactionHistoryDaoImpl implements TransactionHistoryDao {
 	result.setTotalAmount(new BigDecimal(String.valueOf(insuranceResp.get(10)).replace(".00", "")));
 	result.setSubscriberNumber(insuranceResp.get(13).trim());
 	result.setSubscriberName(insuranceResp.get(14).trim());
+	response = Optional.of(result);
+
+	entityManager.close();
+	
+	return response;
+    }
+        
+
+    /* (non-Javadoc)
+     * @see id.co.asyst.bukopin.mobile.transfer.core.dao.TransactionHistoryDao#getDetailCreditCardHistory(java.lang.Long)
+     */
+    @Override
+    public Optional<TransactionHistoryCreditCardResponse> getDetailCreditCardHistory(Long id) {
+	System.out.println("Transaction History Dao - Get Detail Credit Card with id: " + id);
+	Optional<TransactionHistoryCreditCardResponse> response = Optional.empty();
+	TransactionHistoryCreditCardResponse result = new TransactionHistoryCreditCardResponse();
+	
+	String sql = "SELECT" +
+		" A.ID, A.REFERENCE_NUMBER, A.CREATED_DATE, A.ACCOUNT_NUMBER," +
+		" B.TYPE, B.BILLED_AMOUNT, B.MINIMUM_AMOUNT, B.AMOUNT," +
+		" C.SUBSCRIBER_NAME, C.SUBSCRIBER_NUMBER, C.ALIAS" + 
+		" FROM TRX A" +
+		" JOIN CREDIT_CARD B ON B.ID_TRANSACTION = A.ID" +
+		" JOIN DESTINATION C ON C.ID = A.ID_DESTINATION" +
+		" WHERE A.ID = "+id+";";
+
+	
+	// run query
+	Session session = entityManager.unwrap(Session.class);
+	Object thp = session.createSQLQuery(sql).uniqueResult();
+	
+	// data not found handler
+	if(thp == null) {
+	    return response;
+	}
+	ObjectMapper objMapper = new ObjectMapper();
+	List<String> creditCardResp = objMapper.convertValue(thp, ArrayList.class);
+	String dateLong = String.valueOf(creditCardResp.get(2));
+	Date date = new Date(Long.valueOf(dateLong));
+	
+	// Mapping result
+	result.setReferenceNumber(creditCardResp.get(1));
+	result.setDateTime(String.valueOf(sdf.format(date)));
+	result.setAccountNumber(creditCardResp.get(3));
+	result.setName(creditCardResp.get(4));
+	result.setBilledAmount(new BigDecimal(String.valueOf(creditCardResp.get(5)).replace(".00", "")));
+	result.setMinimumPayment(new BigDecimal(String.valueOf(creditCardResp.get(6)).replace(".00", "")));
+	result.setAmount(new BigDecimal(String.valueOf(creditCardResp.get(7)).replace(".00", "")));
+	result.setSubscriberName(creditCardResp.get(8));
+	result.setSubscriberNumber(creditCardResp.get(9));
+	result.setAlias(creditCardResp.get(10));
+	
+	
+	response = Optional.of(result);
+
+	entityManager.close();
+	
+	return response;
+    }
+
+
+    @Override
+    public Optional<TransactionHistorySamolnasResponse> getDetailSamolnasHistory(Long id) {
+	System.out.println("Transaction History Dao - Get Detail Samolnas with id: " + id);
+	Optional<TransactionHistorySamolnasResponse> response = Optional.empty();
+	TransactionHistorySamolnasResponse result = new TransactionHistorySamolnasResponse();
+	
+	String sql = "SELECT" +
+		" A.ID, A.REFERENCE_NUMBER, A.CREATED_DATE, A.ACCOUNT_NUMBER," +
+		" A.TOTAL_AMOUNT, B.*, C.SUBSCRIBER_NUMBER, C.SUBSCRIBER_NAME, C.ALIAS" +
+		" FROM TRX A" +
+		" JOIN SAMOLNAS B ON B.TRANSACTION_ID = A.ID" +
+		" JOIN DESTINATION C ON C.ID = A.ID_DESTINATION" +
+		" WHERE A.ID = "+id+";";
+
+
+	// run query
+	Session session = entityManager.unwrap(Session.class);
+	Object ths = session.createSQLQuery(sql).uniqueResult();
+	
+	// data not found handler
+	if(ths == null) {
+	    return response;
+	}
+	ObjectMapper objMapper = new ObjectMapper();
+	List<String> samolnasResp = objMapper.convertValue(ths, ArrayList.class);
+	String dateLong = String.valueOf(samolnasResp.get(2));
+	Date date = new Date(Long.valueOf(dateLong));
+	
+	// Mapping result
+	result.setReferenceNumber(samolnasResp.get(1));
+	result.setDate(String.valueOf(dF.format(date)));
+	result.setTime(String.valueOf(tF.format(date)));
+	result.setAccountNumber(samolnasResp.get(3));
+	result.setTotalAmount(new BigDecimal(String.valueOf(samolnasResp.get(4)).replace(".00", "")));
+	result.setAdminFee(new BigDecimal(String.valueOf(samolnasResp.get(6)).replace(".00", "")));
+	result.setAmount(new BigDecimal(String.valueOf(samolnasResp.get(7)).replace(".00", "")));
+	result.setMachineNo(samolnasResp.get(8));
+	result.setMerk(samolnasResp.get(9));
+	result.setModel(samolnasResp.get(10));
+	result.setNewTbpkb(samolnasResp.get(11));
+	result.setNik(samolnasResp.get(12));
+	result.setNpkb(samolnasResp.get(13));
+	result.setProgresif(samolnasResp.get(14));
+	result.setTbpkb(samolnasResp.get(15));
+	result.setType(samolnasResp.get(16));
+	result.setValidityPeriod(samolnasResp.get(17));
+	result.setYear(samolnasResp.get(18));
+	result.setPayCode(samolnasResp.get(20));
+	result.setSubscriberName(samolnasResp.get(21));
+	result.setAlias(samolnasResp.get(22));
 	response = Optional.of(result);
 
 	entityManager.close();

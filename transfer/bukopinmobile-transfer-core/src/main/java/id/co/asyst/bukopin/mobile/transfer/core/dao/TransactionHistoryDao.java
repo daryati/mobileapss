@@ -13,12 +13,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryCreditCardResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryEmoneyResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryFTOverbookResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryInsuranceResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryPLNPostpaidResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryPLNPrepaidResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryResponse;
+import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistorySamolnasResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryTelcoPostpaidResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryTelcoPrepaidResponse;
 
@@ -88,5 +90,19 @@ public interface TransactionHistoryDao {
      * @return
      */
     public Optional<TransactionHistoryInsuranceResponse> getDetailInsuranceHistory(Long id);
+    
+    /**
+     * Get Detail Credit Card History
+     * @param id
+     * @return
+     */
+    public Optional<TransactionHistoryCreditCardResponse> getDetailCreditCardHistory(Long id);
+    
+    /**
+     * Get Detail Samolnas History
+     * @param id
+     * @return
+     */
+    public Optional<TransactionHistorySamolnasResponse> getDetailSamolnasHistory(Long id);
 
 }

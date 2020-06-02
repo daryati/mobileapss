@@ -243,6 +243,11 @@ public class OverbookService {
 						
 						// get user data 
 					    String urlUser = config.getConfigValue("USER_BASE_URL")+config.getConfigValue("URL_FINDUSER_BY_USERNAME");
+					    
+					    //use this if run user in local PC
+					    //String urlUser ="http://localhost:8080/bukopinmobile-user/account/findUserByUsername";
+					    
+					    
 					    dataJson = new JSONObject();
 					    
 					    JSONObject identityObj = new JSONObject();
@@ -272,7 +277,7 @@ public class OverbookService {
 					    UserTransfer user = new UserTransfer();
 						if(res != null){
 							responseJson = (JSONObject) parser.parse(res);
-							//log.debug("response "+responseJson);
+							//log.debug("response ini yaaa "+responseJson);
 							
 							JSONObject userObj = new JSONObject();
 							userObj = (JSONObject) responseJson.get(JsonVariable.RESULT);

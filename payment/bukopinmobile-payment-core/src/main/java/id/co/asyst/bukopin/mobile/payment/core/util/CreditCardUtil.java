@@ -76,10 +76,7 @@ public class CreditCardUtil {
 
     private static final String CODE_CC_BKP = "CCBKP";
 
-    private static final String ROUTING_INFO_CC_BKP = "000000004413013016017441";
 
-    private static final String SETTLEMENT_ID = "441001";
-    private static final String SETTLEMENT_ARANET_ID = "00000441001";
 
     // element123 Components
     private static final String CONVENTION_RATE = "0000000000000000000";
@@ -102,7 +99,6 @@ public class CreditCardUtil {
     private static DateFormat element7Format = new SimpleDateFormat("MMddHHmmss");
     private static SimpleDateFormat timeLocal = new SimpleDateFormat("HHmmss");
     private static SimpleDateFormat dateLocal = new SimpleDateFormat("MMdd");
-    private static SimpleDateFormat dateYear = new SimpleDateFormat("yyyyMMdd");
 
     /* Attributes: */
 
@@ -117,6 +113,13 @@ public class CreditCardUtil {
     /* Functionalities: */
 
     /* Overrides: */
+    /**
+     * Generate Request Inquiry for Tibco
+     * @param req
+     * @param regCard
+     * @param codeCbs
+     * @return
+     */
     public static InquiryCreditCardTibcoReq generateInquiryRequest(InquiryCreditCardRequest req, String regCard,
 	    String codeCbs) {
 	InquiryCreditCardTibcoReq request = new InquiryCreditCardTibcoReq();
@@ -199,6 +202,16 @@ public class CreditCardUtil {
 	return response;
     }
 
+    /**
+     * Generate request Payment for TIbco
+     * @param req
+     * @param bankName
+     * @param regCard
+     * @param accType
+     * @param forwardInsCode
+     * @param codeCbs
+     * @return
+     */
     public static PaymentCreditCardTibcoReq generatePaymentCreditCardTibcoReq(PaymentCreditCardRequest req,
 	    String bankName, String regCard, String accType, String forwardInsCode, String codeCbs) {
 	PaymentCreditCardTibcoReq request = new PaymentCreditCardTibcoReq();
@@ -312,6 +325,12 @@ public class CreditCardUtil {
 	return request;
     }
 
+    /**
+     * Generate Response Data
+     * @param req
+     * @param resp
+     * @return
+     */
     public static PaymentCreditCardResponse generatePaymentCreditCardResponse(PaymentCreditCardRequest req,
 	    PaymentCreditCardTibcoResponse resp) {
 	PaymentCreditCardResponse response = new PaymentCreditCardResponse();
@@ -351,29 +370,11 @@ public class CreditCardUtil {
 	return response;
     }
 
-    /*
-     * public static CommonRequest<DestinationCommonRequest>
-     * generateDestinationReq(Identity identity, PaymentCreditCardRequest reqPay,
-     * String referenceNumber) { CommonRequest<DestinationCommonRequest> req = new
-     * CommonRequest<>(); DestinationCommonRequest destReq = new
-     * DestinationCommonRequest();
-     * 
-     * 
-     * destReq.setCategoryId(CategoryEnum.KARTU_KREDIT.getId());
-     * destReq.setUsername(reqPay.getUsername());
-     * destReq.setSubscriberNumber(reqPay.getSubscriberNumber());
-     * destReq.setSubscriberName(reqPay.getSubscriberName());
-     * 
-     * destReq.setTransactionType(TransactionTypeEnum.CREDITCARD.name());
-     * destReq.setReference(referenceNumber);
-     * destReq.setAccountNumber(reqPay.getAccountNumber());
-     * destReq.setTotalAmount(reqPay.getAmount());
-     * 
-     * req.setIdentity(identity); req.setData(destReq);
-     * 
-     * return req;
-     * 
-     * }
+
+    /**
+     * Generate Numeric String
+     * @param length
+     * @return
      */
     private static String generateNumber(int length) {
 	if (length < 1) {
@@ -392,6 +393,12 @@ public class CreditCardUtil {
 	return sb.toString();
     }
 
+    /**
+     * Generate Alphanumeric String
+     * 
+     * @param length
+     * @return
+     */
     private static String generateAlphanumeric(int length) {
 	if (length < 1) {
 	    throw new IllegalArgumentException();

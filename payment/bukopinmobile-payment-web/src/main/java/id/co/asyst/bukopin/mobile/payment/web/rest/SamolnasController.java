@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,6 +51,7 @@ import id.co.asyst.bukopin.mobile.payment.model.payload.SamolnasPaymentResponse;
 import id.co.asyst.bukopin.mobile.service.core.MasterModuleService;
 import id.co.asyst.bukopin.mobile.service.core.SamolnasModuleService;
 import id.co.asyst.bukopin.mobile.service.core.UserModuleService;
+import id.co.asyst.bukopin.mobile.service.model.payload.pln.GetVerifyPINRequest;
 import id.co.asyst.bukopin.mobile.service.model.payload.samolnas.SamolnasInquiryTibcoRequest;
 import id.co.asyst.bukopin.mobile.service.model.payload.samolnas.SamolnasInquiryTibcoResponse;
 import id.co.asyst.bukopin.mobile.service.model.payload.samolnas.SamolnasPaymentTibcoRequest;
@@ -120,7 +122,7 @@ public class SamolnasController {
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping("/inquiry")
+    @PostMapping("/inquiry")
     private CommonResponse inquirySamolnas(@Valid @RequestBody CommonRequest<SamolnasInquiryRequest> req)
 	    throws IOException {
 	log.debug("REST request to inquiry Samolnas : {}", req.getData());
@@ -137,6 +139,14 @@ public class SamolnasController {
 	if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
 	    log.error("Validate Token and Phone owner error..");
 	    return resPhone;
+	}
+	ObjectMapper oMapper = new ObjectMapper();
+	Map<String, Boolean> resultPhoneObj = oMapper.convertValue(resPhone.getData(), Map.class);
+	if (!resultPhoneObj.get("valid")) {
+	    log.error("Token and phone owner invalid");
+	    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+	    response.setMessage(messageUtil.get("error.invalid.token.phone.owner", servletRequest.getLocale()));
+	    return response;
 	}
 
 	String payCode = req.getData().getPayCode();
@@ -205,7 +215,14 @@ public class SamolnasController {
 	return response;
     }
 
-    @RequestMapping("/payment")
+    /**
+     * paymentSamolnas
+     * @param req
+     * @return
+     * @throws IOException
+     * @throws ParseException
+     */
+    @PostMapping("/payment")
     private CommonResponse paymentSamolnas(@Valid @RequestBody CommonRequest<SamolnasPaymentRequest> req)
 	    throws IOException, ParseException {
 	log.debug("REST request to payment Samolnas : {}", req.getData());
@@ -222,6 +239,29 @@ public class SamolnasController {
 	if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
 	    log.error("Validate Token and Phone owner error..");
 	    return resPhone;
+	}
+	ObjectMapper mapper = new ObjectMapper();
+	Map<String, Boolean> resultPhoneObj = mapper.convertValue(resPhone.getData(), Map.class);
+	if (!resultPhoneObj.get("valid")) {
+	    log.error("Token and phone owner invalid");
+	    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+	    response.setMessage(messageUtil.get("error.invalid.token.phone.owner", servletRequest.getLocale()));
+	    return response;
+	}
+
+	// verify PIN
+	GetVerifyPINRequest verifyPINReqData = new GetVerifyPINRequest();
+	verifyPINReqData.setUsername(req.getData().getUsername());
+	verifyPINReqData.setPin(req.getData().getPin());
+
+	CommonRequest<GetVerifyPINRequest> verifyPINReq = new CommonRequest<>();
+	verifyPINReq.setIdentity(req.getIdentity());
+	verifyPINReq.setData(verifyPINReqData);
+
+	CommonResponse verifyPINRes = Services.create(UserModuleService.class).verifyPIN(verifyPINReq).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(verifyPINRes.getCode())) {
+	    log.error("Error while verify PIN");
+	    return verifyPINRes;
 	}
 
 	// validate account number's owner user
