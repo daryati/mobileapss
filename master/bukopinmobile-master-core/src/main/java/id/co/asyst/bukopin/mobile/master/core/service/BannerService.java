@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 
 
 import id.co.asyst.bukopin.mobile.master.core.repository.BannerRepository;
-import id.co.asyst.bukopin.mobile.master.model.entity.Banner;
+import id.co.asyst.bukopin.mobile.master.model.entity.cms.Banner;
 
 /**
  * 

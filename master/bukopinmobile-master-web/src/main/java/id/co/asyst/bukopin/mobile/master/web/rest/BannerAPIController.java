@@ -12,6 +12,7 @@
  */
 package id.co.asyst.bukopin.mobile.master.web.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,11 +24,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import id.co.asyst.bukopin.mobile.common.core.util.CryptoUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
 import id.co.asyst.bukopin.mobile.master.core.service.BannerService;
-import id.co.asyst.bukopin.mobile.master.model.entity.Banner;
+import id.co.asyst.bukopin.mobile.master.model.entity.cms.Banner;
 
 /**
  * 
@@ -77,6 +79,10 @@ public class BannerAPIController {
 			return response;
 		}
 		
+		// encrypt url
+		result.forEach(banner -> banner.setImg(CryptoUtil.encryptAESHex(banner.getImg())));
+		
+		// set data
 		response.setData(result);
 		
 		return response;
