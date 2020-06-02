@@ -160,7 +160,7 @@ public class PrepaidTelcoUtils {
 	// System.out.println("..... admin FEEEE "+paddingAdminFee);
 
 	//-- set request element 37
-	String retrievalRefNumber = generateAlphaNumeric(12);
+	String retrievalRefNumber = generateSTAN(12);
 
 	//-- set element 61
 	String element61 = request.getPhoneNumber();
