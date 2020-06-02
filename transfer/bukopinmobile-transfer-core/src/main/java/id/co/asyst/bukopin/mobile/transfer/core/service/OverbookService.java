@@ -333,9 +333,17 @@ public class OverbookService {
 						    Bank bank = bankService.findBankByBankCode(request.getPostingTo().getBankCode());
 						    receiver.setBank(bank);
 						    
-						    // send Email receipt saved
-						    log.debug("send email receipt to "+user.getEmail());
-						    transferService.sendEmailReceiptSaved(receiver, user, servletRequest.getLocale(), transferType);
+						    // send Email receipt saved, issave=true?
+						    
+						    // send Email receipt saved, isSave = true?
+						    if(request.getPostingTo().isSave() == true) {
+						    	log.debug("send email receipt to "+user.getEmail());
+							    transferService.sendEmailReceiptSaved(receiver, user, servletRequest.getLocale(), transferType);
+							    
+						    } else {
+						    	log.debug("Not send email receipt to "+user.getEmail()+" issave = false");
+							   
+						    }
 						    
 						    
 						}
