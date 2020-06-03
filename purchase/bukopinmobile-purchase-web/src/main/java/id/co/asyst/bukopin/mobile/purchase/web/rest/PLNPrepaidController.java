@@ -54,6 +54,7 @@ import id.co.asyst.bukopin.mobile.purchase.model.payload.PurchasePrepaidRequestP
 import id.co.asyst.bukopin.mobile.purchase.model.payload.PurchasePrepaidResponsePLN;
 import id.co.asyst.bukopin.mobile.purchase.model.payload.inquiryPrepaidRequestPLN;
 import id.co.asyst.bukopin.mobile.purchase.model.payload.inquiryPrepaidResponsePLN;
+import id.co.asyst.bukopin.mobile.purchase.web.rest.errors.MiddlewareException;
 import id.co.asyst.bukopin.mobile.service.core.MasterModuleService;
 import id.co.asyst.bukopin.mobile.service.core.PLNService;
 import id.co.asyst.bukopin.mobile.service.core.UserModuleService;
@@ -177,8 +178,7 @@ public class PLNPrepaidController {
 		    new Object[] { req.getData().getSubscriberID() }, servletRequest.getLocale()));
 	} else if (!SUCCESS_CODE.equals(codeRes)) {
 	    log.error("Error from Aranet with code : "+codeRes);
-	    response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
-	    response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
+	    throw new MiddlewareException(codeRes);
 	} else {
 	    log.debug("Inquiry PLN success");
 	    String dataResp = resInquiryPrepaidPLNAranet.getRespayment().getResult().getElement48();
@@ -249,8 +249,7 @@ public class PLNPrepaidController {
 	    response.setMessage(messageUtil.get("error.user.pln.block",new Object[] {id}, servletRequest.getLocale()));
 	} else if (!SUCCESS_CODE.equals(codeRes)) {
 	    log.error("Error from Aranet with code : "+codeRes);
-	    response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
-	    response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
+	    throw new MiddlewareException(codeRes);
 	} else {
 	    log.debug("Inquiry subscriber PLN success");
 	    String dataResp = resInquiryPrepaidPLNAranet.getRespayment().getResult().getElement48();
@@ -361,10 +360,8 @@ public class PLNPrepaidController {
 	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
 	    response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
 	} else if(!SUCCESS_CODE.equals(codeRes) && !ARANET_TIME_OUT_CODE.equals(codeRes)) {
-	    log.error("Purchase Failed (response) : "+resPurchasePrepaidPLNAranet.getRespayment().getResult().getElement39());
-	    response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
-	    response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
-	    return response;
+	    log.error("Purchase Failed (response) : "+codeRes);
+	    throw new MiddlewareException(codeRes);
 	}
 	
 	PurchasePrepaidResponsePLN purchasePrepaidResPLN = new PurchasePrepaidResponsePLN();

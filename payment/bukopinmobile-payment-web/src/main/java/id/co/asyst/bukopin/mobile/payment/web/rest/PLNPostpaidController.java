@@ -183,8 +183,7 @@ public class PLNPostpaidController {
 		    new Object[] { monthName }, servletRequest.getLocale()));
 	} else if (!SUCCESS_CODE.equals(codeRes)) {
 	    log.error("Error from Aranet with code : " + codeRes);
-	    response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
-	    response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
+	    throw new MiddlewareException(codeRes);
 	} else {
 	    log.debug("Inquiry Postpaid PLN success");
 	    String dataResp = resInquiryPostpaidPLNAranet.getRespayment().getResult().getElement48();
