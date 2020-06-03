@@ -229,6 +229,7 @@ public class UserService {
 	userTokenService.save(uToken);
 
 	// Update User
+	user.setLocked(false);
 	user.setLogin(true);
 	save(user);
 	
