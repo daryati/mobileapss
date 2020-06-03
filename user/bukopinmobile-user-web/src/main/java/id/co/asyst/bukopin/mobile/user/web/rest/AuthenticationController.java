@@ -833,7 +833,8 @@ public class AuthenticationController {
 	    CentagateCommonResponse ctgResponseUnlock = Services.create(CentagateService.class)
 		    .unlockUser(ctgObj.getUsername(), ctgRequestUnlock).execute().body();
 
-	    if (!BkpmConstants.CODE_CTG_SUCCESS.equals(ctgResponseUnlock.getCode())) {
+	    if (!BkpmConstants.CODE_CTG_SUCCESS.equals(ctgResponseUnlock.getCode()) 
+		    && !BkpmConstants.CODE_CTG_USER_NOT_LOCKED.equals(ctgResponseUnlock.getCode())) {
 		log.error("unlock user failed: " + username);
 		log.debug(BkpmUtil.convertToJson(ctgResponseUnlock));
 		response = new CommonResponse(ResponseMessage.ERROR_UNLOCK_USER.getCode(),
