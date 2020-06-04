@@ -9,6 +9,10 @@
 			border-radius: 15px
 		}
 		
+		#table1, #table2 {
+			width: 100%;
+		}
+		
 		#table1 td{
 			font-family: Arial;
 			font-size: 9px;
@@ -63,7 +67,7 @@
                 	<p align="right" style="font-family:Arial; font-size:10px"> <span th:text ="${subject}"></span></p>
 					<p align="left" style="font-family:Arial; font-size:12px">Hai <span style="font-weight:bold" th:text ="${fullname}"></span>,</p>
 					<br>
-					<table id="table1" style="width:100%">
+					<table id="table1">
                     <tr>
                     <td>Tanggal & Waktu</td>
                     <td><span style="font-weight:bold" th:text ="${date}"></span>, <span style="font-weight:bold" th:text ="${time}"></span></td>
@@ -103,7 +107,7 @@
                     </table>
                     <br>                    
                     
-                    <table id="table2" style="width:100%">
+                    <table id="table2">
                     <tr>
                     <td><b>Total Bayar</b></td>
                     <td><span style="font-weight:bold" th:text ="${total}"></span></td>
