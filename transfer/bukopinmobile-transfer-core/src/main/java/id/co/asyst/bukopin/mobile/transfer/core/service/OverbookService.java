@@ -319,7 +319,17 @@ public class OverbookService {
 						    //exist
 						    receiver.setAlias(request.getPostingTo().getAlias());
 						    receiver.setCounter(receiver.getCounter()+1);   
-						    receiver.setSave(request.getPostingTo().isSave());						    
+						    receiver.setSave(request.getPostingTo().isSave());		
+						    
+						    // send Email receipt saved, isSave = true?
+						    if(request.getPostingTo().isSave() == true) {
+						    	log.debug("send email receipt to "+user.getEmail());
+							    transferService.sendEmailReceiptSaved(receiver, user, servletRequest.getLocale(), transferType);
+							    
+						    } else {
+						    	log.debug("Not send email receipt to "+user.getEmail()+" issave = false");
+							   
+						    }
 						} else {
 						    // // if receiver is save true
 							log.debug("SAVE RECEIVER. . .");
