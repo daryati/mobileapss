@@ -57,7 +57,6 @@ import id.co.asyst.bukopin.mobile.telco.core.service.TelcoService;
 import id.co.asyst.bukopin.mobile.telco.core.util.TelcoUtils;
 import id.co.asyst.bukopin.mobile.telco.model.entity.TelcoPostpaid;
 import id.co.asyst.bukopin.mobile.telco.model.payload.InstitutionMapper;
-import id.co.asyst.bukopin.mobile.telco.model.payload.PrefixTelcoMapper;
 import id.co.asyst.bukopin.mobile.telco.model.payload.TelcoPostpaidInquiryRequest;
 import id.co.asyst.bukopin.mobile.telco.model.payload.TelcoPostpaidInquiryResponse;
 import id.co.asyst.bukopin.mobile.telco.model.payload.TelcoPostpaidPaymentRequest;
@@ -85,6 +84,7 @@ public class TelcoPostpaidController {
 	private final Logger log = LoggerFactory.getLogger(TelcoPostpaidController.class);
 
 	private static final String SUCCESS_CODE = "000";
+	private static final String ERROR_CODE_BILL_NOT_AVAILABLE = "187";
 	private static final String ERROR_CODE_BILL_ALREADY_PAID = "188";
 	private static final String ERROR_CODE_PHONE_NUMBER_EXPIRED = "181";
 	private static final String ERROR_CODE_SYSTEM_FAILURE = "191";
@@ -99,6 +99,7 @@ public class TelcoPostpaidController {
 	private static final String ERROR_CODE_CUSTOMER_NAME = "176";
 	private static final String ERROR_CODE_EXCEED_BILL_LIMIT = "177";
 	private static final String ERROR_CODE_DIFFERENT_BILL = "178";
+	private static final String ERROR_CODE_NUMBER_NOT_REGISTERED = "114";
 	private static final String IRREGULAR_AREA_CODE = "IRREGULAR_AREA_CODE";
 	private static final String ERROR_NOT_ENOUGH_BALANCE = "851";
 	private static final String ERROR_ACCOUNT_INACTIVE = "839";
@@ -178,7 +179,8 @@ public class TelcoPostpaidController {
 			log.error("phone number expired");
 			response.setCode(ResponseMessage.PHONE_NUMBER_EXPIRED.getCode());
 			response.setMessage(messageUtil.get("error.phone.number.expired", servletRequest.getLocale()));
-		} else if (ERROR_CODE_BILL_ALREADY_PAID.equals(codeRes)) {
+		} else if (ERROR_CODE_BILL_ALREADY_PAID.equals(codeRes)
+			|| ERROR_CODE_BILL_NOT_AVAILABLE.equals(codeRes)) {
 			log.error("bill already paid");
 			response.setCode(ResponseMessage.ERROR_BILL_ALREADY_PAID.getCode());
 			response.setMessage(messageUtil.get("error.bill.already.paid", servletRequest.getLocale()));
@@ -191,7 +193,8 @@ public class TelcoPostpaidController {
 			response.setCode(ResponseMessage.ERROR_SYSTEM_FAILURE.getCode());
 			response.setMessage(messageUtil.get("error.system.failure", servletRequest.getLocale()));
 		} else if (ERROR_CODE_PHONE_NUMBER_NOT_FOUND.equals(codeRes) || ERROR_CODE_SPECIAL_NUMBER.equals(codeRes)
-				|| ERROR_CODE_INVALID_PHONE_NUMBER.equals(codeRes)) {
+				|| ERROR_CODE_INVALID_PHONE_NUMBER.equals(codeRes)
+				|| ERROR_CODE_NUMBER_NOT_REGISTERED.equals(codeRes)) {
 			log.error("data not found with code : " + codeRes);
 			response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 			response.setMessage(messageUtil.get("error.data.not.found", servletRequest.getLocale()));
@@ -344,7 +347,8 @@ public class TelcoPostpaidController {
 			log.error("account inactive");
 			response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
 			response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
-		} else if (ERROR_CODE_BILL_ALREADY_PAID.equals(codeRes)) {
+		} else if (ERROR_CODE_BILL_ALREADY_PAID.equals(codeRes)
+			|| ERROR_CODE_BILL_NOT_AVAILABLE.equals(codeRes)) {
 			log.error("bill already paid");
 			response.setCode(ResponseMessage.ERROR_BILL_ALREADY_PAID.getCode());
 			response.setMessage(messageUtil.get("error.bill.already.paid", servletRequest.getLocale()));
@@ -357,7 +361,8 @@ public class TelcoPostpaidController {
 			response.setCode(ResponseMessage.ERROR_SYSTEM_FAILURE.getCode());
 			response.setMessage(messageUtil.get("error.system.failure", servletRequest.getLocale()));
 		} else if (ERROR_CODE_PHONE_NUMBER_NOT_FOUND.equals(codeRes) || ERROR_CODE_SPECIAL_NUMBER.equals(codeRes)
-				|| ERROR_CODE_INVALID_PHONE_NUMBER.equals(codeRes)) {
+				|| ERROR_CODE_INVALID_PHONE_NUMBER.equals(codeRes)
+				|| ERROR_CODE_NUMBER_NOT_REGISTERED.equals(codeRes)) {
 			log.error("data not found with code : " + codeRes);
 			response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 			response.setMessage(messageUtil.get("error.data.not.found", servletRequest.getLocale()));
@@ -515,7 +520,8 @@ public class TelcoPostpaidController {
 			log.error("phone number expired");
 			response.setCode(ResponseMessage.PHONE_NUMBER_EXPIRED.getCode());
 			response.setMessage(messageUtil.get("error.phone.number.expired", servletRequest.getLocale()));
-		} else if (ERROR_CODE_BILL_ALREADY_PAID.equals(codeRes)) {
+		} else if (ERROR_CODE_BILL_ALREADY_PAID.equals(codeRes)
+			|| ERROR_CODE_BILL_NOT_AVAILABLE.equals(codeRes)) {
 			log.error("bill already paid");
 			response.setCode(ResponseMessage.ERROR_BILL_ALREADY_PAID.getCode());
 			response.setMessage(messageUtil.get("error.bill.already.paid", servletRequest.getLocale()));
@@ -528,7 +534,8 @@ public class TelcoPostpaidController {
 			response.setCode(ResponseMessage.ERROR_SYSTEM_FAILURE.getCode());
 			response.setMessage(messageUtil.get("error.system.failure", servletRequest.getLocale()));
 		} else if (ERROR_CODE_PHONE_NUMBER_NOT_FOUND.equals(codeRes) || ERROR_CODE_SPECIAL_NUMBER.equals(codeRes)
-				|| ERROR_CODE_INVALID_PHONE_NUMBER.equals(codeRes)) {
+				|| ERROR_CODE_INVALID_PHONE_NUMBER.equals(codeRes)
+				|| ERROR_CODE_NUMBER_NOT_REGISTERED.equals(codeRes)) {
 			log.error("data not found with code : " + codeRes);
 			response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 			response.setMessage(messageUtil.get("error.data.not.found", servletRequest.getLocale()));
@@ -735,7 +742,8 @@ public class TelcoPostpaidController {
 			log.error("account inactive");
 			response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
 			response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
-		} else if (ERROR_CODE_BILL_ALREADY_PAID.equals(codeRes)) {
+		} else if (ERROR_CODE_BILL_ALREADY_PAID.equals(codeRes)
+			|| ERROR_CODE_BILL_NOT_AVAILABLE.equals(codeRes)) {
 			log.error("bill already paid");
 			response.setCode(ResponseMessage.ERROR_BILL_ALREADY_PAID.getCode());
 			response.setMessage(messageUtil.get("error.bill.already.paid", servletRequest.getLocale()));
@@ -748,7 +756,8 @@ public class TelcoPostpaidController {
 			response.setCode(ResponseMessage.ERROR_SYSTEM_FAILURE.getCode());
 			response.setMessage(messageUtil.get("error.system.failure", servletRequest.getLocale()));
 		} else if (ERROR_CODE_PHONE_NUMBER_NOT_FOUND.equals(codeRes) || ERROR_CODE_SPECIAL_NUMBER.equals(codeRes)
-				|| ERROR_CODE_INVALID_PHONE_NUMBER.equals(codeRes)) {
+				|| ERROR_CODE_INVALID_PHONE_NUMBER.equals(codeRes)
+				|| ERROR_CODE_NUMBER_NOT_REGISTERED.equals(codeRes)) {
 			log.error("data not found with code : " + codeRes);
 			response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 			response.setMessage(messageUtil.get("error.data.not.found", servletRequest.getLocale()));
