@@ -33,6 +33,7 @@ import org.hibernate.annotations.Type;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import id.co.asyst.bukopin.mobile.master.model.entity.cms.InstitutionCategory;
 import id.co.asyst.foundation.common.model.IdBasedObject;
 
 /**
@@ -138,6 +139,11 @@ public class Institution extends IdBasedObject  implements Serializable {
     @JoinColumn(name = "PREFIX_TELCO_ID")
     @JsonProperty("prefixTelcoId")
     private PrefixTelco prefixTelcoId;
+    
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "INSTITUTION_CATEGORY_ID")
+    @JsonProperty("institutionCategoryId")
+    private InstitutionCategory institutionCategory;
 
     
     /* Getters & setters for attributes: */
@@ -374,42 +380,33 @@ public class Institution extends IdBasedObject  implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-
-	@Override
-	public String toString() {
-		return "Institution [codeArra=" + codeArra + ", codeCbs=" + codeCbs
-				+ ", name=" + name + ", status=" + status + ", billSummary="
-				+ billSummary + ", institutionType=" + institutionType
-				+ ", adminFee=" + adminFee + ", displayMessage="
-				+ displayMessage + ", selection=" + selection + ", nameLocal="
-				+ nameLocal + ", nameEnglish=" + nameEnglish
-				+ ", prefixTelcoId=" + prefixTelcoId + ", id=" + id
-				+ ", getCodeArra()=" + getCodeArra() + ", getCodeCbs()="
-				+ getCodeCbs() + ", getName()=" + getName() + ", getStatus()="
-				+ getStatus() + ", getBillSummary()=" + getBillSummary()
-				+ ", getInstitutionType()=" + getInstitutionType()
-				+ ", getAdminFee()=" + getAdminFee() + ", getDisplayMessage()="
-				+ getDisplayMessage() + ", getSelection()=" + getSelection()
-				+ ", getNameLocal()=" + getNameLocal() + ", getNameEnglish()="
-				+ getNameEnglish() + ", getPrefixTelcoId()="
-				+ getPrefixTelcoId() + ", getId()=" + getId() + ", toString()="
-				+ super.toString() + ", hashCode()=" + hashCode()
-				+ ", getClass()=" + getClass() + "]";
+	
+	/**
+	 * Gets <code>institutionCategory</code>.
+	 * @return The <code>institutionCategory</code>.
+	 */
+	public InstitutionCategory getInstitutionCategory() {
+	    return institutionCategory;
 	}
 
-	
-    
-	
-	
-	
-	
-	
-	
-	
-	
-    
-    
-    
-    
-    
+	/**
+	 * Sets <code>institutionCategory</code>.
+	 * @param institutionCategory The <code>institutionCategory</code> to set.
+	 */
+	public void setInstitutionCategory(InstitutionCategory institutionCategory) {
+	    this.institutionCategory = institutionCategory;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+	    return "Institution [codeArra=" + codeArra + ", codeCbs=" + codeCbs + ", name=" + name + ", status="
+		    + status + ", billSummary=" + billSummary + ", institutionType=" + institutionType + ", adminFee="
+		    + adminFee + ", displayMessage=" + displayMessage + ", selection=" + selection + ", nameLocal="
+		    + nameLocal + ", nameEnglish=" + nameEnglish + ", prefixTelcoId=" + prefixTelcoId
+		    + ", institutionCategory=" + institutionCategory + "]";
+	}
+
     }
