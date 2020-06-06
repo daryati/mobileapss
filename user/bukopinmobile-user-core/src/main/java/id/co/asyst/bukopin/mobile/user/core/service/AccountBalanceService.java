@@ -110,17 +110,20 @@ public class AccountBalanceService {
 	getAccountBalanceRQ.setAccType(accountBalanceReq.getAccountType());
 
 	// get list of account number
-	AccountCard accCard = accountCardService.findByUsername(accountBalanceReq.getUsername());
+	//AccountCard accCard = accountCardService.findByUsername(accountBalanceReq.getUsername());
+	List<AccountCard> listAccCard = accountCardService.findListByUsername(accountBalanceReq.getUsername());
 
 	Account acc = new Account();
 	List<AccountInfo> accInfoFilter = new ArrayList<>();
-	for (AccountInfo info : accCard.getAccounts()) {
-	    log.debug("acc no " + info.getAccountNo());
-	    if(accountBalanceReq.getAccountType().equals(BigInteger.valueOf(info.getAccountType().getValue()))) {
-	    	acc.getAccNo().add(info.getAccountNo());
-	    	accInfoFilter.add(info);
+	for (int i = 0; i < listAccCard.size(); i++) {
+	    for (AccountInfo info : listAccCard.get(i).getAccounts()) {
+		log.debug("acc no " + info.getAccountNo());
+		if (accountBalanceReq.getAccountType().equals(BigInteger.valueOf(info.getAccountType().getValue()))) {
+		    acc.getAccNo().add(info.getAccountNo());
+		    accInfoFilter.add(info);
+		}
+
 	    }
-	    
 	}
 	getAccountBalanceRQ.setAccount(acc);
 	
