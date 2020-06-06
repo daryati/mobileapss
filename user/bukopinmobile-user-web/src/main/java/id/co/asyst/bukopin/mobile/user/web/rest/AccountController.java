@@ -350,8 +350,10 @@ public class AccountController {
 
 	// Update Account Status (Backend DB)
 	// --------------------------------------
-	AccountCard accountCard = accountCardService.findByUsername(username);
-	if (accountCard == null) {
+//	AccountCard accountCard = accountCardService.findByUsername(username);
+	List<AccountCard> acs = accountCardService.findListByUsername(username);
+//	if (accountCard == null) {
+	if (acs == null || acs.isEmpty()) {
 	    log.error("Account not found: " + username);
 	    String message = messageUtil.get("activation.failed", new Object[] { username },
 		    servletRequest.getLocale());
@@ -360,23 +362,40 @@ public class AccountController {
 	    return response;
 	}
 	
-	String receiver = accountCard.getUser().getEmail();
+//	String receiver = accountCard.getUser().getEmail();
+	String receiver = acs.get(0).getUser().getEmail();
 	
-	log.debug("Accounts: " + accountCard.getAccounts().size());
+//	log.debug("Accounts: " + accountCard.getAccounts().size());
 	// find mainAccount
 	AtomicBoolean isMainAccountFound = new AtomicBoolean(false);
-	accountCard.getAccounts().forEach(acc -> {
-	    // verifying all account
-	    acc.setStatus(AccountInfoStatusEnum.VERIFIED);
-	    // set main account
-	    if (mainAccount.equals(acc.getAccountNo())) {
-		isMainAccountFound.set(true);
-		acc.setMainAccount(true);
-	    } else {
-		// set other main account false
-		acc.setMainAccount(false);
-	    }
+//	accountCard.getAccounts().forEach(acc -> {
+//	    // verifying all account
+//	    acc.setStatus(AccountInfoStatusEnum.VERIFIED);
+//	    // set main account
+//	    if (mainAccount.equals(acc.getAccountNo())) {
+//		isMainAccountFound.set(true);
+//		acc.setMainAccount(true);
+//	    } else {
+//		// set other main account false
+//		acc.setMainAccount(false);
+//	    }
+//	});
+	
+	acs.forEach(ac -> {
+	    ac.getAccounts().forEach(acc -> {
+		// verifying all account
+		acc.setStatus(AccountInfoStatusEnum.VERIFIED);
+		// set main account
+		if (mainAccount.equals(acc.getAccountNo())) {
+		    isMainAccountFound.set(true);
+		    acc.setMainAccount(true);
+		} else {
+		    // set other main account false
+		    acc.setMainAccount(false);
+		}
+	    });
 	});
+	
 	// error main account not found
 	if (!isMainAccountFound.get()) {
 	    log.error("Account number not found: " + mainAccount);
@@ -385,10 +404,28 @@ public class AccountController {
 		    messageUtil.get("account.not.found", new Object[] { mainAccount }, servletRequest.getLocale()));
 	    return response;
 	}
-	accountCard = accountCardService.save(accountCard);
+	
+//	accountCard = accountCardService.save(accountCard);
+	List<AccountCard> newCards = new ArrayList<>();
+	for(AccountCard ac: acs) {
+	    newCards.add(accountCardService.save(ac));
+	}
+	
+	// find current card
+//	currentCard = newCards.stream().filter(cards -> cards.get);
+	AccountCard currentCard = newCards.get(0);
+	for(AccountCard ac : newCards) {
+	    for(AccountInfo ai: ac.getAccounts()) {
+		if(ai.isMainAccount()) {
+		    currentCard = ac;
+		    break;
+		}
+	    }
+	}
 	
 	//sent activation email
-	userMailService.sentActivationMail(receiver, accountCard,servletRequest.getLocale());
+//	userMailService.sentActivationMail(receiver, accountCard,servletRequest.getLocale());
+	userMailService.sentActivationMail(receiver, currentCard,servletRequest.getLocale());
 	
 	// Login Centagate Admin
 	// --------------------------------------

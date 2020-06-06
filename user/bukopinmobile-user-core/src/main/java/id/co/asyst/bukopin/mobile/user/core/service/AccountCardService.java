@@ -75,6 +75,24 @@ public class AccountCardService {
 	}
     }
     
+    @Transactional(readOnly=true)
+    public List<AccountCard> findListByUsername(String username) {
+	log.debug("Find User by username : {} " + username);
+	User user = userService.findUserByUsername(username);
+	if(user==null) {
+	    return null;
+	} else {
+	    List<AccountCard> list = accountCardRepository.findListByUserId(user.getId());
+	    List<AccountCard> result = new ArrayList<>();
+	    for(AccountCard ac: list) {
+		result.add(decryptResponse(ac));
+	    }
+	    return result;
+	    //return decryptResponse(accountCardRepository.findByUserId(user.getId()));
+//	    return accountCardRepository.findByUserId(user.getId());
+	}
+    }
+    
     /**
      * Save AccountCard
      * 
