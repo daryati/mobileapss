@@ -283,7 +283,7 @@ public class TelcoUtils {
 	    param.setElement3(PROCCESSING_CODE_PAYMENT_GIRO);
 	}
 	
-	param.setElement4(StringUtils.leftPad(amount + "00", 20));
+	param.setElement4(StringUtils.leftPad(amount.trim() + "00", 20, "0"));
 	param.setElement7(element7Format.format(date));
 	param.setElement11(STAN);
 	param.setElement12(timeLocal.format(date));
