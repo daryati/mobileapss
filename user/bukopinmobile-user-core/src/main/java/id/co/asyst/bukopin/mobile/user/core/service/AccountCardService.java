@@ -64,7 +64,7 @@ public class AccountCardService {
      * @return AccountCard by username
      */
     @Transactional(readOnly=true)
-    public AccountCard findxByUsername(String username) {
+    public AccountCard findByUsername(String username) {
 	log.debug("Find User by username : {} " + username);
 	User user = userService.findUserByUsername(username);
 	if(user==null) {
