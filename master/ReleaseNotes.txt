@@ -3,7 +3,7 @@
 ===============================================================================
 Release Notes - Bukopin-Mobile-Master - Version 1.2.Alpha1
 ** Notes
-	* Release for phase ...
+	* Release for phase 2b & 2c, Telco & PSTN.
 	* Upgrade foundation version to 3.0.Beta1-SNAPSHOT
 
 ** Features
@@ -73,5 +73,6 @@ Initial prototype, features:
 	- [BKPM-76] save Data Purchase to Destination Database Table
 	- [BKPM-77] save Data Purchase to Transaction Database Table
 	- [BKPM-78] save Data Purchase to PLN Pre Paid Database Table
+	- [BKPM-279] - [Backend] API GetBanner
 	
 	* add CRUD for Configuration

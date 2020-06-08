@@ -3,14 +3,15 @@
 ===============================================================================
 Release Notes - Bukopin-Mobile-User - Version 1.2.Alpha1
 ** Notes
-	* Release for phase ...
+	* Release for phase 2b & 2c, Telco & PSTN.
 	* Upgrade foundation version to 3.0.Beta1-SNAPSHOT
 
 ** Features
 	* 
 
 ** Story
-	* 
+	* [BKPM-269] - [Bakcend] Registration: Duplicate Username Message.
+	* [BKPM-281] - [Backend] Encrypt Service: Index Out of Bound
 
 ** Bug Fixed
 	*   
