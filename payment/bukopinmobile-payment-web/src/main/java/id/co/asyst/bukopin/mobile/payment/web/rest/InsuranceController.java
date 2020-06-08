@@ -84,7 +84,6 @@ import id.co.asyst.foundation.service.connector.Services;
  */
 @RestController
 @RequestMapping("/insurance")
-@Profile("!prod")
 public class InsuranceController {
     /* Constants: */
     private final Logger log = LoggerFactory.getLogger(InsuranceController.class);

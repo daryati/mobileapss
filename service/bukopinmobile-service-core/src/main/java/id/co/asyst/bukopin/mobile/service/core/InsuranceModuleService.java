@@ -9,18 +9,10 @@
  */
 package id.co.asyst.bukopin.mobile.service.core;
 
-import id.co.asyst.bukopin.mobile.service.model.payload.emoney.EMoneyInquiryRequest;
-import id.co.asyst.bukopin.mobile.service.model.payload.emoney.EMoneyInquiryResponse;
-import id.co.asyst.bukopin.mobile.service.model.payload.emoney.EMoneyPurchaseRequest;
-import id.co.asyst.bukopin.mobile.service.model.payload.emoney.EMoneyPurchaseResponse;
-import id.co.asyst.bukopin.mobile.service.model.payload.emoney.LinkAjaInquiryRequest;
-import id.co.asyst.bukopin.mobile.service.model.payload.emoney.LinkAjaInquiryResponse;
-import id.co.asyst.bukopin.mobile.service.model.payload.emoney.LinkAjaPurchaseResponse;
 import id.co.asyst.bukopin.mobile.service.model.payload.insurance.InsuranceInquiryRequest;
 import id.co.asyst.bukopin.mobile.service.model.payload.insurance.InsuranceInquiryResponse;
 import id.co.asyst.bukopin.mobile.service.model.payload.insurance.InsurancePurchaseRequest;
 import id.co.asyst.bukopin.mobile.service.model.payload.insurance.InsurancePurchaseResponse;
-import id.co.asyst.bukopin.mobile.service.model.payload.emoney.LinkAjaPurchaseRequest;
 import id.co.asyst.foundation.service.connector.annotations.ServiceUrl;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -33,8 +25,8 @@ import retrofit2.http.POST;
  * @version $Revision$, Mar 16, 2020
  * @since 1.1.Alpha1-SNAPSHOT
  */
-//@ServiceUrl("http://10.2.62.80:55557") // dev
-@ServiceUrl("http://10.0.13.20:55557") // prod
+@ServiceUrl("http://10.2.62.80:55557") // dev
+//@ServiceUrl("http://10.0.13.20:55557") // prod
 public interface InsuranceModuleService {
     
     @POST("/")
