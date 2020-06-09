@@ -87,6 +87,7 @@ public class SamolnasController {
     private static final String ERROR_CODE_BILL_ALREADY_PAID = "188";
     private static final String ERROR_NOT_ENOUGH_BALANCE = "851";
     private static final String ERROR_ACCOUNT_INACTIVE = "839";
+    private static final String ERROR_NOT_ENOUGH_BALANCE_GIRO = "885";
 
     /* Attributes: */
     @Autowired
@@ -339,7 +340,8 @@ public class SamolnasController {
 		response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
 		response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
 	    }
-	} else if (ERROR_NOT_ENOUGH_BALANCE.equals(codeRes)) {
+	} else if (ERROR_NOT_ENOUGH_BALANCE.equals(codeRes)
+		|| ERROR_NOT_ENOUGH_BALANCE_GIRO.equals(codeRes)) {
 	    log.error("Not enough balance");
 	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
 	    response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
