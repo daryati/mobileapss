@@ -408,8 +408,9 @@ public class AccountController {
 //	accountCard = accountCardService.save(accountCard);
 	List<AccountCard> newCards = new ArrayList<>();
 	for(AccountCard ac: acs) {
-	    newCards.add(accountCardService.save(ac));
+	    newCards.add(ac);
 	}
+	accountCardService.saveAll(acs);
 	
 	// find current card
 //	currentCard = newCards.stream().filter(cards -> cards.get);
@@ -763,9 +764,7 @@ public class AccountController {
 	}
 	
 //	accountCardService.save(accountCard);
-	for(AccountCard ac: acs) {
-	    accountCardService.save(ac);
-	}
+	accountCardService.saveAll(acs);
 
 	return response;
     }

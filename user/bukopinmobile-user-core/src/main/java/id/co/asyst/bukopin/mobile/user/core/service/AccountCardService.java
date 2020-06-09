@@ -116,6 +116,22 @@ public class AccountCardService {
 	return ac;
     }
     
+    public void saveAll(List<AccountCard> listAccCard){
+	log.debug("Save all Account card with username : {} "+ listAccCard.get(0).getUser().getUsername());
+	for (int i = 0; i < listAccCard.size(); i++) {
+	    listAccCard.get(i).setRegisteredCard(CryptoUtil.encryptBase64(
+		    listAccCard.get(i).getRegisteredCard()));
+	    if(null != listAccCard.get(i).getAccounts()) {
+		listAccCard.get(i).getAccounts().forEach(ai -> {
+		    String encrypted = CryptoUtil.encryptBase64(ai.getAccountNo());
+		    ai.setAccountNo(encrypted);
+		});
+	    }
+	}
+	accountCardRepository.saveAll(listAccCard);
+	accountCardRepository.flush();
+    }
+    
     /**
      * Find AccountCard by CIF
      * 
