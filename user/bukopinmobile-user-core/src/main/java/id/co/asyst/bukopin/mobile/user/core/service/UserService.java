@@ -54,7 +54,6 @@ import retrofit2.Response;
 public class UserService {
     
     /* Constants: */
-    private static final String KEY_RESET_PASSWORD_DURATION = "RESET_PASSWORD_DURATION";
 
     /**
      * Logger
@@ -186,7 +185,8 @@ public class UserService {
 		messageUtil.get("success", locale));
 	
 	// Get idle time
-	Integer duration = Integer.valueOf(configuration.getConfigValue(KEY_RESET_PASSWORD_DURATION));
+	Integer duration = Integer.valueOf(configuration.getConfigValue(
+		BkpmConstants.KEY_RESET_PASSWORD_DURATION));
 		
 	// Get user "last reset password"
 	User user = findUserByUsername(username);
