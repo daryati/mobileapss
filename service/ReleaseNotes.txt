@@ -3,7 +3,7 @@
 ===============================================================================
 Release Notes - Bukopin-Mobile-Purchase - Version 1.2.Alpha1
 ** Notes
-	* Release for phase ...
+	* Release for phase 2b & 2c, Telco & PSTN.
 	* Upgrade foundation version to 3.0.Beta1-SNAPSHOT
 
 ** Features
