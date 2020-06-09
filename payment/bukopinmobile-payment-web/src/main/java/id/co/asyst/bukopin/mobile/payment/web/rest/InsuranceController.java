@@ -84,7 +84,6 @@ import id.co.asyst.foundation.service.connector.Services;
  */
 @RestController
 @RequestMapping("/insurance")
-@Profile("!prod")
 public class InsuranceController {
     /* Constants: */
     private final Logger log = LoggerFactory.getLogger(InsuranceController.class);
@@ -176,7 +175,7 @@ public class InsuranceController {
 	//-- generate request tibco
 	InsuranceInquiryRequest reqInquiryInsuraneTibco = InsuranceUtils.generateInquiryInsuranceReq(
 			req.getData().getCodeIns(), req.getData().getMonth(), req.getData().getSubscriberNumber(), 
-			forwardInsCode, institution);
+			forwardInsCode, institution, httpServletRequest.getLocale().getLanguage());
 		
 	
 	log.debug("request to TIBCO : "+BkpmUtil.convertToJson(reqInquiryInsuraneTibco));

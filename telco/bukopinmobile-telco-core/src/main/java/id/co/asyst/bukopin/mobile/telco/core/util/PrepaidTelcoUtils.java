@@ -57,23 +57,23 @@ public class PrepaidTelcoUtils {
     private static final String IDR_CURRENCY_CODE = "360";
     
     //-- description
-    private static final String TRDES1_PULSA_TELKOMSEL = "INET : PULSA TSEL ";
-    private static final String TRDES1_MOBILEDATA_TELKOMSEL = "INET : PAKET DATA TSEL ";
-    private static final String TRDES1_PULSA_INDOSAT = "INET : PULSA INDOSAT ";
-    private static final String TRDES1_MOBILEDATA_INDOSAT = "INET : PAKET DATA INDOSAT ";
-    private static final String TRDES1_PULSA_XL = "INET : PULSA XL ";
-    private static final String TRDES1_MOBILEDATA_XL = "INET : PAKET DATA XL ";
-    private static final String TRDES1_PULSA_TRI = "INET : PULSA TRI ";
-    private static final String TRDES1_PULSA_SMARTFREN = "INET : PULSA SMARTFREN ";    
-    private static final String TRDES2 = "00000000000000000000000IB0101 ";
-    private static final String TRDES3_PULSA_TELKOMSEL = "INET : PULSA TSEL 01";
-    private static final String TRDES3_MOBILEDATA_TELKOMSEL = "INET : PAKET DATA TSEL 01";
-    private static final String TRDES3_PULSA_INDOSAT = "INET : PULSA INDOSAT 01";
-    private static final String TRDES3_MOBILEDATA_INDOSAT = "INET : PAKET DATA INDOSAT 01";
-    private static final String TRDES3_PULSA_XL = "INET : PULSA XL 01";
-    private static final String TRDES3_MOBILEDATA_XL = "INET : PAKET DATA XL 01";
-    private static final String TRDES3_PULSA_TRI = "INET : PULSA TRI 01";
-    private static final String TRDES3_PULSA_SMARTFREN = "INET : PULSA SMARTFREN 01";
+    private static final String TRDES1_PULSA_TELKOMSEL = "MB : PULSA TSEL ";
+    private static final String TRDES1_MOBILEDATA_TELKOMSEL = "MB : PAKET DATA TSEL ";
+    private static final String TRDES1_PULSA_INDOSAT = "MB : PULSA INDOSAT ";
+    private static final String TRDES1_MOBILEDATA_INDOSAT = "MB : PAKET DATA INDOSAT ";
+    private static final String TRDES1_PULSA_XL = "MB : PULSA XL ";
+    private static final String TRDES1_MOBILEDATA_XL = "MB : PAKET DATA XL ";
+    private static final String TRDES1_PULSA_TRI = "MB : PULSA TRI ";
+    private static final String TRDES1_PULSA_SMARTFREN = "MB : PULSA SMARTFREN ";    
+    private static final String TRDES2 = "Dr. ";
+    private static final String TRDES3_PULSA_TELKOMSEL = "-";
+    private static final String TRDES3_MOBILEDATA_TELKOMSEL = "-";
+    private static final String TRDES3_PULSA_INDOSAT = "-ET : PULSA INDOSAT 01";
+    private static final String TRDES3_MOBILEDATA_INDOSAT = "-";
+    private static final String TRDES3_PULSA_XL = "-";
+    private static final String TRDES3_MOBILEDATA_XL = "-";
+    private static final String TRDES3_PULSA_TRI = "-";
+    private static final String TRDES3_PULSA_SMARTFREN = "-";
     
     private static final String CONVENTION_RATE = "0000000000000000000";
     private static final String FEE_CODE = "00";
@@ -175,38 +175,38 @@ public class PrepaidTelcoUtils {
 	if(PrepaidTelcoEnum.PREPAID.getName().equalsIgnoreCase(request.getInstitutionType())) {
 		if("TELKOMSEL".equalsIgnoreCase(providerGroup)) {
 			des1 = StringUtils.rightPad(TRDES1_PULSA_TELKOMSEL.concat(request.getPhoneNumber()), 40);
-			des2 = StringUtils.rightPad(TRDES2.concat(trdes2.format(date)), 40);
+			des2 = StringUtils.rightPad(TRDES2.concat(request.getAccountNumber()), 40);
 			des3 = StringUtils.leftPad(TRDES3_PULSA_TELKOMSEL, 60);
     	} else if("INDOSAT".equalsIgnoreCase(providerGroup)) {
     		des1 = StringUtils.rightPad(TRDES1_PULSA_INDOSAT.concat(request.getPhoneNumber()), 40);
-    		des2 = StringUtils.rightPad(TRDES2.concat(trdes2.format(date)), 40);
+    		des2 = StringUtils.rightPad(TRDES2.concat(request.getAccountNumber()), 40);
     		des3 = StringUtils.leftPad(TRDES3_PULSA_INDOSAT, 60);
     	} else if("XL".equalsIgnoreCase(providerGroup)) {
     		des1 = StringUtils.rightPad(TRDES1_PULSA_XL.concat(request.getPhoneNumber()), 40);
-    		des2 = StringUtils.rightPad(TRDES2.concat(trdes2.format(date)), 40);
+    		des2 = StringUtils.rightPad(TRDES2.concat(request.getAccountNumber()), 40);
     		des3 = StringUtils.leftPad(TRDES3_PULSA_XL, 60);
     	} else if("TRI".equalsIgnoreCase(providerGroup)) {
     		des1 = StringUtils.rightPad(TRDES1_PULSA_TRI.concat(request.getPhoneNumber()), 40);
-    		des2 = StringUtils.rightPad(TRDES2.concat(trdes2.format(date)), 40);
+    		des2 = StringUtils.rightPad(TRDES2.concat(request.getAccountNumber()), 40);
     		des3 = StringUtils.leftPad(TRDES3_PULSA_TRI, 60);
     	} else if("SMARTFREN".equalsIgnoreCase(providerGroup)) {
     		des1 = StringUtils.rightPad(TRDES1_PULSA_SMARTFREN.concat(request.getPhoneNumber()), 40);
-    		des2 = StringUtils.rightPad(TRDES2.concat(trdes2.format(date)), 40);
+    		des2 = StringUtils.rightPad(TRDES2.concat(request.getAccountNumber()), 40);
     		des3 = StringUtils.leftPad(TRDES3_PULSA_SMARTFREN, 60);
     	}
 		
 	} else if(PrepaidTelcoEnum.PAKET_DATA.getName().equalsIgnoreCase(request.getInstitutionType())) {
 		if("TELKOMSEL".equalsIgnoreCase(providerGroup)) {
 			des1 = StringUtils.rightPad(TRDES1_MOBILEDATA_TELKOMSEL.concat(request.getPhoneNumber()), 40);
-			des2 = StringUtils.rightPad(TRDES2.concat(trdes2.format(date)), 40);
+			des2 = StringUtils.rightPad(TRDES2.concat(request.getAccountNumber()), 40);
 			des3 = StringUtils.leftPad(TRDES3_MOBILEDATA_TELKOMSEL, 60);
     	} else if("INDOSAT".equalsIgnoreCase(providerGroup)) {
     		des1 = StringUtils.rightPad(TRDES1_MOBILEDATA_INDOSAT.concat(request.getPhoneNumber()), 40);
-    		des2 = StringUtils.rightPad(TRDES2.concat(trdes2.format(date)), 40);
+    		des2 = StringUtils.rightPad(TRDES2.concat(request.getAccountNumber()), 40);
     		des3 = StringUtils.leftPad(TRDES3_MOBILEDATA_INDOSAT, 60);
     	} else if("XL".equalsIgnoreCase(providerGroup)) {
     		des1 = StringUtils.rightPad(TRDES1_MOBILEDATA_XL.concat(request.getPhoneNumber()), 40);
-    		des2 = StringUtils.rightPad(TRDES2.concat(trdes2.format(date)), 40);
+    		des2 = StringUtils.rightPad(TRDES2.concat(request.getAccountNumber()), 40);
     		des3 = StringUtils.leftPad(TRDES3_MOBILEDATA_XL, 60);
     	}
 		

@@ -141,10 +141,18 @@ public class BkpmConstants {
     public final static String HTTP_HEADER_DEVICE_ID = "Phone_Identity";
     
     
-    /* Configuration Keys: */
+    /* CONFIGURATION KEYS (NAME in table CONFIGURATION): */
     /**
      * name of session timeout in CONFIGURATION table
      */
     public static final String KEY_SESSION_TIME_OUT = "SESSION_TIME_OUT";
+    /**
+     * Reset Password Duration
+     */
+    public static final String KEY_RESET_PASSWORD_DURATION = "RESET_PASSWORD_DURATION";
+    /**
+     * Not activated accounts 
+     */
+    public static final String KEY_ACCOUNT_NOT_ACTIVATED = "NOT_ACTIVATED";
     
 }
