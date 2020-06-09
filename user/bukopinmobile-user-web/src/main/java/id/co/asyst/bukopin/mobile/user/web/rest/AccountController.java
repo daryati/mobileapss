@@ -523,6 +523,17 @@ public class AccountController {
 		response.setData(null);
 		return response;
 	    }
+	    
+	    // validate add account card with same CIF number
+	    User user = userService.findUserByUsername(request.getData().getUsername());
+	    String cif = user.getCifNumber();
+	    if (null != cif && !cif.equals(cards.get(0).getCif())) {
+		log.error("Card invalid, CIF number is not match");
+		response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+		response.setMessage(messageUtil.get("card.invalid", servletRequest.getLocale()));
+		response.setData(null);
+		return response;
+	    }
 
 	    ObjectMapper oMapper = new ObjectMapper();
 	    Map<String, Object> res = oMapper.convertValue(response.getData(), Map.class);
