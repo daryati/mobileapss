@@ -366,8 +366,10 @@ public class AccountController {
 
 	// Update Account Status (Backend DB)
 	// --------------------------------------
-	AccountCard accountCard = accountCardService.findByUsername(username);
-	if (accountCard == null) {
+//	AccountCard accountCard = accountCardService.findByUsername(username);
+	List<AccountCard> acs = accountCardService.findListByUsername(username);
+//	if (accountCard == null) {
+	if (acs == null || acs.isEmpty()) {
 	    log.error("Account not found: " + username);
 	    String message = messageUtil.get("activation.failed", new Object[] { username },
 		    servletRequest.getLocale());
@@ -376,23 +378,40 @@ public class AccountController {
 	    return response;
 	}
 	
-	String receiver = accountCard.getUser().getEmail();
+//	String receiver = accountCard.getUser().getEmail();
+	String receiver = acs.get(0).getUser().getEmail();
 	
-	log.debug("Accounts: " + accountCard.getAccounts().size());
+//	log.debug("Accounts: " + accountCard.getAccounts().size());
 	// find mainAccount
 	AtomicBoolean isMainAccountFound = new AtomicBoolean(false);
-	accountCard.getAccounts().forEach(acc -> {
-	    // verifying all account
-	    acc.setStatus(AccountInfoStatusEnum.VERIFIED);
-	    // set main account
-	    if (mainAccount.equals(acc.getAccountNo())) {
-		isMainAccountFound.set(true);
-		acc.setMainAccount(true);
-	    } else {
-		// set other main account false
-		acc.setMainAccount(false);
-	    }
+//	accountCard.getAccounts().forEach(acc -> {
+//	    // verifying all account
+//	    acc.setStatus(AccountInfoStatusEnum.VERIFIED);
+//	    // set main account
+//	    if (mainAccount.equals(acc.getAccountNo())) {
+//		isMainAccountFound.set(true);
+//		acc.setMainAccount(true);
+//	    } else {
+//		// set other main account false
+//		acc.setMainAccount(false);
+//	    }
+//	});
+	
+	acs.forEach(ac -> {
+	    ac.getAccounts().forEach(acc -> {
+		// verifying all account
+		acc.setStatus(AccountInfoStatusEnum.VERIFIED);
+		// set main account
+		if (mainAccount.equals(acc.getAccountNo())) {
+		    isMainAccountFound.set(true);
+		    acc.setMainAccount(true);
+		} else {
+		    // set other main account false
+		    acc.setMainAccount(false);
+		}
+	    });
 	});
+	
 	// error main account not found
 	if (!isMainAccountFound.get()) {
 	    log.error("Account number not found: " + mainAccount);
@@ -401,10 +420,29 @@ public class AccountController {
 		    messageUtil.get("account.not.found", new Object[] { mainAccount }, servletRequest.getLocale()));
 	    return response;
 	}
-	accountCard = accountCardService.save(accountCard);
+	
+//	accountCard = accountCardService.save(accountCard);
+	List<AccountCard> newCards = new ArrayList<>();
+	for(AccountCard ac: acs) {
+	    newCards.add(ac);
+	}
+	accountCardService.saveAll(acs);
+	
+	// find current card
+//	currentCard = newCards.stream().filter(cards -> cards.get);
+	AccountCard currentCard = newCards.get(0);
+	for(AccountCard ac : newCards) {
+	    for(AccountInfo ai: ac.getAccounts()) {
+		if(ai.isMainAccount()) {
+		    currentCard = ac;
+		    break;
+		}
+	    }
+	}
 	
 	//sent activation email
-	userMailService.sentActivationMail(receiver, accountCard,servletRequest.getLocale());
+//	userMailService.sentActivationMail(receiver, accountCard,servletRequest.getLocale());
+	userMailService.sentActivationMail(receiver, currentCard,servletRequest.getLocale());
 	
 	// Login Centagate Admin
 	// --------------------------------------
@@ -498,6 +536,17 @@ public class AccountController {
 	    response = gettingInquiryCIF(cards.get(0).getCif());
 
 	    if (!ResponseMessage.SUCCESS.getCode().equals(response.getCode())) {
+		response.setData(null);
+		return response;
+	    }
+	    
+	    // validate add account card with same CIF number
+	    User user = userService.findUserByUsername(request.getData().getUsername());
+	    String cif = user.getCifNumber();
+	    if (null != cif && !cif.equals(cards.get(0).getCif())) {
+		log.error("Card invalid, CIF number is not match");
+		response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+		response.setMessage(messageUtil.get("card.invalid", servletRequest.getLocale()));
 		response.setData(null);
 		return response;
 	    }
@@ -692,29 +741,46 @@ public class AccountController {
 
 	// Update Account Status (Backend DB)
 	// --------------------------------------
-	AccountCard accountCard = accountCardService.findByUsername(username);
-	if (accountCard == null) {
+//	AccountCard accountCard = accountCardService.findByUsername(username);
+	List<AccountCard> acs = accountCardService.findListByUsername(username);
+//	if (accountCard == null) {
+	if (acs == null || acs.isEmpty()) {
 	    log.error("Account not found: " + username);
-	    String message = messageUtil.get("change.main.account.failed", new Object[] { username },
+	    String message = messageUtil.get("activation.failed", new Object[] { username },
 		    servletRequest.getLocale());
-	    response.setCode(ResponseMessage.ERROR_UPDATE_USER.getCode());
+	    response.setCode(ResponseMessage.ACTIVATION_USER_FAILED.getCode());
 	    response.setMessage(message);
 	    return response;
 	}
 
-	log.debug("Accounts: " + accountCard.getAccounts().size());
+//	log.debug("Accounts: " + accountCard.getAccounts().size());
 	// find mainAccount
 	AtomicBoolean isMainAccountFound = new AtomicBoolean(false);
-	accountCard.getAccounts().forEach(acc -> {
-	    // set main account
-	    if (mainAccount.equals(acc.getAccountNo())) {
-		isMainAccountFound.set(true);
-		acc.setMainAccount(true);
-	    } else {
-		// set other main account false
-		acc.setMainAccount(false);
-	    }
+//	accountCard.getAccounts().forEach(acc -> {
+//	    // set main account
+//	    if (mainAccount.equals(acc.getAccountNo())) {
+//		isMainAccountFound.set(true);
+//		acc.setMainAccount(true);
+//	    } else {
+//		// set other main account false
+//		acc.setMainAccount(false);
+//	    }
+//	});
+	acs.forEach(ac -> {
+	    ac.getAccounts().forEach(acc -> {
+		// verifying all account
+		acc.setStatus(AccountInfoStatusEnum.VERIFIED);
+		// set main account
+		if (mainAccount.equals(acc.getAccountNo())) {
+		    isMainAccountFound.set(true);
+		    acc.setMainAccount(true);
+		} else {
+		    // set other main account false
+		    acc.setMainAccount(false);
+		}
+	    });
 	});
+	
 	// error main account not found
 	if (!isMainAccountFound.get()) {
 	    log.error("Account number not found: " + mainAccount);
@@ -723,7 +789,9 @@ public class AccountController {
 		    messageUtil.get("account.not.found", new Object[] { mainAccount }, servletRequest.getLocale()));
 	    return response;
 	}
-	accountCardService.save(accountCard);
+	
+//	accountCardService.save(accountCard);
+	accountCardService.saveAll(acs);
 
 	return response;
     }
@@ -855,13 +923,27 @@ public class AccountController {
 	log.debug("REST request to get account card by username");
         CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(), messageUtil.get("success", servletRequest.getLocale()));
         
-        AccountCard result = accountCardService.findByUsername(username);
-        if(result == null) {
+//        AccountCard result = accountCardService.findByUsername(username);
+        List<AccountCard> results = accountCardService.findListByUsername(username);
+//        if(result == null) {
+        if(results == null || results.isEmpty()) {
             log.error("Data Account Card not found for user : " + username);
             response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
             response.setMessage(messageUtil.get("error.not.found", servletRequest.getLocale()));
             
             return response;
+        }
+        
+        AccountCard result = new AccountCard();
+        int i=0;
+        // combine all account info in one account card
+        for(AccountCard ac: results) {
+            if(i==0) {
+        	result = ac;
+            } else {
+        	result.getAccounts().addAll(ac.getAccounts());
+            }
+            i++;
         }
         
         log.debug("Data Account Card {} " + BkpmUtil.convertToJson(result));

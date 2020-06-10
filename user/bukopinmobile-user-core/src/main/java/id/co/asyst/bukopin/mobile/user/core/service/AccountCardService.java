@@ -75,6 +75,24 @@ public class AccountCardService {
 	}
     }
     
+    @Transactional(readOnly=true)
+    public List<AccountCard> findListByUsername(String username) {
+	log.debug("Find User by username : {} " + username);
+	User user = userService.findUserByUsername(username);
+	if(user==null) {
+	    return null;
+	} else {
+	    List<AccountCard> list = accountCardRepository.findListByUserId(user.getId());
+	    List<AccountCard> result = new ArrayList<>();
+	    for(AccountCard ac: list) {
+		result.add(decryptResponse(ac));
+	    }
+	    return result;
+	    //return decryptResponse(accountCardRepository.findByUserId(user.getId()));
+//	    return accountCardRepository.findByUserId(user.getId());
+	}
+    }
+    
     /**
      * Save AccountCard
      * 
@@ -96,6 +114,22 @@ public class AccountCardService {
 	
 	AccountCard ac = decryptResponse(accountCard); 
 	return ac;
+    }
+    
+    public void saveAll(List<AccountCard> listAccCard){
+	log.debug("Save all Account card with username : {} "+ listAccCard.get(0).getUser().getUsername());
+	for (int i = 0; i < listAccCard.size(); i++) {
+	    listAccCard.get(i).setRegisteredCard(CryptoUtil.encryptBase64(
+		    listAccCard.get(i).getRegisteredCard()));
+	    if(null != listAccCard.get(i).getAccounts()) {
+		listAccCard.get(i).getAccounts().forEach(ai -> {
+		    String encrypted = CryptoUtil.encryptBase64(ai.getAccountNo());
+		    ai.setAccountNo(encrypted);
+		});
+	    }
+	}
+	accountCardRepository.saveAll(listAccCard);
+	accountCardRepository.flush();
     }
     
     /**

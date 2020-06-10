@@ -37,6 +37,15 @@ public interface AccountCardRepository extends JpaRepository<AccountCard, Long> 
     public AccountCard findByUserId(Long id);
     
     /**
+     * Find Account Card List by user id
+     * 
+     * @param id user's db id
+     * @return Account Card by user id
+     */
+    @Query("select ac from AccountCard ac where ac.user.id= ?1")
+    public List<AccountCard> findListByUserId(Long id);
+    
+    /**
      * Find Account Card by CIF
      * 
      * @param cif user's CIF

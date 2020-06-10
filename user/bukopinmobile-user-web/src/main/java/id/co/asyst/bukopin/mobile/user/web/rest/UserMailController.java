@@ -11,6 +11,7 @@ package id.co.asyst.bukopin.mobile.user.web.rest;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -123,14 +124,15 @@ public class UserMailController {
 	log.info("Test mail Activation: {}", username);
 	loggingService.logRequest(servletRequest, null);
 	
-	AccountCard accountCard = accountCardService.findByUsername(username);
-	if (accountCard == null) {
+	List<AccountCard> cards = accountCardService.findListByUsername(username);
+	if (cards == null) {
 	    log.error("Account not found: " + username);
 	    String message = messageUtil.get("activation.failed", new Object[] { username },
 		    servletRequest.getLocale());
 	    response.setCode(ResponseMessage.ACTIVATION_USER_FAILED.getCode());
 	    response.setMessage(message);
 	} else {
+	    AccountCard accountCard = cards.get(0);
 	    String receiver = accountCard.getUser().getEmail();
 	    // sent activation email
 	    userMailService.sentActivationMail(receiver, accountCard, servletRequest.getLocale());
