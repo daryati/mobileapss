@@ -25,6 +25,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import id.co.asyst.foundation.common.model.IdBasedObject;
@@ -36,7 +37,7 @@ import id.co.asyst.foundation.common.model.IdBasedObject;
  * @version $Revision$, Mar 16, 2020
  * @since 1.0.Alpha1
  */
-//@JsonIgnoreProperties(ignoreUnknown=true)
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class PrefixTelcoMapper extends IdBasedObject implements Serializable {
 
     /* Constants: */
