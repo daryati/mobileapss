@@ -90,7 +90,7 @@ public class EMoneyUtils {
     private static final String PRODUCT_CODE_EMONEY_CBS = "301801";
     private static final String FORWARD_ID_BUKOPIN = "441";
     private static final String TRDES1 = "INET : ISI GOPAY ";
-    private static final String TRDES2 = "00000000000000000000000IB0101 ";
+    private static final String TRDES2 = "Dr. ";
     private static final String TRDES3 = "INET : ISI GOPAY 01";
     private static final String CONVENTION_RATE = "0000000000000000000";
     private static final String FEE_CODE = "00";
@@ -112,8 +112,8 @@ public class EMoneyUtils {
     // OVO
     private static final String PRODUCT_CODE_EMONEY_OVO = "812277";
     private static final String ROUTING_INFO_OVO = "000004410013018026017441";
-    private static final String TRDES1_OVO = "INET : ISI OVO ";
-    private static final String TRDES3_OVO = "INET : ISI OVO 01";
+    private static final String TRDES1_OVO = "MB : TOP UP OVO ";
+    //private static final String TRDES3_OVO = "INET : ISI OVO 01";
     private static final String PRODUCT_CODE_EMONEY_CBS_OVO = "301802";
 
     // LINK AJA
@@ -297,8 +297,8 @@ public class EMoneyUtils {
 	}
 	if (OVO.equalsIgnoreCase(typeEmoney)) {
 	    String des1 = StringUtils.rightPad(TRDES1_OVO.concat(request.getCustomerNumber()), 40);
-	    String des2 = StringUtils.rightPad(TRDES2.concat(trdes2.format(date)), 40);
-	    String des3 = StringUtils.leftPad(TRDES3_OVO, 60);
+	    String des2 = StringUtils.rightPad(TRDES2.concat(request.getAccountNumber()), 40);
+	    String des3 = StringUtils.leftPad("", 60);
 	    description = des1.concat(des2).concat(des3);
 	    productCodeEmoney = PRODUCT_CODE_EMONEY_CBS_OVO;
 	    param.setElement63(PRODUCT_CODE_EMONEY_OVO);

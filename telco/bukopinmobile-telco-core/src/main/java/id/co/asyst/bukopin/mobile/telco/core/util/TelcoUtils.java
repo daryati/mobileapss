@@ -75,17 +75,17 @@ public class TelcoUtils {
     private static final String CREDENTIALS_MBUKOPIN = "MBUKOPIN";
     private static final int TELCO_LENGTH_TRXID = 12;
 
-    private static final String TRDES1_INDOSAT = "INET : BAYAR INDOSAT ";
-    private static final String TRDES2 = "00000000000000000000000IB0101 ";
-    private static final String TRDES3_INDOSAT = "INET : BAYAR INDOSAT 01";
-    private static final String TRDES1_TELKOMSEL = "INET : BAYAR HALO ";
-    private static final String TRDES3_TELKOMSEL = "INET : BAYAR HALO 01";
-    private static final String TRDES1_XL = "INET : BAYAR XL ";
-    private static final String TRDES3_XL = "INET : BAYAR XL 01";
-    private static final String TRDES1_TRI = "INET : BAYAR TRI ";
-    private static final String TRDES3_TRI = "INET : BAYAR TRI 01";
-    private static final String TRDES1_SMARTFREN = "INET : BAYAR SMARTFREN ";
-    private static final String TRDES3_SMARTFREN = "INET : BAYAR SMARTFREN 01";
+    private static final String TRDES1_INDOSAT = "MB : BAYAR INDOSAT ";
+    private static final String TRDES2 = "Dr. ";
+    //private static final String TRDES3_INDOSAT = "INET : BAYAR INDOSAT 01";
+    private static final String TRDES1_TELKOMSEL = "MB : BAYAR HALO ";
+    //private static final String TRDES3_TELKOMSEL = "INET : BAYAR HALO 01";
+    private static final String TRDES1_XL = "MB : BAYAR XL ";
+    //private static final String TRDES3_XL = "INET : BAYAR XL 01";
+    private static final String TRDES1_TRI = "MB : BAYAR TRI ";
+    //private static final String TRDES3_TRI = "INET : BAYAR TRI 01";
+    private static final String TRDES1_SMARTFREN = "MB : BAYAR SMARTFREN ";
+    //private static final String TRDES3_SMARTFREN = "INET : BAYAR SMARTFREN 01";
     private static final String CURRENCY_CODE_IDR = "360";
     private static final String ELEMENT123_BIT_4_24 = "000000000000000000000";
     private static final String ELEMENT123_BIT_31_147 = "05                                                                               000000                    0000000000";
@@ -303,19 +303,19 @@ public class TelcoUtils {
 		CURRENCY_CODE_IDR.concat(ELEMENT123_BIT_4_24).concat(codeCbs).concat(ELEMENT123_BIT_31_147));
 	param.setElement120(ROUTING_INFO_PART_1.concat(codeCbs).concat(ROUTING_INFO_PART_2));
 
-	String element122_bit41_80 = custNo.concat(TRDES2).concat(param.getElement13())
-		.concat(param.getElement12().substring(0, 4));
+	/*String element122_bit41_80 = custNo.concat(TRDES2).concat(param.getElement13())
+		.concat(param.getElement12().substring(0, 4));*/
 
 	if (PGROUP_TELKOMSEL.equalsIgnoreCase(group)) {
-	    param.setElement122(TRDES1_TELKOMSEL.concat(element122_bit41_80).concat(TRDES3_TELKOMSEL));
+	    param.setElement122(TRDES1_TELKOMSEL.concat(custNo+" ").concat(TRDES2).concat(accNo));
 	} else if (PGROUP_INDOSAT.equalsIgnoreCase(group)) {
-	    param.setElement122(TRDES1_INDOSAT.concat(element122_bit41_80).concat(TRDES3_INDOSAT));
+	    param.setElement122(TRDES1_INDOSAT.concat(custNo+" ").concat(TRDES2).concat(accNo));
 	} else if (PGROUP_XL.equalsIgnoreCase(group)) {
-	    param.setElement122(TRDES1_XL.concat(element122_bit41_80).concat(TRDES3_XL));
+	    param.setElement122(TRDES1_XL.concat(custNo+" ").concat(TRDES2).concat(accNo));
 	} else if (PGROUP_TRI.equalsIgnoreCase(group)) {
-	    param.setElement122(TRDES1_TRI.concat(element122_bit41_80).concat(TRDES3_TRI));
+	    param.setElement122(TRDES1_TRI.concat(custNo+" ").concat(TRDES2).concat(accNo));
 	} else if (PGROUP_SMARTFREN.equalsIgnoreCase(group)) {
-	    param.setElement122(TRDES1_SMARTFREN.concat(element122_bit41_80).concat(TRDES3_SMARTFREN));
+	    param.setElement122(TRDES1_SMARTFREN.concat(custNo+" ").concat(TRDES2).concat(accNo));
 	}
 
 	req.setIdentity(identity);
