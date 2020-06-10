@@ -120,8 +120,8 @@ public class EMoneyUtils {
     private static final String PRODUCT_CODE_EMONEY_LINK_AJA = "301803";
     private static final String PRIVATE_DATA = "017007";
     private static final String ROUTING_INFO_LINK_AJA = "000004410013018036017441";
-    private static final String TRDES1_LA = "INET : ISI LINKAJA ";
-    private static final String TRDES3_LA = "INET : ISI LINKAJA 01";
+    private static final String TRDES1_LA = "MB : TOP UP LINKAJA ";
+    private static final String TRDES3_LA = "-";
 
     private static final String ALPHA_NUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
     private static SimpleDateFormat purchaseResTime = new SimpleDateFormat("dd MMM yyyy - HH:mm");
