@@ -423,10 +423,7 @@ public class AccountController {
 	
 //	accountCard = accountCardService.save(accountCard);
 	List<AccountCard> newCards = new ArrayList<>();
-	for(AccountCard ac: acs) {
-	    newCards.add(ac);
-	}
-	accountCardService.saveAll(acs);
+	newCards = accountCardService.saveAll(acs);
 	
 	// find current card
 //	currentCard = newCards.stream().filter(cards -> cards.get);

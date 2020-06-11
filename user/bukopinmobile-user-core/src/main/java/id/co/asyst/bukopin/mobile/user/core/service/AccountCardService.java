@@ -116,8 +116,15 @@ public class AccountCardService {
 	return ac;
     }
     
-    public void saveAll(List<AccountCard> listAccCard){
+    /**
+     * Save List Account Card
+     * 
+     * @param listAccCard
+     * @return
+     */
+    public List<AccountCard> saveAll(List<AccountCard> listAccCard){
 	log.debug("Save all Account card with username : {} "+ listAccCard.get(0).getUser().getUsername());
+	List<AccountCard> listAcDecrypt = new ArrayList<>();
 	for (int i = 0; i < listAccCard.size(); i++) {
 	    listAccCard.get(i).setRegisteredCard(CryptoUtil.encryptBase64(
 		    listAccCard.get(i).getRegisteredCard()));
@@ -127,9 +134,13 @@ public class AccountCardService {
 		    ai.setAccountNo(encrypted);
 		});
 	    }
+	    AccountCard ac = decryptResponse(listAccCard.get(i));
+	    listAcDecrypt.add(ac);
 	}
 	accountCardRepository.saveAll(listAccCard);
 	accountCardRepository.flush();
+	
+	return listAcDecrypt;
     }
     
     /**
