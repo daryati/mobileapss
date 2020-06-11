@@ -107,10 +107,10 @@ public class TelcoUtils {
     private static final String NOT_BRANCH = "000";
     private static final String NOT_LOCATION = "000";
     private static final String TELKOMPSTN = "TELKOMPSTN";
-    private static final String TRDES1_PSTN = "MBUKOPIN : BYR TLKOM PSTN ";
-    private static final String TRDES1_SPEEDY = "MBUKOPIN : BYR TLM SPEEDY ";
-    private static final String TRDES3_PSTN = "MBUKOPIN :  BYR TLKOM PSTN 1 ";
-    private static final String TRDES3_SPEEDY = "MBUKOPIN :  BYR TLM SPEEDY 1 ";
+    private static final String TRDES1_PSTN = "MB : BAYAR TELKOM ";
+    private static final String TRDES1_SPEEDY = "MB : BAYAR TELKOM ";
+    private static final String TRDES3_PSTN = "";
+    private static final String TRDES3_SPEEDY = "";
 
     private static final String SPEEDY = "SPEEDY";
     private static final String ROUTING_INF = "00000441001";
@@ -570,6 +570,7 @@ public class TelcoUtils {
 	identity.setReqdatetime(today);
 	identity.setCredentials(credentials);
 
+	String accNo = dataReq.getAccountNo();
 	String amount = dataReq.getElement61();
 	String amt = amount.substring(78, 89);
 	String paddingEl4 = new String(new char[18 - amt.length()]).replace('\0', '0');
@@ -584,13 +585,13 @@ public class TelcoUtils {
 	String description = "";
 	if (SPEEDY.equals(dataReq.getType())) {
 	    String desc1 = StringUtils.rightPad(TRDES1_SPEEDY.concat(dataReq.getCustNo()), 40);
-	    String desc2 = StringUtils.rightPad(TRDES2.concat(trdes2.format(today)), 40);
+	    String desc2 = StringUtils.rightPad(TRDES2.concat(accNo), 40);
 	    String desc3 = StringUtils.leftPad(TRDES3_SPEEDY, 60);
 	    description = desc1.concat(desc2).concat(desc3);
 
 	} else {
 	    String desc1 = StringUtils.rightPad(TRDES1_PSTN.concat(dataReq.getCustNo()), 40);
-	    String desc2 = StringUtils.rightPad(TRDES2.concat(trdes2.format(today)), 40);
+	    String desc2 = StringUtils.rightPad(TRDES2.concat(accNo), 40);
 	    String desc3 = StringUtils.leftPad(TRDES3_PSTN, 60);
 	    description = desc1.concat(desc2).concat(desc3);
 	}
