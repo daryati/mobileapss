@@ -582,11 +582,14 @@ public class EMoneyController {
 	    log.error("Error invallid amount");
 	    response.setCode(ResponseMessage.INVALID_AMOUNT.getCode());
 	    response.setMessage(messageUtil.get("error.invalid.amount", servletRequest.getLocale()));
-	} else if (INVALID_SUBSCRIBER_ID.equals(codeRes)) {
+	} else if (INVALID_SUBSCRIBER_ID.equals(codeRes)
+		|| GIRO_USER_NOT_FOUND.equalsIgnoreCase(codeRes)) {
 	    log.error("Error invalid number");
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 	    response.setMessage(messageUtil.get("error.id.emoney.not.found", servletRequest.getLocale()));
-	} else if (EMONEY_ACCOUNT_INACTIVE.equals(codeRes) ) {
+	} else if (EMONEY_ACCOUNT_INACTIVE.equals(codeRes)
+		|| GIRO_INACTIVE_ACCOUNT.equalsIgnoreCase(codeRes)
+		|| GIRO_CLOSED_ACCOUNT.equalsIgnoreCase(codeRes)) {
 	    log.error("account inactive");
 	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
 	    response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
@@ -594,6 +597,27 @@ public class EMoneyController {
 	    log.error("Bill already Paid");
 	    response.setCode(ResponseMessage.ERROR_BILL_ALREADY_PAID.getCode());
 	    response.setMessage(messageUtil.get("error.emoney.already.paid", servletRequest.getLocale()));
+	} else if (GIRO_LIMIT_TRANSFER.equals(codeRes) 
+			|| GIRO_OVER_LIMIT.equals(codeRes)) {
+	    log.error("exceed limit");
+	    response = new CommonResponse();
+	    response.setCode(ResponseMessage.LIMIT_TRANSFER_DAY.getCode());
+	    response.setMessage(messageUtil.get("error.exceed.limit", servletRequest.getLocale()));
+	} else if (GIRO_CUT_OFF.equals(codeRes)) {
+	    log.error("Giro cut off");
+	    response = new CommonResponse();
+	    response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
+	    response.setMessage(messageUtil.get("error.cutoff.pln", servletRequest.getLocale()));
+	} else if (GIRO_DUPLICATE_DATA.equals(codeRes)) {
+	    log.error("Giro Duplicate Data");
+	    response = new CommonResponse();
+	    response.setCode(ResponseMessage.DUPLICATE_DATA.getCode());
+	    response.setMessage(messageUtil.get("error.duplicate.data", servletRequest.getLocale()));
+	} else if (GIRO_ACCOUNT_WAS_BLOCKED.equals(codeRes)
+			|| GIRO_ACCOUNT_BLOCKED.equals(codeRes)) {
+	    log.error("account was blocked");
+	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
+	    response.setMessage(messageUtil.get("error.customer.was.blocked", servletRequest.getLocale()));    
 	} else if (SYSTEM_BROKEN_168.equals(codeRes) || SYSTEM_BROKEN_169.equals(codeRes)) {
 	    log.error("System error from aranet");
 	    response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
@@ -601,8 +625,7 @@ public class EMoneyController {
 	} else {
 	    // TODO throw middleware exception
 	    log.error("Error from Aranet with code : "+codeRes);
-	    response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
-	    response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
+	    throw new MiddlewareException(codeRes);
 	}
 
 	return response;
@@ -724,7 +747,10 @@ public class EMoneyController {
 	    log.error("Error invallid amount");
 	    response.setCode(ResponseMessage.INVALID_AMOUNT.getCode());
 	    response.setMessage(messageUtil.get("error.invalid.amount", servletRequest.getLocale()));
-	} else if (EMONEY_NOT_ENOUGH_BALANCE.equals(codeRes)) {
+	} else if (EMONEY_NOT_ENOUGH_BALANCE.equals(codeRes)
+		|| GIRO_AMOUNT_NOT_ENOUGH_BALANCE.equals(codeRes)
+		|| GIRO_ERROR_VALUTA_CODE.equals(codeRes)
+		|| GIRO_LIMITED_BALANCE.equals(codeRes)) {
 	    log.error("Not enough balance: "+req.getData().getAccountNumber());
 	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
 	    response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
@@ -742,10 +768,8 @@ public class EMoneyController {
 	    response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
 	    response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
 	} else {
-	    // TODO throw middleware exception
 	    log.error("Error from Aranet with code : " + codeRes);
-	    response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
-	    response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
+	    throw new MiddlewareException(codeRes);
 	}
 	return response;
     }
