@@ -65,7 +65,6 @@ import id.co.asyst.bukopin.mobile.service.model.payload.pln.prepaid.PrepaidInqui
 import id.co.asyst.bukopin.mobile.service.model.payload.pln.prepaid.PrepaidInquiryResponse;
 import id.co.asyst.bukopin.mobile.service.model.payload.pln.prepaid.PrepaidPurchaseRequest;
 import id.co.asyst.bukopin.mobile.service.model.payload.pln.prepaid.PrepaidPurchaseResponse;
-import id.co.asyst.bukopin.mobile.user.model.entity.User;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyAccountOwnerRequest;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyAccountOwnerResponse;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyPhoneOwnerRequest;
@@ -92,6 +91,22 @@ public class PLNPrepaidController {
     private static final String PRR_SUBSCRIBER = "116";
     private static final String SUBSCRIBER_SUSPENDED = "177";
     private static final String PLN_CUT_OFF = "190";
+    
+    // Giro
+    private static final String PLN_EXCEED_LIMIT = "802"; // limit pembayaran tidak cukup
+    private static final String PLN_NOT_ENOUGH_BALANCE_GIRO = "805"; // salmin tidak cukup
+    private static final String PLN_BLOCKED_ACCOUNT_DEBET = "806"; // Rekening diblok debet
+    private static final String PLN_TRX_OVER_LIMIT = "808"; // Transaction over limit
+    private static final String PLN_BLOCKED_ACCOUNT = "814"; // Rekening diblok
+    private static final String PLN_CUT_OFF_GIRO = "818"; // Cutoff in progress
+    private static final String PLN_INACTIVE_ACCOUNT_GIRO = "822"; // Rekening inaktif
+    private static final String PLN_USER_NOT_FOUND = "831"; // User Not found
+    private static final String PLN_INACTIVE_ACCOUNT_APPROVE_GIRO = "839"; // Rekening belum disetujui
+    private static final String PLN_TRX_DUPLICATE = "869"; // Transaction duplicate
+    private static final String PLN_INACTIVE_ACCOUNT_CLOSED_GIRO = "878"; // Rekening ditutup
+    private static final String PLN_NOT_ENOUGH_BALANCE_VALUTA_GIRO = "885"; // Kode valuta tidak ada dalam batch
+    private static final String PLN_NOT_ENOUGH_BALANCE_GIRO2 = "897"; // Saldo dibawah minimum
+    
     private static final String PLN_NOT_ENOUGH_BALANCE = "851";
     private static final String PLN_INACTIVE_ACCOUNT = "839";
     

@@ -73,7 +73,7 @@ public class LoggingServiceImpl implements LoggingService {
 		+ "\nHeader      : "
 		+ "\n - Authorization  : " + request.getHeader(HttpHeaders.AUTHORIZATION)
 		+ "\n - Accept-Language: " + request.getHeader(HttpHeaders.ACCEPT_LANGUAGE)
-		+ "\n - Phone_Identity : " + request.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID)
+		+ "\n - Phone-Identity : " + request.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID)
 		+ "\nFrom        : " + ip
 		+ "\nMethod      : " + request.getMethod()
 		+ (body==null ? "" : "\nRequest body: " + BkpmUtil.convertToJson(body))

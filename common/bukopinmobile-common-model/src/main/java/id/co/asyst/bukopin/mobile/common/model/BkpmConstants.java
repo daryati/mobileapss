@@ -138,7 +138,7 @@ public class BkpmConstants {
     /**
      * Http Header: Device Id/ Phone Identity
      */
-    public final static String HTTP_HEADER_DEVICE_ID = "Phone_Identity";
+    public final static String HTTP_HEADER_DEVICE_ID = "Phone-Identity";
     
     
     /* CONFIGURATION KEYS (NAME in table CONFIGURATION): */
