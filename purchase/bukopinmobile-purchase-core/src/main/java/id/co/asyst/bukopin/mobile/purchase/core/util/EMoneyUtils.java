@@ -544,11 +544,13 @@ public class EMoneyUtils {
 
 	// element48
 	String element48 = request.getElement48();
+	
+	String accNo = request.getAccountNo();
 
 	// set description, element 122
 	String des1 = StringUtils.rightPad(TRDES1_LA.concat(request.getCustNo()), 40);
-	String des2 = StringUtils.rightPad(TRDES2.concat(trdes2.format(date)), 40);
-	String des3 = StringUtils.rightPad(TRDES3_LA, 60);
+	String des2 = StringUtils.rightPad(TRDES2.concat(accNo), 40);
+	String des3 = StringUtils.rightPad("", 60);
 	String description = des1.concat(des2).concat(des3);
 
 	// set description, element 123

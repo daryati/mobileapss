@@ -65,14 +65,15 @@ public class CreditCardUtil {
     private static final String MERCHANT_TYPE_MOBILE = "6017";
     private static final String IDR_CURRENCY_CODE = "360";
     private static final String TERMINAL_ID = "BKPM6017";
-    private static final String TRDES_CCBKP = "INET : KK BKP ";
-    private static final String TRDES_CCBKP_01 = "INET : KK BKP 01";
+    private static final String TRDES_CCBKP = "MB : BAYAR KK BUKOPIN ";
+	private static final String TRDES_CCBKP_01 = "-";
 
     // desc non BKP
-    private static final String TRDES_CC_NON_BKP = "INET : KK ";
+    private static final String TRDES_CC_NON_BKP = "MB : BAYAR KK ";
     private static final String TRDES_CC_NON_BKP_01 = ": INET : KK ";
 
-    private static final String TRDES2 = "00000000000000000000000IB0101";
+    /*private static final String TRDES2 = "00000000000000000000000IB0101";*/
+    private static final String TRDES2 = "Dr. ";
 
     private static final String CODE_CC_BKP = "CCBKP";
 
@@ -270,7 +271,7 @@ public class CreditCardUtil {
 	    param.setElement48(subscriberNumber);
 
 	    des = StringUtils.rightPad(TRDES_CCBKP.concat(req.getSubscriberNumber()), 40);
-	    des2 = StringUtils.rightPad(TRDES2.concat(trdes2.format(today)), 40);
+	    des2 = StringUtils.rightPad(TRDES2.concat(req.getAccountNumber()), 40);
 	    des3 = StringUtils.leftPad(TRDES_CCBKP_01, 60);
 
 	} else {
@@ -288,7 +289,7 @@ public class CreditCardUtil {
 	    element120 = "00000000441".concat(codeCbs+"6017441");
 
 	    des = StringUtils.rightPad(TRDES_CC_NON_BKP + " " + bankName.concat(req.getSubscriberNumber()), 40);
-	    des2 = StringUtils.rightPad(TRDES2.concat(trdes2.format(today)), 40);
+	    des2 = StringUtils.rightPad(TRDES2.concat(req.getAccountNumber()), 40);
 	    des3 = StringUtils.leftPad(TRDES_CC_NON_BKP_01 + " " + bankName, 60);
 	}
 
