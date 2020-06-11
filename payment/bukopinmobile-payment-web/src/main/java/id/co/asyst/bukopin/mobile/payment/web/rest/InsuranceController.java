@@ -244,7 +244,8 @@ public class InsuranceController {
 	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
 	    response.setMessage(messageUtil.get("error.amount.not.enough", httpServletRequest.getLocale()));
 	} else if (PASSIVE_ACCOUNT.equals(codeRes)
-			|| GIRO_INACTIVE_ACCOUNT.equals(codeRes)) {
+			|| GIRO_INACTIVE_ACCOUNT.equals(codeRes)
+			|| GIRO_CLOSED_ACCOUNT.equalsIgnoreCase(codeRes)) {
 	    log.error("passive account");
 	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
 	    response.setMessage(messageUtil.get("error.inactive.bank.account", httpServletRequest.getLocale()));
@@ -506,7 +507,8 @@ public class InsuranceController {
 	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
 	    response.setMessage(messageUtil.get("error.amount.not.enough", httpServletRequest.getLocale()));
 	} else if (PASSIVE_ACCOUNT.equals(codeRes)
-			|| GIRO_INACTIVE_ACCOUNT.equals(codeRes)) {
+			|| GIRO_INACTIVE_ACCOUNT.equals(codeRes)
+			|| GIRO_CLOSED_ACCOUNT.equalsIgnoreCase(codeRes)) {
 	    log.error("passive account");
 	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
 	    response.setMessage(messageUtil.get("error.inactive.bank.account", httpServletRequest.getLocale()));
@@ -530,6 +532,14 @@ public class InsuranceController {
 	    response = new CommonResponse();
 	    response.setCode(ResponseMessage.DUPLICATE_DATA.getCode());
 	    response.setMessage(messageUtil.get("error.duplicate.data", httpServletRequest.getLocale()));
+	} else if (AMOUNT_NOT_ENOUGH_BALANCE.equals(codeRes)
+			|| GIRO_AMOUNT_NOT_ENOUGH_BALANCE.equals(codeRes)
+			|| GIRO_ERROR_VALUTA_CODE.equals(codeRes)
+			|| GIRO_LIMITED_BALANCE.equals(codeRes)) {		
+	    log.error("not enough balance");
+	    response = new CommonResponse();
+	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
+	    response.setMessage(messageUtil.get("error.amount.not.enough", httpServletRequest.getLocale()));
 	} else {
 		log.error("Error (result) Insurance payment : "+codeRes);
 	    // Throw middleware error
