@@ -107,6 +107,20 @@ public class InsuranceController {
     private static final String SYSTEM_BROKEN_189 = "189";
     private static final String SYSTEM_BROKEN_196 = "196";
     private static final String PASSIVE_ACCOUNT = "839";
+    
+    //giro error handling
+    private static final String GIRO_AMOUNT_NOT_ENOUGH_BALANCE = "805";
+    private static final String GIRO_LIMIT_TRANSFER = "802";
+    private static final String GIRO_ACCOUNT_WAS_BLOCKED = "806";
+    private static final String GIRO_OVER_LIMIT = "808";
+    private static final String GIRO_ACCOUNT_BLOCKED= "814";
+    private static final String GIRO_CUT_OFF= "818";
+    private static final String GIRO_INACTIVE_ACCOUNT= "822";
+    private static final String GIRO_USER_NOT_FOUND= "831";
+    private static final String GIRO_DUPLICATE_DATA= "869";
+    private static final String GIRO_CLOSED_ACCOUNT= "878";
+    private static final String GIRO_ERROR_VALUTA_CODE= "885";
+    private static final String GIRO_LIMITED_BALANCE= "897";
     private DateFormat paymentTelkomselDate = new SimpleDateFormat("dd MMM yyyy");
     
     
@@ -190,7 +204,8 @@ public class InsuranceController {
 	    log.error("insurance Invalid Amount");
 	    response.setCode(ResponseMessage.INVALID_AMOUNT.getCode());
 	    response.setMessage(messageUtil.get("error.invalid.amount", httpServletRequest.getLocale()));
-	} else if (SUBSCRIBERNUMBER_NOT_FOUND.equalsIgnoreCase(codeRes) ) {
+	} else if (SUBSCRIBERNUMBER_NOT_FOUND.equalsIgnoreCase(codeRes) 
+			|| GIRO_USER_NOT_FOUND.equalsIgnoreCase(codeRes)) {
 	    log.error("SUbscriber not found/invalid");
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 	    response.setMessage(messageUtil.get("error.subs.number.not.found", httpServletRequest.getLocale()));
@@ -206,11 +221,14 @@ public class InsuranceController {
 	    log.error("invalid exceed");
 	    response.setCode(ResponseMessage.ERROR_VOUCHER_OUT_OF_STOCK.getCode());
 	    response.setMessage(messageUtil.get("error.invalid.exceed", httpServletRequest.getLocale()));
-	} else if (ACCOUNT_WAS_BLOCKED.equals(codeRes)) {
+	} else if (ACCOUNT_WAS_BLOCKED.equals(codeRes)
+			|| GIRO_ACCOUNT_WAS_BLOCKED.equals(codeRes)
+			|| GIRO_ACCOUNT_BLOCKED.equals(codeRes)) {
 	    log.error("account wass blocked");
 	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
 	    response.setMessage(messageUtil.get("error.account.blocked", httpServletRequest.getLocale()));
-	} else if (DATA_NOT_FOUND.equals(codeRes)) {
+	} else if (DATA_NOT_FOUND.equals(codeRes) 
+			|| GIRO_USER_NOT_FOUND.equals(codeRes)) {
 	    log.error("data not found");
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 	    response.setMessage(messageUtil.get("error.subs.number.not.found", httpServletRequest.getLocale()));
@@ -218,11 +236,15 @@ public class InsuranceController {
 	    log.error("data Exipred");
 	    response.setCode(ResponseMessage.PHONE_NUMBER_EXPIRED.getCode());
 	    response.setMessage(messageUtil.get("error.subcriber.expired", httpServletRequest.getLocale()));
-	} else if (AMOUNT_NOT_ENOUGH_BALANCE.equals(codeRes)) {
+	} else if (AMOUNT_NOT_ENOUGH_BALANCE.equals(codeRes) 
+			|| GIRO_AMOUNT_NOT_ENOUGH_BALANCE.equals(codeRes)
+			|| GIRO_ERROR_VALUTA_CODE.equals(codeRes)
+			|| GIRO_LIMITED_BALANCE.equals(codeRes)) {
 	    log.error("not enough balance");
 	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
 	    response.setMessage(messageUtil.get("error.amount.not.enough", httpServletRequest.getLocale()));
-	} else if (PASSIVE_ACCOUNT.equals(codeRes)) {
+	} else if (PASSIVE_ACCOUNT.equals(codeRes)
+			|| GIRO_INACTIVE_ACCOUNT.equals(codeRes)) {
 	    log.error("passive account");
 	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
 	    response.setMessage(messageUtil.get("error.inactive.bank.account", httpServletRequest.getLocale()));
@@ -230,6 +252,22 @@ public class InsuranceController {
 	    log.error("invalid interval");
 	    response.setCode(ResponseMessage.ERROR_INVALID_INTERVAL.getCode());
 	    response.setMessage(messageUtil.get("error.invalid.interval", httpServletRequest.getLocale()));
+	} else if (GIRO_LIMIT_TRANSFER.equals(codeRes) 
+			|| GIRO_OVER_LIMIT.equals(codeRes)) {
+	    log.error("exceed limit");
+	    response = new CommonResponse();
+	    response.setCode(ResponseMessage.LIMIT_TRANSFER_DAY.getCode());
+	    response.setMessage(messageUtil.get("error.exceed.limit", httpServletRequest.getLocale()));
+	} else if (GIRO_CUT_OFF.equals(codeRes)) {
+	    log.error("Giro cut off");
+	    response = new CommonResponse();
+	    response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
+	    response.setMessage(messageUtil.get("error.cutoff.pln", httpServletRequest.getLocale()));
+	} else if (GIRO_DUPLICATE_DATA.equals(codeRes)) {
+	    log.error("Giro Duplicate Data");
+	    response = new CommonResponse();
+	    response.setCode(ResponseMessage.DUPLICATE_DATA.getCode());
+	    response.setMessage(messageUtil.get("error.duplicate.data", httpServletRequest.getLocale()));
 	} else	if (!SUCCESS_CODE.equals(codeRes)) {
 		log.error("Error (result) Insurance inquiry : "+codeRes);
 	    // Throw middleware error
@@ -428,7 +466,8 @@ public class InsuranceController {
 	    log.error("insurance Invalid Amount");
 	    response.setCode(ResponseMessage.INVALID_AMOUNT.getCode());
 	    response.setMessage(messageUtil.get("error.invalid.amount", httpServletRequest.getLocale()));
-	} else if (SUBSCRIBERNUMBER_NOT_FOUND.equalsIgnoreCase(codeRes) ) {
+	} else if (SUBSCRIBERNUMBER_NOT_FOUND.equalsIgnoreCase(codeRes) 
+			|| GIRO_USER_NOT_FOUND.equalsIgnoreCase(codeRes)) {
 	    log.error("SUbscriber not found/invalid");
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 	    response.setMessage(messageUtil.get("error.subs.number.not.found", httpServletRequest.getLocale()));
@@ -444,11 +483,14 @@ public class InsuranceController {
 	    log.error("invalid exceed");
 	    response.setCode(ResponseMessage.ERROR_VOUCHER_OUT_OF_STOCK.getCode());
 	    response.setMessage(messageUtil.get("error.invalid.exceed", httpServletRequest.getLocale()));
-	} else if (ACCOUNT_WAS_BLOCKED.equals(codeRes)) {
+	} else if (ACCOUNT_WAS_BLOCKED.equals(codeRes)
+			|| GIRO_ACCOUNT_WAS_BLOCKED.equals(codeRes)
+			|| GIRO_ACCOUNT_BLOCKED.equals(codeRes)) {
 	    log.error("account wass blocked");
 	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
 	    response.setMessage(messageUtil.get("error.account.blocked", httpServletRequest.getLocale()));
-	} else if (DATA_NOT_FOUND.equals(codeRes)) {
+	} else if (DATA_NOT_FOUND.equals(codeRes) 
+			|| GIRO_USER_NOT_FOUND.equals(codeRes)) {
 	    log.error("data not found");
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 	    response.setMessage(messageUtil.get("error.subs.number.not.found", httpServletRequest.getLocale()));
@@ -456,11 +498,15 @@ public class InsuranceController {
 	    log.error("data Exipred");
 	    response.setCode(ResponseMessage.PHONE_NUMBER_EXPIRED.getCode());
 	    response.setMessage(messageUtil.get("error.subcriber.expired", httpServletRequest.getLocale()));
-	} else if (AMOUNT_NOT_ENOUGH_BALANCE.equals(codeRes)) {
+	} else if (AMOUNT_NOT_ENOUGH_BALANCE.equals(codeRes) 
+			|| GIRO_AMOUNT_NOT_ENOUGH_BALANCE.equals(codeRes)
+			|| GIRO_ERROR_VALUTA_CODE.equals(codeRes)
+			|| GIRO_LIMITED_BALANCE.equals(codeRes)) {
 	    log.error("not enough balance");
 	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
 	    response.setMessage(messageUtil.get("error.amount.not.enough", httpServletRequest.getLocale()));
-	} else if (PASSIVE_ACCOUNT.equals(codeRes)) {
+	} else if (PASSIVE_ACCOUNT.equals(codeRes)
+			|| GIRO_INACTIVE_ACCOUNT.equals(codeRes)) {
 	    log.error("passive account");
 	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
 	    response.setMessage(messageUtil.get("error.inactive.bank.account", httpServletRequest.getLocale()));
@@ -468,6 +514,22 @@ public class InsuranceController {
 	    log.error("invalid interval");
 	    response.setCode(ResponseMessage.ERROR_INVALID_INTERVAL.getCode());
 	    response.setMessage(messageUtil.get("error.invalid.interval", httpServletRequest.getLocale()));
+	} else if (GIRO_LIMIT_TRANSFER.equals(codeRes) 
+			|| GIRO_OVER_LIMIT.equals(codeRes)) {
+	    log.error("exceed limit");
+	    response = new CommonResponse();
+	    response.setCode(ResponseMessage.LIMIT_TRANSFER_DAY.getCode());
+	    response.setMessage(messageUtil.get("error.exceed.limit", httpServletRequest.getLocale()));
+	} else if (GIRO_CUT_OFF.equals(codeRes)) {
+	    log.error("Giro cut off");
+	    response = new CommonResponse();
+	    response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
+	    response.setMessage(messageUtil.get("error.cutoff.pln", httpServletRequest.getLocale()));
+	} else if (GIRO_DUPLICATE_DATA.equals(codeRes)) {
+	    log.error("Giro Duplicate Data");
+	    response = new CommonResponse();
+	    response.setCode(ResponseMessage.DUPLICATE_DATA.getCode());
+	    response.setMessage(messageUtil.get("error.duplicate.data", httpServletRequest.getLocale()));
 	} else {
 		log.error("Error (result) Insurance payment : "+codeRes);
 	    // Throw middleware error
