@@ -87,7 +87,21 @@ public class SamolnasController {
     private static final String ERROR_CODE_BILL_ALREADY_PAID = "188";
     private static final String ERROR_NOT_ENOUGH_BALANCE = "851";
     private static final String ERROR_ACCOUNT_INACTIVE = "839";
-    private static final String ERROR_NOT_ENOUGH_BALANCE_GIRO = "885";
+    private static final String ERROR_INVALID_SUBSCRIBER_ID = "114";
+    
+    // giro error handle
+    private static final String GIRO_AMOUNT_NOT_ENOUGH_BALANCE = "805";
+    private static final String GIRO_LIMIT_TRANSFER = "802";
+    private static final String GIRO_ACCOUNT_WAS_BLOCKED = "806";
+    private static final String GIRO_OVER_LIMIT = "808";
+    private static final String GIRO_ACCOUNT_BLOCKED= "814";
+    private static final String GIRO_CUT_OFF= "818";
+    private static final String GIRO_INACTIVE_ACCOUNT= "822";
+    private static final String GIRO_USER_NOT_FOUND= "831";
+    private static final String GIRO_DUPLICATE_DATA= "869";
+    private static final String GIRO_CLOSED_ACCOUNT= "878";
+    private static final String GIRO_ERROR_VALUTA_CODE= "885";
+    private static final String GIRO_LIMITED_BALANCE= "897";
 
     /* Attributes: */
     @Autowired
@@ -201,6 +215,27 @@ public class SamolnasController {
 	    log.error("bill already paid");
 	    response.setCode(ResponseMessage.ERROR_BILL_ALREADY_PAID.getCode());
 	    response.setMessage(messageUtil.get("error.bill.already.paid", servletRequest.getLocale()));
+	} else if (GIRO_LIMIT_TRANSFER.equals(codeRes) 
+			|| GIRO_OVER_LIMIT.equals(codeRes)) {
+	    log.error("exceed limit");
+	    response = new CommonResponse();
+	    response.setCode(ResponseMessage.LIMIT_TRANSFER_DAY.getCode());
+	    response.setMessage(messageUtil.get("error.exceed.limit", servletRequest.getLocale()));
+	} else if (GIRO_CUT_OFF.equals(codeRes)) {
+	    log.error("Giro cut off");
+	    response = new CommonResponse();
+	    response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
+	    response.setMessage(messageUtil.get("error.cutoff.pln", servletRequest.getLocale()));
+	} else if (GIRO_DUPLICATE_DATA.equals(codeRes)) {
+	    log.error("Giro Duplicate Data");
+	    response = new CommonResponse();
+	    response.setCode(ResponseMessage.DUPLICATE_DATA.getCode());
+	    response.setMessage(messageUtil.get("error.duplicate.data", servletRequest.getLocale()));
+	} else if (GIRO_ACCOUNT_WAS_BLOCKED.equals(codeRes)
+			|| GIRO_ACCOUNT_BLOCKED.equals(codeRes)) {
+	    log.error("account was blocked");
+	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
+	    response.setMessage(messageUtil.get("error.customer.was.blocked", servletRequest.getLocale()));    
 	} else if (ERROR_MISC.equals(codeRes)) {
 	    log.error("Misc error");
 	    throw new MiddlewareException(codeRes);
@@ -340,13 +375,22 @@ public class SamolnasController {
 		response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
 		response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
 	    }
+	} else if (ERROR_INVALID_SUBSCRIBER_ID.equals(codeRes)
+		||GIRO_USER_NOT_FOUND.equalsIgnoreCase(codeRes)) {
+	    log.error("User not found/invalid");
+	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+	    response.setMessage(messageUtil.get("error.id.pln.not.found", servletRequest.getLocale()));
 	} else if (ERROR_NOT_ENOUGH_BALANCE.equals(codeRes)
-		|| ERROR_NOT_ENOUGH_BALANCE_GIRO.equals(codeRes)) {
+		|| GIRO_AMOUNT_NOT_ENOUGH_BALANCE.equals(codeRes)
+		|| GIRO_ERROR_VALUTA_CODE.equals(codeRes)
+		|| GIRO_LIMITED_BALANCE.equals(codeRes)) {
 	    log.error("Not enough balance");
 	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
 	    response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
 	    return response;
-	} else if (ERROR_ACCOUNT_INACTIVE.equals(codeRes)) {
+	} else if (ERROR_ACCOUNT_INACTIVE.equals(codeRes)
+		|| GIRO_INACTIVE_ACCOUNT.equalsIgnoreCase(codeRes)
+		|| GIRO_CLOSED_ACCOUNT.equalsIgnoreCase(codeRes)) {
 	    log.error("account inactive");
 	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
 	    response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
