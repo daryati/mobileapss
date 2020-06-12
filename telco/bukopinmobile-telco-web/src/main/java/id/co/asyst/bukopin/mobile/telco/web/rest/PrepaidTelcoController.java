@@ -190,7 +190,7 @@ public class PrepaidTelcoController {
 			
 			try {
 				CommonResponse prefixTelcoRes = Services.create(MasterModuleService.class)
-						.findByPrefixNoAndType(request).execute().body();
+						.findByPrefixNoAndType(httpServletRequest.getLocale().getLanguage(),request).execute().body();
 				
 
 				if (!ResponseMessage.SUCCESS.getCode().equals(prefixTelcoRes.getCode())) {
@@ -378,7 +378,7 @@ public class PrepaidTelcoController {
 	CommonRequest<InstitutionRequest> ins = new CommonRequest<InstitutionRequest>();
 	ins.setData(insReq);
 	CommonResponse institutionRes = Services.create(MasterModuleService.class)
-			.findByPrefixIdAndInstitutionType(ins).execute().body();
+			.findByPrefixIdAndInstitutionType(httpServletRequest.getLocale().getLanguage(),ins).execute().body();
 	if (!ResponseMessage.SUCCESS.getCode().equals(institutionRes.getCode())) {
 		// response not success
 		return institutionRes;
@@ -495,7 +495,7 @@ public class PrepaidTelcoController {
 	    log.error("prepaid telco - phone number not found");
 	    response = new CommonResponse();
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
-	    response.setMessage(messageUtil.get("error.phone.number.not.found", httpServletRequest.getLocale()));
+	    response.setMessage(messageUtil.get("error.number.not.found", httpServletRequest.getLocale()));
 	}else if (VOUCHER_OUT_OF_STOCK.equals(codeRes)) {
 	    log.error("prepaid telco - Voucher out of stock");
 	    response = new CommonResponse();

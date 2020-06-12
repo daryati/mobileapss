@@ -222,7 +222,7 @@ public class TelcoPostpaidController {
 		|| ERROR_CODE_NUMBER_NOT_REGISTERED.equals(codeRes)) {
 	    log.error("data not found with code : " + codeRes);
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
-	    response.setMessage(messageUtil.get("error.data.not.found", servletRequest.getLocale()));
+	    response.setMessage(messageUtil.get("error.number.not.found", servletRequest.getLocale()));
 	} else if (ERROR_CODE_INVALID_AMOUNT.equals(codeRes)) {
 	    log.error("invalid amount");
 	    response.setCode(ResponseMessage.INVALID_AMOUNT.getCode());
@@ -441,7 +441,7 @@ public class TelcoPostpaidController {
 
 	try {
 	    CommonResponse prefixRes = Services.create(MasterModuleService.class)
-		    .findOneByPrefixNo(req.getData().get("custNo")).execute().body();
+		    .findOneByPrefixNo(servletRequest.getLocale().getLanguage(), req.getData().get("custNo")).execute().body();
 	    if (!ResponseMessage.SUCCESS.getCode().equals(prefixRes.getCode())) {
 		// response not success
 		return prefixRes;
@@ -512,7 +512,7 @@ public class TelcoPostpaidController {
 	String forwardInsCode = env.getProperty("config.forwarding-institution-code");
 	// Institution findInstitution = institutionService.findCodeByProvider(type);
 
-	CommonResponse institutionRes = Services.create(MasterModuleService.class).findCodeByProvider(type).execute()
+	CommonResponse institutionRes = Services.create(MasterModuleService.class).findCodeByProvider(servletRequest.getLocale().getLanguage(),type).execute()
 		.body();
 	if (!ResponseMessage.SUCCESS.getCode().equals(institutionRes.getCode())) {
 	    // response not success
@@ -694,7 +694,7 @@ public class TelcoPostpaidController {
 
 	String forwardInsCode = env.getProperty("config.forwarding-institution-code");
 
-	CommonResponse institutionRes = Services.create(MasterModuleService.class).findCodeByProvider(type).execute()
+	CommonResponse institutionRes = Services.create(MasterModuleService.class).findCodeByProvider(servletRequest.getLocale().getLanguage(),type).execute()
 		.body();
 	if (!ResponseMessage.SUCCESS.getCode().equals(institutionRes.getCode())) {
 	    // response not success
