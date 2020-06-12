@@ -307,15 +307,15 @@ public class TelcoUtils {
 		.concat(param.getElement12().substring(0, 4));*/
 
 	if (PGROUP_TELKOMSEL.equalsIgnoreCase(group)) {
-	    param.setElement122(TRDES1_TELKOMSEL.concat(custNo+" ").concat(TRDES2).concat(accNo));
+	    param.setElement122(StringUtils.rightPad(TRDES1_TELKOMSEL.concat(custNo), 40).concat(StringUtils.rightPad(TRDES2.concat(accNo), 40)).concat(StringUtils.rightPad("", 60)));
 	} else if (PGROUP_INDOSAT.equalsIgnoreCase(group)) {
-	    param.setElement122(TRDES1_INDOSAT.concat(custNo+" ").concat(TRDES2).concat(accNo));
+	    param.setElement122(StringUtils.rightPad(TRDES1_INDOSAT.concat(custNo), 40).concat(StringUtils.rightPad(TRDES2.concat(accNo), 40)).concat(StringUtils.rightPad("", 60)));
 	} else if (PGROUP_XL.equalsIgnoreCase(group)) {
-	    param.setElement122(TRDES1_XL.concat(custNo+" ").concat(TRDES2).concat(accNo));
+	    param.setElement122(StringUtils.rightPad(TRDES1_XL.concat(custNo), 40).concat(StringUtils.rightPad(TRDES2.concat(accNo), 40)).concat(StringUtils.rightPad("", 60)));
 	} else if (PGROUP_TRI.equalsIgnoreCase(group)) {
-	    param.setElement122(TRDES1_TRI.concat(custNo+" ").concat(TRDES2).concat(accNo));
+	    param.setElement122(StringUtils.rightPad(TRDES1_TRI.concat(custNo), 40).concat(StringUtils.rightPad(TRDES2.concat(accNo), 40)).concat(StringUtils.rightPad("", 60)));
 	} else if (PGROUP_SMARTFREN.equalsIgnoreCase(group)) {
-	    param.setElement122(TRDES1_SMARTFREN.concat(custNo+" ").concat(TRDES2).concat(accNo));
+	    param.setElement122(StringUtils.rightPad(TRDES1_SMARTFREN.concat(custNo), 40).concat(StringUtils.rightPad(TRDES2.concat(accNo), 40)).concat(StringUtils.rightPad("", 60)));
 	}
 
 	req.setIdentity(identity);
@@ -341,7 +341,8 @@ public class TelcoUtils {
 	String custNo = element61.substring(0, 13);
 	String custName = element61.substring(19, 64);
 	String billPeriod = element61.substring(89, 97);
-	String reference = element61.substring(97, 113);
+	//String reference = element61.substring(97, 113);
+	String reference = dataResp.getElement122().substring(144, 159);
 	String amount = element61.substring(114, 126);
 	String amountFee = element61.substring(126, 134);
 
