@@ -95,6 +95,21 @@ public class PLNPostpaidController {
     private static final String PLN_BILL_NOT_AVAILABLE = "189";
     private static final String PLN_NOT_ENOUGH_BALANCE = "851";
     private static final String PLN_INACTIVE_ACCOUNT = "839";
+    
+    // Giro
+    private static final String PLN_EXCEED_LIMIT = "802"; // limit pembayaran tidak cukup
+    private static final String PLN_NOT_ENOUGH_BALANCE_GIRO = "805"; // salmin tidak cukup
+    private static final String PLN_BLOCKED_ACCOUNT_DEBET = "806"; // Rekening diblok debet
+    private static final String PLN_TRX_OVER_LIMIT = "808"; // Transaction over limit
+    private static final String PLN_BLOCKED_ACCOUNT = "814"; // Rekening diblok
+    private static final String PLN_CUT_OFF_GIRO = "818"; // Cutoff in progress
+    private static final String PLN_INACTIVE_ACCOUNT_GIRO = "822"; // Rekening inaktif
+    private static final String PLN_USER_NOT_FOUND = "831"; // User Not found
+    private static final String PLN_INACTIVE_ACCOUNT_APPROVE_GIRO = "839"; // Rekening belum disetujui
+    private static final String PLN_TRX_DUPLICATE = "869"; // Transaction duplicate
+    private static final String PLN_INACTIVE_ACCOUNT_CLOSED_GIRO = "878"; // Rekening ditutup
+    private static final String PLN_NOT_ENOUGH_BALANCE_VALUTA_GIRO = "885"; // Kode valuta tidak ada dalam batch
+    private static final String PLN_NOT_ENOUGH_BALANCE_GIRO2 = "897"; // Saldo dibawah minimum
 
     /* Attributes: */
     @Autowired
@@ -159,11 +174,12 @@ public class PLNPostpaidController {
 	log.debug("response : " + BkpmUtil.convertToJson(resInquiryPostpaidPLNAranet.getRespayment().getResult()));
 
 	String codeRes = resInquiryPostpaidPLNAranet.getRespayment().getResult().getElement39();
-	if (PLN_CUT_OFF.equals(codeRes)) {
+	if (PLN_CUT_OFF.equals(codeRes) || PLN_CUT_OFF_GIRO.equals(codeRes)) {
 	    log.error("Cut Off PLN");
 	    response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
 	    response.setMessage(messageUtil.get("error.cutoff.pln", servletRequest.getLocale()));
-	} else if (UNREGISTERED_BILLER.equals(codeRes) || UNREGISTERED_SUBSCRIBER_NUMBER.equals(codeRes)) {
+	} else if (UNREGISTERED_BILLER.equals(codeRes) || UNREGISTERED_SUBSCRIBER_NUMBER.equals(codeRes)
+		|| PLN_USER_NOT_FOUND.equals(codeRes)) {
 	    log.error("Unregistered biller or subscriber number");
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 	    response.setMessage(messageUtil.get("error.id.pln.not.found", servletRequest.getLocale()));
@@ -181,6 +197,20 @@ public class PLNPostpaidController {
 	    response.setCode(ResponseMessage.ERROR_BILL_NOT_AVAILABLE.getCode());
 	    response.setMessage(messageUtil.get("error.bill.not.available",
 		    new Object[] { monthName }, servletRequest.getLocale()));
+	} else if (PLN_EXCEED_LIMIT.equals(codeRes) 
+			|| PLN_TRX_OVER_LIMIT.equals(codeRes)) {
+	    log.error("exceed limit");
+	    response.setCode(ResponseMessage.LIMIT_TRANSFER_DAY.getCode());
+	    response.setMessage(messageUtil.get("error.exceed.limit", servletRequest.getLocale()));
+	} else if (PLN_BLOCKED_ACCOUNT_DEBET.equals(codeRes)
+			|| PLN_BLOCKED_ACCOUNT.equals(codeRes)) {
+	    log.error("account was blocked");
+	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
+	    response.setMessage(messageUtil.get("error.customer.was.blocked", servletRequest.getLocale()));    
+	} else if (PLN_TRX_DUPLICATE.equals(codeRes)) {
+	    log.error("Giro Duplicate Data");
+	    response.setCode(ResponseMessage.DUPLICATE_DATA.getCode());
+	    response.setMessage(messageUtil.get("error.duplicate.data", servletRequest.getLocale()));
 	} else if (!SUCCESS_CODE.equals(codeRes)) {
 	    log.error("Error from Aranet with code : " + codeRes);
 	    throw new MiddlewareException(codeRes);
@@ -498,11 +528,12 @@ public class PLNPostpaidController {
 	String codeRes = tibcoResponse.getRespayment().getResult().getElement39();
 //	String postRes = tibcoResponse.getRespayment().getResult().getElement121().substring(0, 3);
 	String monthName = new DateFormatSymbols().getMonths()[Calendar.getInstance().get(Calendar.MONTH)];
-	if (PLN_CUT_OFF.equals(codeRes)) {
+	if (PLN_CUT_OFF.equals(codeRes) || PLN_CUT_OFF_GIRO.equals(codeRes)) {
 	    log.error("Cut Off PLN");
 	    response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
 	    response.setMessage(messageUtil.get("error.cutoff.pln", servletRequest.getLocale()));
-	} else if (UNREGISTERED_BILLER.equals(codeRes) || UNREGISTERED_SUBSCRIBER_NUMBER.equals(codeRes)) {
+	} else if (UNREGISTERED_BILLER.equals(codeRes) || UNREGISTERED_SUBSCRIBER_NUMBER.equals(codeRes)
+		|| PLN_USER_NOT_FOUND.equals(codeRes)) {
 	    log.error("Unregistered biller or subscriber number");
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 	    response.setMessage(messageUtil.get("error.id.pln.not.found", servletRequest.getLocale()));
@@ -520,7 +551,9 @@ public class PLNPostpaidController {
 	    response.setCode(ResponseMessage.ERROR_BILL_NOT_AVAILABLE.getCode());
 	    response.setMessage(messageUtil.get("error.bill.not.available",
 		    new Object[] { monthName }, servletRequest.getLocale()));
-	} else if(PLN_NOT_ENOUGH_BALANCE.equals(codeRes)) {
+	} else if(PLN_NOT_ENOUGH_BALANCE.equals(codeRes) || PLN_NOT_ENOUGH_BALANCE_GIRO.equals(codeRes)
+		|| PLN_NOT_ENOUGH_BALANCE_VALUTA_GIRO.equals(codeRes) 
+		|| PLN_NOT_ENOUGH_BALANCE_GIRO2.equals(codeRes)) {
 	    log.error("Not enough balance: "+accountNo);
 	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
 	    response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
@@ -528,6 +561,26 @@ public class PLNPostpaidController {
 	    log.error("Account inactive: "+accountNo);
 	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
 	    response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
+	}  else if (PLN_EXCEED_LIMIT.equals(codeRes) 
+			|| PLN_TRX_OVER_LIMIT.equals(codeRes)) {
+	    log.error("exceed limit");
+	    response.setCode(ResponseMessage.LIMIT_TRANSFER_DAY.getCode());
+	    response.setMessage(messageUtil.get("error.exceed.limit", servletRequest.getLocale()));
+	}  else if (PLN_BLOCKED_ACCOUNT_DEBET.equals(codeRes)
+			|| PLN_BLOCKED_ACCOUNT.equals(codeRes)) {
+	    log.error("account was blocked");
+	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
+	    response.setMessage(messageUtil.get("error.customer.was.blocked", servletRequest.getLocale()));    
+	} else if (PLN_INACTIVE_ACCOUNT_GIRO.equals(codeRes)
+		||  PLN_INACTIVE_ACCOUNT_APPROVE_GIRO.equalsIgnoreCase(codeRes)
+		||  PLN_INACTIVE_ACCOUNT_CLOSED_GIRO.equalsIgnoreCase(codeRes)) {
+	    log.error("account inactive");
+	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
+	    response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
+	} else if (PLN_TRX_DUPLICATE.equals(codeRes)) {
+	    log.error("Giro Duplicate Data");
+	    response.setCode(ResponseMessage.DUPLICATE_DATA.getCode());
+	    response.setMessage(messageUtil.get("error.duplicate.data", servletRequest.getLocale()));
 	} else if(!SUCCESS_CODE.equals(codeRes)) {
 	    log.error("Error (result) PLN Postpaid: "+codeRes);
 	    // Throw middleware error
