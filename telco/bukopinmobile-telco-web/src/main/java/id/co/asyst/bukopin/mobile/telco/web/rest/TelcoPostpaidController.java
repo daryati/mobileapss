@@ -555,10 +555,22 @@ public class TelcoPostpaidController {
 	    log.error("bill already paid");
 	    response.setCode(ResponseMessage.ERROR_BILL_ALREADY_PAID.getCode());
 	    response.setMessage(messageUtil.get("error.bill.already.paid", servletRequest.getLocale()));
-	} else if (ERROR_CODE_CUTT_OFF.equals(codeRes)) {
+	} else if (GIRO_LIMIT_TRANSFER.equals(codeRes) 
+			|| GIRO_OVER_LIMIT.equals(codeRes)) {
+	    log.error("exceed limit");
+	    response = new CommonResponse();
+	    response.setCode(ResponseMessage.LIMIT_TRANSFER_DAY.getCode());
+	    response.setMessage(messageUtil.get("error.exceed.limit", servletRequest.getLocale()));
+	} else if (ERROR_CODE_CUTT_OFF.equals(codeRes)
+		|| GIRO_CUT_OFF.equals(codeRes)) {
 	    log.error("cutoff in progress");
 	    response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
 	    response.setMessage(messageUtil.get("error.cutoff", servletRequest.getLocale()));
+	} else if (GIRO_DUPLICATE_DATA.equals(codeRes)) {
+	    log.error("Giro Duplicate Data");
+	    response = new CommonResponse();
+	    response.setCode(ResponseMessage.DUPLICATE_DATA.getCode());
+	    response.setMessage(messageUtil.get("error.duplicate.data", servletRequest.getLocale()));
 	} else if (ERROR_CODE_SYSTEM_FAILURE.equals(codeRes) || ERROR_CODE_SYSTEM_FAILURE_2.equals(codeRes)) {
 	    log.error("system failure");
 	    response.setCode(ResponseMessage.ERROR_SYSTEM_FAILURE.getCode());
@@ -568,12 +580,14 @@ public class TelcoPostpaidController {
 		|| ERROR_CODE_NUMBER_NOT_REGISTERED.equals(codeRes)) {
 	    log.error("data not found with code : " + codeRes);
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
-	    response.setMessage(messageUtil.get("error.data.not.found", servletRequest.getLocale()));
+	    response.setMessage(messageUtil.get("error.number.not.found", servletRequest.getLocale()));
 	} else if (ERROR_CODE_INVALID_AMOUNT.equals(codeRes)) {
 	    log.error("invalid amount");
 	    response.setCode(ResponseMessage.INVALID_AMOUNT.getCode());
 	    response.setMessage(messageUtil.get("error.invalid.amount", servletRequest.getLocale()));
-	} else if (ERROR_CODE_BLOCKED_ACCOUNT.equals(codeRes)) {
+	} else if (ERROR_CODE_BLOCKED_ACCOUNT.equals(codeRes)
+		|| GIRO_ACCOUNT_WAS_BLOCKED.equals(codeRes)
+		|| GIRO_ACCOUNT_BLOCKED.equals(codeRes)) {
 	    log.error("blocked account");
 	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
 	    response.setMessage(messageUtil.get("error.account.was.blocked", servletRequest.getLocale()));
@@ -589,10 +603,6 @@ public class TelcoPostpaidController {
 	    log.error("different bill at same month");
 	    response.setCode(ResponseMessage.ERROR_DIFFERENT_BILL.getCode());
 	    response.setMessage(messageUtil.get("error.different.bill", servletRequest.getLocale()));
-	} else if (ERROR_CODE_PREFIX_UNKNOWN.equals(codeRes)) {
-	    log.error("Error data prefix unknown");
-	    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
-	    response.setMessage(messageUtil.get("error.data.not.match", servletRequest.getLocale()));
 	} else {
 	    log.error("error from aranet with code : " + codeRes);
 	    throw new MiddlewareException(codeRes);
@@ -761,12 +771,17 @@ public class TelcoPostpaidController {
 	    log.error("phone number expired");
 	    response.setCode(ResponseMessage.PHONE_NUMBER_EXPIRED.getCode());
 	    response.setMessage(messageUtil.get("error.phone.number.expired", servletRequest.getLocale()));
-	} else if (ERROR_NOT_ENOUGH_BALANCE.equals(codeRes)) {
+	} else if (ERROR_NOT_ENOUGH_BALANCE.equals(codeRes)
+		|| GIRO_AMOUNT_NOT_ENOUGH_BALANCE.equals(codeRes)
+		|| GIRO_ERROR_VALUTA_CODE.equals(codeRes)
+		|| GIRO_LIMITED_BALANCE.equals(codeRes)) {
 	    log.error("Not enough balance");
 	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
 	    response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
 	    return response;
-	} else if (ERROR_ACCOUNT_INACTIVE.equals(codeRes)) {
+	} else if (ERROR_ACCOUNT_INACTIVE.equals(codeRes)
+		|| GIRO_INACTIVE_ACCOUNT.equalsIgnoreCase(codeRes)
+		|| GIRO_CLOSED_ACCOUNT.equalsIgnoreCase(codeRes)) {
 	    log.error("account inactive");
 	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
 	    response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
@@ -784,7 +799,8 @@ public class TelcoPostpaidController {
 	    response.setMessage(messageUtil.get("error.system.failure", servletRequest.getLocale()));
 	} else if (ERROR_CODE_PHONE_NUMBER_NOT_FOUND.equals(codeRes) || ERROR_CODE_SPECIAL_NUMBER.equals(codeRes)
 		|| ERROR_CODE_INVALID_PHONE_NUMBER.equals(codeRes)
-		|| ERROR_CODE_NUMBER_NOT_REGISTERED.equals(codeRes)) {
+		|| ERROR_CODE_NUMBER_NOT_REGISTERED.equals(codeRes)
+		|| GIRO_USER_NOT_FOUND.equalsIgnoreCase(codeRes)) {
 	    log.error("data not found with code : " + codeRes);
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 	    response.setMessage(messageUtil.get("error.data.not.found", servletRequest.getLocale()));
@@ -808,10 +824,6 @@ public class TelcoPostpaidController {
 	    log.error("different bill at same month");
 	    response.setCode(ResponseMessage.ERROR_DIFFERENT_BILL.getCode());
 	    response.setMessage(messageUtil.get("error.different.bill", servletRequest.getLocale()));
-	} else if (ERROR_CODE_PREFIX_UNKNOWN.equals(codeRes)) {
-	    log.error("Error data prefix unknown");
-	    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
-	    response.setMessage(messageUtil.get("error.data.not.match", servletRequest.getLocale()));
 	} else {
 	    log.error("error aranet with code : " + codeRes);
 	    throw new MiddlewareException(codeRes);
