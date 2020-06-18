@@ -296,6 +296,13 @@ public class TelcoService {
 	    String accNoSeg4 = accNoOri.substring(7, 10);
 	    String accountNumber = accNoSeg1.concat(" "+accNoSeg2.concat(" "+accNoSeg3.concat(" "+accNoSeg4)));
 	    
+	    //set mobile number
+	    String custNoOri = resTelcoPayment.getCustNo();
+	    String custNoSeg1 = custNoOri.substring(0, 4);
+	    String custNoSeg2 = custNoOri.substring(4, 8);
+	    String custNoSeg3 = custNoOri.substring(8, custNoOri.length());
+	    String custNumber = custNoSeg1.concat(" "+custNoSeg2).concat(" "+custNoSeg3);
+	    
 	    // thymleaf template mail
 	    // Prepare the evaluation context
 	    final Locale locale = new Locale("en_US.UTF-8");
@@ -306,13 +313,13 @@ public class TelcoService {
 	    ctx.setVariable("date", date);
 	    ctx.setVariable("time", time);
 	    ctx.setVariable("accountNumber", accountNumber);
-	    ctx.setVariable("mobileNumber", resTelcoPayment.getCustNo());
+	    ctx.setVariable("mobileNumber", custNumber);
 	    ctx.setVariable("customerName", resTelcoPayment.getCustName());
 	    ctx.setVariable("billPeriode", billPeriode);
 	    ctx.setVariable("provider", resTelcoPayment.getProductName());
-	    ctx.setVariable("total", total.replace("Rp", "RP "));
-	    ctx.setVariable("adminCharge", adminCharge.replace("Rp", "RP "));
-	    ctx.setVariable("bill", amount.replace("Rp", "RP "));
+	    ctx.setVariable("total", total);
+	    ctx.setVariable("adminCharge", adminCharge);
+	    ctx.setVariable("bill", amount);
 	    
 
 	    // Prepare message using a Spring helper
