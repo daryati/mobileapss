@@ -83,6 +83,13 @@ public class FAQ extends IdBasedObjectAclAware implements Serializable {
      */
     @Column(name = "UPDATED_BY")
     private String updatedBy;
+    
+    /**
+     * Sort
+     */
+    @NotBlank
+    @Column(name = "SORT")
+    private int sort;
 
     /* Transient Attributes: */
 
@@ -195,6 +202,22 @@ public class FAQ extends IdBasedObjectAclAware implements Serializable {
      */
     public void setUpdatedBy(String updatedBy) {
 	this.updatedBy = updatedBy;
+    }
+
+    /**
+     * Gets <code>sort</code>.
+     * @return The <code>sort</code>.
+     */
+    public int getSort() {
+        return sort;
+    }
+
+    /**
+     * Sets <code>sort</code>.
+     * @param sort The <code>sort</code> to set.
+     */
+    public void setSort(int sort) {
+        this.sort = sort;
     }
 
     /* Getters & setters for transient attributes: */
