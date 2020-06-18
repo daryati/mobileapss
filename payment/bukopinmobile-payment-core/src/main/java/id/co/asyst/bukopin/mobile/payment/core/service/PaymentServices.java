@@ -103,7 +103,7 @@ public class PaymentServices {
 	    DateFormat formatterTm1 = new SimpleDateFormat("HH:mm");
 
 	    // set subject
-	    String subject = "Samolnas Online";
+	    String subject = "Samolnas";
 
 	    // set full name
 	    String fullName = "";
