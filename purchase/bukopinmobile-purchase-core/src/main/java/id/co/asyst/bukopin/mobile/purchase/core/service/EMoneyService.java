@@ -165,9 +165,13 @@ public class EMoneyService {
 	    ctx.setVariable("total", total.replace("Rp", "RP "));
 	    ctx.setVariable("adminCharge", adminCharge.replace("Rp", "RP "));
 	    ctx.setVariable("topUpGopay", amount.replace("Rp", "RP "));
+	    ctx.setVariable("receipField1", resPurchase.getReceiptField1());
+	    ctx.setVariable("receipField2", resPurchase.getReceiptField2());
+	    ctx.setVariable("receipField3", resPurchase.getReceiptField3());
+	    ctx.setVariable("receipField4", resPurchase.getReceiptField4());
+	    ctx.setVariable("receipField5", resPurchase.getReceiptField5());
+	    ctx.setVariable("receipField6", resPurchase.getReceiptField6());
 	    
-	    
-
 	    // Prepare message using a Spring helper
 	    final MimeMessage mimeMessage = this.javaMailSender.createMimeMessage();
 	    final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, StandardCharsets.UTF_8.name());
