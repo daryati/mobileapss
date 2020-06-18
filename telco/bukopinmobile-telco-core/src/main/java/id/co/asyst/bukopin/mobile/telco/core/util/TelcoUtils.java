@@ -645,14 +645,13 @@ public class TelcoUtils {
      * @return Telco Purchase Data Response
      */
     public static TelcoPostpaidPaymentResponse generatePurchaseTelkomPSTNSPeedyResponse(
-	    TelkomPSTNSpeedyPurchaseTibcoDataResp resp) {
+	    TelkomPSTNSpeedyPurchaseTibcoDataResp resp, String custNo) {
 	TelcoPostpaidPaymentResponse response = new TelcoPostpaidPaymentResponse();
 
 	Date today = new Date();
 
 	String element61 = resp.getElement61();
 
-	String custNo = element61.substring(0, 13);
 	String custName = element61.substring(90, 119);
 	String billPeriod = element61.substring(19, 20);
 	String amount = element61.substring(78, 89);

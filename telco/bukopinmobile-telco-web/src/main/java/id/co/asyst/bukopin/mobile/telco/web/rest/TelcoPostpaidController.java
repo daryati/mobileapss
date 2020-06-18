@@ -732,7 +732,7 @@ public class TelcoPostpaidController {
 	    TelcoPostpaidPaymentResponse resp = new TelcoPostpaidPaymentResponse();
 
 	    resp = TelcoUtils.generatePurchaseTelkomPSTNSPeedyResponse(
-		    purchaseTelkomPostpaidTibcoResp.getRespayment().getResult());
+		    purchaseTelkomPostpaidTibcoResp.getRespayment().getResult(), req.getData().getCustNo());
 
 	    // save to db (Destination and transaction)
 	    log.debug("saving to database destination and transaction");

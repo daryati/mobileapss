@@ -249,14 +249,17 @@ public class TelcoService {
 	    
 	    String subject = " ";
 	    String desc = "";
+	    String fieldBill = "";
 	    if(category.equalsIgnoreCase(CATEGORY_TELEPHONE_TV)) {
 		// send struk emoney by email
 	    	subject = "Telepon & TV Kabel";
 			desc ="Telepon & TV Kabel";
+			fieldBill = "Nomor/ID Pelanggan";
 		
 	    } else {
 	    	subject = "Pulsa Pascabayar";
 			desc ="Pulsa Pascabayar";
+			fieldBill ="Nomor Tagihan";
 	    }
 	    
 	    //set full name
@@ -296,23 +299,37 @@ public class TelcoService {
 	    String accNoSeg4 = accNoOri.substring(7, 10);
 	    String accountNumber = accNoSeg1.concat(" "+accNoSeg2.concat(" "+accNoSeg3.concat(" "+accNoSeg4)));
 	    
+	    //set cutomer number per segment
+	    String custNo = resTelcoPayment.getCustNo();
+	    String custNoSeg1 = custNo.substring(0, 4);
+	    String custNoSeg2 = custNo.substring(4, 8);
+	    String custNoSeg3 = custNo.substring(8);
+	    
+	    String custNumber = custNoSeg1.concat(" " + custNoSeg2.concat(" " + custNoSeg3));
+	    
+	    
 	    // thymleaf template mail
 	    // Prepare the evaluation context
 	    final Locale locale = new Locale("en_US.UTF-8");
 	    final Context ctx = new Context(locale);
+	    ctx.setVariable("fieldBill", fieldBill);
 	    ctx.setVariable("desc", desc);
 	    ctx.setVariable("fullname", fullName);
 	    ctx.setVariable("reference", resTelcoPayment.getReferensi());
 	    ctx.setVariable("date", date);
 	    ctx.setVariable("time", time);
 	    ctx.setVariable("accountNumber", accountNumber);
-	    ctx.setVariable("mobileNumber", resTelcoPayment.getCustNo());
+	    ctx.setVariable("mobileNumber", custNumber);
 	    ctx.setVariable("customerName", resTelcoPayment.getCustName());
 	    ctx.setVariable("billPeriode", billPeriode);
 	    ctx.setVariable("provider", resTelcoPayment.getProductName());
-	    ctx.setVariable("total", total.replace("Rp", "RP "));
+	    /*ctx.setVariable("total", total.replace("Rp", "RP "));
 	    ctx.setVariable("adminCharge", adminCharge.replace("Rp", "RP "));
-	    ctx.setVariable("bill", amount.replace("Rp", "RP "));
+	    ctx.setVariable("bill", amount.replace("Rp", "RP "));*/
+	    
+	    ctx.setVariable("total", total);
+	    ctx.setVariable("adminCharge", adminCharge);
+	    ctx.setVariable("bill", amount);
 	    
 
 	    // Prepare message using a Spring helper
