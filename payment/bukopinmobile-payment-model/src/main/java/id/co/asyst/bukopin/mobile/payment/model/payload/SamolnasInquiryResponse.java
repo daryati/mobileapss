@@ -40,7 +40,7 @@ public class SamolnasInquiryResponse {
 
     private String element11;
 
-    private String element37;
+    private Long element37;
 
     private String element61;
 
@@ -218,20 +218,18 @@ public class SamolnasInquiryResponse {
 
     /**
      * Gets <code>element37</code>.
-     * 
      * @return The <code>element37</code>.
      */
-    public String getElement37() {
-	return element37;
+    public Long getElement37() {
+        return element37;
     }
 
     /**
      * Sets <code>element37</code>.
-     * 
      * @param element37 The <code>element37</code> to set.
      */
-    public void setElement37(String element37) {
-	this.element37 = element37;
+    public void setElement37(Long element37) {
+        this.element37 = element37;
     }
 
     /**
@@ -294,9 +292,7 @@ public class SamolnasInquiryResponse {
 
     /* Overrides: */
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override

@@ -69,9 +69,9 @@ public class SamolnasUtils {
     private static final String ROUTING_INFO_PART_1 = "00000441001";
     private static final String ROUTING_INFO_PART_2 = "6017441";
 
-    private static final String TRDES1 = "INET: BYR SAMOLNAS ";
-    private static final String TRDES2 = "00000000000000000000000IB0101";
-    private static final String TRDES3 = "INET : SAMOLNAS 01";
+    private static final String TRDES1 = "MB : BYR SAMOLNAS ";
+    private static final String TRDES2 = "Dr. ";
+    private static final String TRDES3 = " ";
     private static final String CURRENCY_CODE_IDR = "360";
     private static final String ELEMENT123_BIT_4_24 = "000000000000000000000";
     private static final String ELEMENT123_BIT_31_96 = "05MIAPOST000000000000000000000000000000000000000000000000000000000";
@@ -178,7 +178,7 @@ public class SamolnasUtils {
 	resp.setAdminFee(new BigDecimal(adminFee));
 	resp.setTotalAmount(resp.getAmount().add(resp.getAdminFee()));
 	resp.setElement11(element11);
-	resp.setElement37(element37);
+	resp.setElement37(Long.parseLong(element37));
 	resp.setElement61(element61);
 
 	return resp;
@@ -225,6 +225,12 @@ public class SamolnasUtils {
 	SamolnasPaymentTibcoDataRequest param = new SamolnasPaymentTibcoDataRequest();
 	param.setMti(MTI_PAYMENT);
 
+	String STAN = generateNumber(6);
+	// element 11 in payment must be different with in inquiry
+	if (element11.equals(STAN)) {
+	    STAN = generateNumber(6);
+	}
+	
 	if (accType.equalsIgnoreCase(AccountTypeEnum.SAVING.name())) {
 	    param.setElement3(PROCCESSING_CODE_PAYMENT_TABUNGAN);
 	} else if (accType.equalsIgnoreCase(AccountTypeEnum.GIRO.name())) {
@@ -233,7 +239,7 @@ public class SamolnasUtils {
 
 	param.setElement4(StringUtils.leftPad(amount + "00", 20, "0"));
 	param.setElement7(element7Format.format(date));
-	param.setElement11(element11);
+	param.setElement11(STAN);
 	param.setElement12(timeLocal.format(date));
 	param.setElement13(dateLocal.format(date));
 	param.setElement18(MERCHANT_TYPE_MOBILE);
@@ -251,8 +257,13 @@ public class SamolnasUtils {
 		.concat(StringUtils.rightPad(username, 15)).concat(ELEMENT123_BIT_112_147));
 	param.setElement120(ROUTING_INFO_PART_1.concat(codeCbs).concat(ROUTING_INFO_PART_2));
 
-	String element122_bit41_80 = TRDES2.concat(yearLocal.format(date)).concat(param.getElement12().substring(0, 4));
-	param.setElement122(TRDES1.concat(payCode).concat(element122_bit41_80).concat(TRDES3));
+	String desc1 = StringUtils.rightPad(TRDES1.concat(payCode), 40);
+	String desc2 = StringUtils.rightPad(TRDES2.concat(accNo), 40);
+	String desc3 = StringUtils.leftPad(TRDES3, 60);
+	String description = desc1.concat(desc2).concat(desc3);
+	param.setElement122(description);
+	//String element122_bit41_80 = TRDES2.concat(yearLocal.format(date)).concat(param.getElement12().substring(0, 4));
+	//param.setElement122(TRDES1.concat(payCode).concat(element122_bit41_80).concat(TRDES3));
 
 	req.setIdentity(identity);
 	req.setParameter(param);
