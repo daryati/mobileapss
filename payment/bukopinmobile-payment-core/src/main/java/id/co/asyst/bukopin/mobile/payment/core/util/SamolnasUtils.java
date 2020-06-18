@@ -287,8 +287,11 @@ public class SamolnasUtils {
 	String accountNumber = dataResp.getElement102();
 	String element122 = dataResp.getElement122();
 
-	String date = element122.substring(92, 100);
-	String referenceNumber = element122.substring(96, 111);
+	Date date = new Date();
+	String dt = dateParse.format(date);
+	
+	//String date = element122.substring(92, 100);
+	String referenceNumber = element122.substring(144, 159);
 	String payCode = element61.substring(0, 18);
 	String subscriberName = element61.substring(306, 331);
 	String nik = element61.substring(424, 440);
@@ -314,7 +317,7 @@ public class SamolnasUtils {
 	resp.setAccountNumber(accountNumber);
 	resp.setAdminFee(new BigDecimal(adminFee));
 	resp.setAmount(new BigDecimal(amount));
-	resp.setDate(date);
+	resp.setDate(dt);
 	resp.setMachineNo(machineNo.trim());
 	resp.setMerk(merk.trim());
 	resp.setModel(model.trim());
