@@ -106,7 +106,7 @@ public class InsuranceService {
 	    // send struk emoney by email
 	    String subject = "";
 	    if(DestinationTypeEnum.POSTBPJSKES.name().equalsIgnoreCase(resPurchase.getCodeIns())) {
-		subject = "BPJS Kes";
+		subject = "BPJS Kesehatan";
 	    }else if (DestinationTypeEnum.POSTINHEALTH.name().equalsIgnoreCase(resPurchase.getCodeIns())) {
 		subject = "Mandiri Inhealth";
 		formatter = new SimpleDateFormat("yyyyMMdd");
