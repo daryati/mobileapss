@@ -170,10 +170,12 @@ public class InsuranceService {
 	    ctx.setVariable("subscriberName", resPurchase.getSubscriberName());
 	    ctx.setVariable("participant", resPurchase.getParticipant());
 	    ctx.setVariable("month", resPurchase.getMonth().toString().concat(" Bulan"));
-	    ctx.setVariable("total", total.replace("Rp", "RP "));
-	    ctx.setVariable("adminFee", adminCharge.replace("Rp", "RP "));
-	    ctx.setVariable("prepaidAmount", prepaidInsurance.replace("Rp", "RP "));
-	    ctx.setVariable("amount", amount.replace("Rp", "RP "));
+	    ctx.setVariable("total", total.replace("Rp", "Rp "));
+	    ctx.setVariable("adminFee", adminCharge.replace("Rp", "Rp "));
+	    ctx.setVariable("prepaidAmount", prepaidInsurance.replace("Rp", "Rp "));
+	    ctx.setVariable("amount", amount.replace("Rp", "Rp "));
+	    ctx.setVariable("notes1", resPurchase.getNotes1());
+	    ctx.setVariable("notes2", resPurchase.getNotes2());
 	    
 	    
 

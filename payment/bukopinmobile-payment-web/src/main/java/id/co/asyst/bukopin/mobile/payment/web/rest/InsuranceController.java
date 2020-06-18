@@ -425,6 +425,17 @@ public class InsuranceController {
 	    purchaseInsuranceRes.setUsername(req.getData().getUsername());
 	    purchaseInsuranceRes.setCodeIns("POST"+req.getData().getCodeIns());
 	    
+	    //set note for email
+	    String elmt60[] = resPurchaseInsuranceTibco.getRespayment().getResult().getElement60().split("\\;");
+	    
+	    String notes1 = elmt60[elmt60.length-5]+" "+elmt60[elmt60.length-4];
+	    String notes2 = elmt60[elmt60.length-2]+" "+elmt60[elmt60.length-1];
+	    
+	    
+	    log.debug("notes 1 "+notes1);
+	    log.debug("NOTES 2 "+notes2);
+	    purchaseInsuranceRes.setNotes1(notes1);
+	    purchaseInsuranceRes.setNotes2(notes2);
 	    
 	    response.setCode(ResponseMessage.SUCCESS.getCode());
 	    response.setMessage(messageUtil.get("success", httpServletRequest.getLocale()));

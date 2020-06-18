@@ -172,8 +172,8 @@ public class TelcoService {
 	    ctx.setVariable("mobileNumber", mobileNumber);
 	    ctx.setVariable("provider", resPurchase.getpGroup());
 	    ctx.setVariable("total", total.replace("Rp", "RP "));
-	    ctx.setVariable("adminCharge", adminCharge.replace("Rp", "RP "));
-	    ctx.setVariable("voucher", amount.replace("Rp", "RP "));
+	    ctx.setVariable("adminCharge", adminCharge.replace("Rp", "Rp "));
+	    ctx.setVariable("voucher", amount.replace("Rp", "Rp "));
 
 	    String htmlContent = "";
 	    if ("Prepaid".equalsIgnoreCase(resPurchase.getInstitutionType())) {
