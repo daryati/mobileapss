@@ -249,14 +249,17 @@ public class TelcoService {
 	    
 	    String subject = " ";
 	    String desc = "";
+	    String fieldBill = "";
 	    if(category.equalsIgnoreCase(CATEGORY_TELEPHONE_TV)) {
 		// send struk emoney by email
 	    	subject = "Telepon & TV Kabel";
 			desc ="Telepon & TV Kabel";
+			fieldBill = "Nomor/ID Pelanggan";
 		
 	    } else {
 	    	subject = "Pulsa Pascabayar";
 			desc ="Pulsa Pascabayar";
+			fieldBill ="Nomor Tagihan";
 	    }
 	    
 	    //set full name
@@ -307,6 +310,7 @@ public class TelcoService {
 	    // Prepare the evaluation context
 	    final Locale locale = new Locale("en_US.UTF-8");
 	    final Context ctx = new Context(locale);
+	    ctx.setVariable("fieldBill", fieldBill);
 	    ctx.setVariable("desc", desc);
 	    ctx.setVariable("fullname", fullName);
 	    ctx.setVariable("reference", resTelcoPayment.getReferensi());
@@ -317,6 +321,10 @@ public class TelcoService {
 	    ctx.setVariable("customerName", resTelcoPayment.getCustName());
 	    ctx.setVariable("billPeriode", billPeriode);
 	    ctx.setVariable("provider", resTelcoPayment.getProductName());
+	    ctx.setVariable("total", total);
+	    ctx.setVariable("adminCharge", adminCharge);
+	    ctx.setVariable("bill", amount);
+	    
 	    ctx.setVariable("total", total);
 	    ctx.setVariable("adminCharge", adminCharge);
 	    ctx.setVariable("bill", amount);

@@ -150,6 +150,26 @@ public class EMoneyService {
 	    String accNoSeg4 = accNoOri.substring(7, 10);
 	    String accountNumber = accNoSeg1.concat(" "+accNoSeg2.concat(" "+accNoSeg3.concat(" "+accNoSeg4)));
 	    
+	    //set cutomer number per segment
+	    String custNo = resPurchase.getCustomerNumber();
+	    String custNoSeg1 = custNo.substring(0, 4);
+	    String custNoSeg2 = custNo.substring(4, 8);
+	    String custNoSeg3 = custNo.substring(8);
+	    
+	    String custNumber = custNoSeg1.concat(" " + custNoSeg2.concat(" " + custNoSeg3));
+	    
+	    //set customer name first letter upper case
+	    String name = resPurchase.getCustomerName().toLowerCase();
+	    String[] splited = name.split("\\s+");
+	    
+	    String custName = "";
+	    
+	    for(String split: splited) {
+            String str = split.substring(0, 1).toUpperCase() + split.substring(1);
+
+            custName += str.concat(" ");
+        }
+	    
 	    // thymleaf template mail
 	    // Prepare the evaluation context
 	    final Locale locale = new Locale("en_US.UTF-8");
@@ -160,17 +180,24 @@ public class EMoneyService {
 	    ctx.setVariable("date", date);
 	    ctx.setVariable("time", time);
 	    ctx.setVariable("accountNumber", accountNumber);
-	    ctx.setVariable("subscriberID", resPurchase.getCustomerNumber());
-	    ctx.setVariable("subscriberName", resPurchase.getCustomerName());
-	    ctx.setVariable("total", total.replace("Rp", "RP "));
+	    ctx.setVariable("subscriberID", custNumber);
+	    ctx.setVariable("subscriberName", custName.trim());
+	    /*ctx.setVariable("total", total.replace("Rp", "RP"));
 	    ctx.setVariable("adminCharge", adminCharge.replace("Rp", "RP "));
-	    ctx.setVariable("topUpGopay", amount.replace("Rp", "RP "));
+	    ctx.setVariable("topUpGopay", amount.replace("Rp", "RP "));*/
+	    
+	    ctx.setVariable("total", total);
+	    ctx.setVariable("adminCharge", adminCharge);
+	    ctx.setVariable("topUpGopay", amount);
+
+	   /* ctx.setVariable("topUpGopay", amount.replace("Rp", "RP "));*/
 	    ctx.setVariable("receipField1", resPurchase.getReceiptField1());
 	    ctx.setVariable("receipField2", resPurchase.getReceiptField2());
 	    ctx.setVariable("receipField3", resPurchase.getReceiptField3());
 	    ctx.setVariable("receipField4", resPurchase.getReceiptField4());
 	    ctx.setVariable("receipField5", resPurchase.getReceiptField5());
 	    ctx.setVariable("receipField6", resPurchase.getReceiptField6());
+
 	    
 	    // Prepare message using a Spring helper
 	    final MimeMessage mimeMessage = this.javaMailSender.createMimeMessage();
