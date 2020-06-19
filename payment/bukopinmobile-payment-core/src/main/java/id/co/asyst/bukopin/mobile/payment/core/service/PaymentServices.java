@@ -186,12 +186,12 @@ public class PaymentServices {
 	    // Create the HTML body using Thymeleaf
 	    final String htmlContent = this.htmlTemplateEngine.process(SAMOLNAS_TEMPLATE_NAME, ctx);
 	    message.setText(htmlContent, true); // true = isHtml
-	    message.addInline("header", new ClassPathResource("/mail/images/Header-M.png"));
-	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-M.png"));
-	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-M.png"));
-	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-M.png"));
-	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-M.png"));
-	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-M.png"));
+	    message.addInline("header", new ClassPathResource("/mail/images/Header-S.png"));
+	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-S.png"));
+	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-S.png"));
+	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-S.png"));
+	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-S.png"));
+	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-S.png"));
 
 	    javaMailSender.send(mimeMessage);
 	    log.debug("Samolnas receipt has been sent successfully");
