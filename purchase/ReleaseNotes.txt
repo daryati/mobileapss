@@ -1,4 +1,21 @@
 ===============================================================================
+   Bukopin-Mobile-Purchase 1.3.Alpha2 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Purchase - Version 1.3.Alpha2
+** Notes
+	* Release for phase 3b: CC & Paket Data.
+
+** Story
+	* 
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 
+
+
+===============================================================================
    Bukopin-Mobile-Purchase 1.3.Alpha1 Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Purchase - Version 1.3.Alpha1
@@ -6,10 +23,10 @@ Release Notes - Bukopin-Mobile-Purchase - Version 1.3.Alpha1
 	* Release for phase 3a: BPJS & Samolnas.
 
 ** Story
-	* 
+	* [BKPM-323] - [Backend] PLN (Prepaid & Postpaid): Add Giro Error Message
 
 ** Bug Fixed
-	*   
+	*
 	
 ** Deprecated Service
 	* 
