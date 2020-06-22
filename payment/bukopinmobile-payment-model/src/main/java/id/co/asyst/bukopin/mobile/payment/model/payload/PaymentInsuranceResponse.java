@@ -73,6 +73,9 @@ public class PaymentInsuranceResponse {
 	@JsonProperty("notes2")
     private String notes2;
 	
+	@JsonProperty("currentAmount")
+	    private BigDecimal currentAmount;
+	
 	
 
 	/* Transient Attributes: */
@@ -274,6 +277,22 @@ public class PaymentInsuranceResponse {
 
 	public void setNotes2(String notes2) {
 		this.notes2 = notes2;
+	}
+
+	/**
+	 * Gets <code>currentAmount</code>.
+	 * @return The <code>currentAmount</code>.
+	 */
+	public BigDecimal getCurrentAmount() {
+	    return currentAmount;
+	}
+
+	/**
+	 * Sets <code>currentAmount</code>.
+	 * @param currentAmount The <code>currentAmount</code> to set.
+	 */
+	public void setCurrentAmount(BigDecimal currentAmount) {
+	    this.currentAmount = currentAmount;
 	}
 
 	

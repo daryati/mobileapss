@@ -140,6 +140,7 @@ public class InsuranceService {
 	    String adminCharge = id.format(resPurchase.getAdminFee()).replace(",00", "");
 	    String amount = id.format(resPurchase.getAmount()).replace(",00", "");
 	    String prepaidInsurance = id.format(resPurchase.getPrepaidInsurance()).replace(",00", "");
+	    String currentAmount = id.format(resPurchase.getCurrentAmount()).replace(",00", "");
 	    
 	    //set account number per segment
 	    String accNoOri = resPurchase.getAccountNumber();
@@ -173,6 +174,7 @@ public class InsuranceService {
 	    ctx.setVariable("total", total.replace("Rp", "Rp "));
 	    ctx.setVariable("adminFee", adminCharge.replace("Rp", "Rp "));
 	    ctx.setVariable("prepaidAmount", prepaidInsurance.replace("Rp", "Rp "));
+	    ctx.setVariable("currentAmount", currentAmount.replace("Rp", "Rp "));// to be define in template
 	    ctx.setVariable("amount", amount.replace("Rp", "Rp "));
 	    ctx.setVariable("notes1", resPurchase.getNotes1());
 	    ctx.setVariable("notes2", resPurchase.getNotes2());
