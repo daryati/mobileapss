@@ -162,6 +162,50 @@ public class BkpmUtil {
 	String aplhaNumber = salt.toString();
 	return aplhaNumber;
     }
+    
+    /**
+     * Number Pattern Generator
+     * <p>Generate string with chunk pattern. e.g.: 123 456 789</p>
+     * 
+     * @param number String number to beautify
+     * @param chunkLength Length of each chunks
+     * @param separator Separator each between chunks
+     * @return Patterned String
+     */
+    public static String numberPattern(String number, int chunkLength, String separator) {
+	String pretty = "";
+	int length = number.length();
+	final int initialStart = 0;
+	int patternLength = chunkLength == 0 ? length : chunkLength; 
+		
+	for(int start=initialStart, end=patternLength; 
+		start<length; 
+		start+=patternLength, end+=patternLength) {
+	    if(start>initialStart) {
+		pretty += separator;
+	    }
+	    if(end > length) {
+		pretty += number.substring(start);
+	    } else {
+		pretty += number.substring(start, end);
+	    }
+	}
+	
+	return pretty;
+    }
+    
+    /**
+     * Pretty Phone Generator
+     * <p>Generate string of phone number with pattern. e.g.: 0811 2222 3333 4</p>
+     * 
+     * @param phone String of phone number to beautify
+     * @return Patterned Phone number
+     */
+    public static String prettyPhone(String phone) {
+	final int patternLength = 4;
+	final String separator = " ";
+	return numberPattern(phone, patternLength, separator);
+    }
 
     /* Overrides: */
 }

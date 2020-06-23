@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
@@ -152,11 +153,7 @@ public class EMoneyService {
 	    
 	    //set cutomer number per segment
 	    String custNo = resPurchase.getCustomerNumber();
-	    String custNoSeg1 = custNo.substring(0, 4);
-	    String custNoSeg2 = custNo.substring(4, 8);
-	    String custNoSeg3 = custNo.substring(8);
-	    
-	    String custNumber = custNoSeg1.concat(" " + custNoSeg2.concat(" " + custNoSeg3));
+	    String custNumber = BkpmUtil.prettyPhone(custNo);
 	    
 	    //set customer name first letter upper case
 	    String name = resPurchase.getCustomerName().toLowerCase();

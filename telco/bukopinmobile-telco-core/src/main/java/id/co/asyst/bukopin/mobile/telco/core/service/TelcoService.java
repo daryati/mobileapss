@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
@@ -154,10 +155,7 @@ public class TelcoService {
 
 	    // set mobile number per segmant
 	    String mobNum = resPurchase.getPhoneNumber();
-	    String mob1 = mobNum.substring(0,4);
-	    String mob2 = mobNum.substring(4,8);
-	    String mob3 = mobNum.substring(8,mobNum.length());
-	    String mobileNumber = mob1.concat(" "+mob2.concat(" "+mob3));
+	    String mobileNumber = BkpmUtil.prettyPhone(mobNum);
 
 	    // thymleaf template mail
 	    // Prepare the evaluation context
@@ -301,10 +299,7 @@ public class TelcoService {
 	    
 	    //set mobile number
 	    String custNoOri = resTelcoPayment.getCustNo();
-	    String custNoSeg1 = custNoOri.substring(0, 4);
-	    String custNoSeg2 = custNoOri.substring(4, 8);
-	    String custNoSeg3 = custNoOri.substring(8, custNoOri.length());
-	    String custNumber = custNoSeg1.concat(" "+custNoSeg2).concat(" "+custNoSeg3);
+	    String custNumber = BkpmUtil.prettyPhone(custNoOri);
 	    
 	    // thymleaf template mail
 	    // Prepare the evaluation context

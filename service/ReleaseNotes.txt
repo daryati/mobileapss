@@ -3,8 +3,7 @@
 ===============================================================================
 Release Notes - Bukopin-Mobile-Service - Version 1.3.Alpha2
 ** Notes
-	* Release for phase 3b: CC & Paket Data.
-	* Insurance & Samolnas Services to Tibco.
+	* Release for Email Styling.
 
 ** Story
 	* 
@@ -22,6 +21,7 @@ Release Notes - Bukopin-Mobile-Service - Version 1.3.Alpha2
 Release Notes - Bukopin-Mobile-Service - Version 1.3.Alpha1
 ** Notes
 	* Release for phase 3a: BPJS & Samolnas.
+	* Insurance & Samolnas Services to Tibco.
 
 ** Story
 	* 
