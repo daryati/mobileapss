@@ -64,9 +64,9 @@ public class PLNUtils {
     private static final String SETTLEMENT_ARANET_ID = "00000441001";
     private static final String PRODUCT_CODE_PREPAID = "003004";
     private static final String FORWARD_ID_BUKOPIN = "441";
-    private static final String TRDES1 = "INET:  PULSA LISTRIK    ";
-    private static final String TRDES2 = "                   IB0101     ";
-    private static final String TRDES3 = "INET:  LISTRIK           01                                 ";
+    private static final String TRDES1 = "MB : PULSA LISTRIK ";// +<nopel> paddingRight(40, space)
+    private static final String TRDES2 = "Dr. "; // +<norek sumber> paddingRight(40, space)
+    private static final String TRDES3 = ""; // paddingRight(60, space)
     private static final String CONVENTION_RATE = "0000000000000000000";
     private static final String FEE_CODE = "00";
     private static final String OPERATION_CODE = "05";
@@ -215,10 +215,10 @@ public class PLNUtils {
 	}
 	// padding 40
 	trDes1 = StringUtils.rightPad(trDes1, 40);
-	
-	String dateTrdes2 = trdes2.format(date);
-	String trDes2 = TRDES2.concat(dateTrdes2);
-	String description = trDes1.concat(trDes2).concat(TRDES3);
+	String trDes2 = StringUtils.rightPad(TRDES2.concat(request.getAccountNo()), 40);
+	// trdesc3
+	String trDes3 = StringUtils.rightPad(TRDES3, 60);
+	String description = trDes1.concat(trDes2).concat(trDes3);
 	
 	// set element 3
 	String elm3 = "";
