@@ -64,3 +64,9 @@ config:
          127.0.0.1
    status:
       redis: 0 #1 is active, 0 is disable
+      
+## url for other module
+url:
+   masterdata:
+      configuration: http://10.2.62.221:8082/
+   user: http://10.2.62.221:8080/
