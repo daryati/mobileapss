@@ -48,14 +48,14 @@ public class FAQ extends IdBasedObjectAclAware implements Serializable {
      * The Question to be asked
      */
     @NotBlank
-    @Column(name = "QUESTION")
+    @Column(name = "QUESTION", length = 2000)
     private String question;
 
     /**
      * Answer
      */
     @NotBlank
-    @Column(name = "ANSWER")
+    @Column(name = "ANSWER", length = 2000)
     private String answer;
 
     /**
