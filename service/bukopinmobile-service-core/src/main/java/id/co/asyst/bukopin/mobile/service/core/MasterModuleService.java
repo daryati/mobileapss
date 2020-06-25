@@ -9,8 +9,6 @@
  */
 package id.co.asyst.bukopin.mobile.service.core;
 
-import java.util.Map;
-
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonRequest;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
 import id.co.asyst.foundation.service.connector.annotations.ServiceUrl;
@@ -28,8 +26,8 @@ import retrofit2.http.Path;
  * @version $Revision$, Dec 19, 2019
  * @since 1.0.Alpha1
  */
-@ServiceUrl("http://localhost:8082/bukopinmobile-master/") // dev
-//@ServiceUrl("http://10.0.13.61:8082/bukopinmobile-master/") // prod
+@ServiceUrl("http://10.2.62.221:8082/bukopinmobile-master/") // dev LB
+//@ServiceUrl("http://10.0.13.54:8082/bukopinmobile-master/") // prod LB
 public interface MasterModuleService {
 
 //    @POST("destination/saveToDestination")
