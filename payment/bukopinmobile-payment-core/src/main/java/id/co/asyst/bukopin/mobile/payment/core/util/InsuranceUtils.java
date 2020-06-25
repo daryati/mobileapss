@@ -75,7 +75,7 @@ public class InsuranceUtils {
     private static final String TRDES1_BPJSKES = "MB : BYR BPJS KESEHATAN ";
     //private static final String TRDES2 = "00000000000000000000000IB0101 ";
     private static final String TRDES2_BPJSKES= "Dr. ";
-    private static final String TRDES3_BPJSKES = "-";
+    private static final String TRDES3_BPJSKES = " ";
     
     
     private static final String CONVENTION_RATE = "0000000000000000000";
@@ -163,7 +163,7 @@ public class InsuranceUtils {
     	param.setElement18(MERCHANT_TYPE_MOBILE);
     	param.setElement32(ACQUIRING_INSTITUTION_CODE);
     	param.setElement33(forwardInsCode);
-    	param.setElement37(generateAlphaNumeric(12));
+    	param.setElement37(generateSTAN(12));
     	param.setElement41(TERMINAL_IDENTIFICATION);
     	param.setElement48(element48);
     	param.setElement63(element63);

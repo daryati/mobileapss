@@ -50,6 +50,9 @@ public class InquiryInsuranceResponse {
 	@JsonProperty("totalAmount")
     private BigDecimal totalAmount;
 	
+	@JsonProperty("currentAmount")
+    private BigDecimal currentAmount;
+	
 	@JsonProperty("element4")
     private String element4;
 	
@@ -178,6 +181,22 @@ public class InquiryInsuranceResponse {
 
 	public void setElement120(String element120) {
 		this.element120 = element120;
+	}
+
+	/**
+	 * Gets <code>currentAmount</code>.
+	 * @return The <code>currentAmount</code>.
+	 */
+	public BigDecimal getCurrentAmount() {
+	    return currentAmount;
+	}
+
+	/**
+	 * Sets <code>currentAmount</code>.
+	 * @param currentAmount The <code>currentAmount</code> to set.
+	 */
+	public void setCurrentAmount(BigDecimal currentAmount) {
+	    this.currentAmount = currentAmount;
 	}
 
 	

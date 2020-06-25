@@ -287,8 +287,9 @@ public class InsuranceController {
 	    String month = element48Res.substring(30,32);
 	    BigDecimal amount = new BigDecimal(element48Res.substring(32,44));
 	    BigDecimal prepaidInsurance = new BigDecimal(element48Res.substring(284,296));
+	    BigDecimal currentAmount = new BigDecimal(element48Res.substring(272,284));
 	    BigDecimal adminFee = new BigDecimal(element48Res.substring(44, 56));	    
-	    BigDecimal totalAmount= amount.add(prepaidInsurance).add(adminFee);
+	    BigDecimal totalAmount= amount.add(adminFee);
 	    
 	    // mapping response
 	    InquiryInsuranceResponse inqInsuranceRes= new InquiryInsuranceResponse();
@@ -306,6 +307,7 @@ public class InsuranceController {
 	    inqInsuranceRes.setSubscriberName(subsName);
 	    inqInsuranceRes.setSubscriberNumber(SubNo);
 	    inqInsuranceRes.setTotalAmount(totalAmount);
+	    inqInsuranceRes.setCurrentAmount(currentAmount);
 	    
 	    
 	    response.setCode(ResponseMessage.SUCCESS.getCode());
@@ -418,13 +420,26 @@ public class InsuranceController {
 	    BigDecimal amount =new BigDecimal(el48Res.substring(32,44));
 	    BigDecimal adminFee = new BigDecimal(el48Res.substring(44,56));
 	    BigDecimal prepaidInsurance = new BigDecimal(el48Res.substring(284,296));
+	    BigDecimal currentAmount = new BigDecimal(el48Res.substring(272,284));
 	    purchaseInsuranceRes.setAmount(amount);
 	    purchaseInsuranceRes.setAdminFee(adminFee);
 	    purchaseInsuranceRes.setPrepaidInsurance(prepaidInsurance);
-	    purchaseInsuranceRes.setTotalAmount(amount.add(adminFee).add(prepaidInsurance));
+	    purchaseInsuranceRes.setTotalAmount(amount.add(adminFee));
+	    purchaseInsuranceRes.setCurrentAmount(currentAmount);
 	    purchaseInsuranceRes.setUsername(req.getData().getUsername());
 	    purchaseInsuranceRes.setCodeIns("POST"+req.getData().getCodeIns());
 	    
+	    //set note for email
+	    String elmt60[] = resPurchaseInsuranceTibco.getRespayment().getResult().getElement60().split("\\;");
+	    
+	    String notes1 = elmt60[elmt60.length-5]+" "+elmt60[elmt60.length-4];
+	    String notes2 = elmt60[elmt60.length-2]+" "+elmt60[elmt60.length-1];
+	    
+	    
+	    log.debug("notes 1 "+notes1);
+	    log.debug("NOTES 2 "+notes2);
+	    purchaseInsuranceRes.setNotes1(notes1);
+	    purchaseInsuranceRes.setNotes2(notes2);
 	    
 	    response.setCode(ResponseMessage.SUCCESS.getCode());
 	    response.setMessage(messageUtil.get("success", httpServletRequest.getLocale()));
@@ -604,6 +619,7 @@ public class InsuranceController {
 			    insurance.setTotalAmount(resInsurance.getTotalAmount());
 			    insurance.setTransaction(transaction);
 			    insurance.setDestination(insurance.getTransaction().getDestination());
+			    insurance.setCurrentAmount(resInsurance.getCurrentAmount());
 			    
 			    log.debug("save payment to insurance");
 			    //log.debug("isinya..... "+telcoPrepaid.toString());

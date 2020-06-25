@@ -106,7 +106,7 @@ public class InsuranceService {
 	    // send struk emoney by email
 	    String subject = "";
 	    if(DestinationTypeEnum.POSTBPJSKES.name().equalsIgnoreCase(resPurchase.getCodeIns())) {
-		subject = "BPJS Kes";
+		subject = "BPJS Kesehatan";
 	    }else if (DestinationTypeEnum.POSTINHEALTH.name().equalsIgnoreCase(resPurchase.getCodeIns())) {
 		subject = "Mandiri Inhealth";
 		formatter = new SimpleDateFormat("yyyyMMdd");
@@ -140,6 +140,7 @@ public class InsuranceService {
 	    String adminCharge = id.format(resPurchase.getAdminFee()).replace(",00", "");
 	    String amount = id.format(resPurchase.getAmount()).replace(",00", "");
 	    String prepaidInsurance = id.format(resPurchase.getPrepaidInsurance()).replace(",00", "");
+	    String currentAmount = id.format(resPurchase.getCurrentAmount()).replace(",00", "");
 	    
 	    //set account number per segment
 	    String accNoOri = resPurchase.getAccountNumber();
@@ -170,10 +171,13 @@ public class InsuranceService {
 	    ctx.setVariable("subscriberName", resPurchase.getSubscriberName());
 	    ctx.setVariable("participant", resPurchase.getParticipant());
 	    ctx.setVariable("month", resPurchase.getMonth().toString().concat(" Bulan"));
-	    ctx.setVariable("total", total.replace("Rp", "RP "));
-	    ctx.setVariable("adminFee", adminCharge.replace("Rp", "RP "));
-	    ctx.setVariable("prepaidAmount", prepaidInsurance.replace("Rp", "RP "));
-	    ctx.setVariable("amount", amount.replace("Rp", "RP "));
+	    ctx.setVariable("total", total.replace("Rp", "Rp "));
+	    ctx.setVariable("adminFee", adminCharge.replace("Rp", "Rp "));
+	    ctx.setVariable("prepaidAmount", prepaidInsurance.replace("Rp", "Rp "));
+	    ctx.setVariable("currentAmount", currentAmount.replace("Rp", "Rp "));// to be define in template
+	    ctx.setVariable("amount", amount.replace("Rp", "Rp "));
+	    ctx.setVariable("notes1", resPurchase.getNotes1());
+	    ctx.setVariable("notes2", resPurchase.getNotes2());
 	    
 	    
 
@@ -187,12 +191,12 @@ public class InsuranceService {
 	    // Create the HTML body using Thymeleaf
 	    final String htmlContent = this.htmlTemplateEngine.process(INSURANCE_TEMPLATE_NAME, ctx);
 	    message.setText(htmlContent, true); // true = isHtml
-	    message.addInline("header", new ClassPathResource("/mail/images/Header-M.png"));
-	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-M.png"));
-	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-M.png"));
-	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-M.png"));
-	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-M.png"));
-	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-M.png"));
+	    message.addInline("header", new ClassPathResource("/mail/images/Header-S.png"));
+	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-S.png"));
+	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-S.png"));
+	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-S.png"));
+	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-S.png"));
+	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-S.png"));
 
 	    javaMailSender.send(mimeMessage);
 	    log.debug("Insurance receipt has been sent successfully");

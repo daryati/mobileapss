@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
@@ -150,6 +151,22 @@ public class EMoneyService {
 	    String accNoSeg4 = accNoOri.substring(7, 10);
 	    String accountNumber = accNoSeg1.concat(" "+accNoSeg2.concat(" "+accNoSeg3.concat(" "+accNoSeg4)));
 	    
+	    //set cutomer number per segment
+	    String custNo = resPurchase.getCustomerNumber();
+	    String custNumber = BkpmUtil.prettyPhone(custNo);
+	    
+	    //set customer name first letter upper case
+	    String name = resPurchase.getCustomerName().toLowerCase();
+	    String[] splited = name.split("\\s+");
+	    
+	    String custName = "";
+	    
+	    for(String split: splited) {
+            String str = split.substring(0, 1).toUpperCase() + split.substring(1);
+
+            custName += str.concat(" ");
+        }
+	    
 	    // thymleaf template mail
 	    // Prepare the evaluation context
 	    final Locale locale = new Locale("en_US.UTF-8");
@@ -160,14 +177,25 @@ public class EMoneyService {
 	    ctx.setVariable("date", date);
 	    ctx.setVariable("time", time);
 	    ctx.setVariable("accountNumber", accountNumber);
-	    ctx.setVariable("subscriberID", resPurchase.getCustomerNumber());
-	    ctx.setVariable("subscriberName", resPurchase.getCustomerName());
-	    ctx.setVariable("total", total.replace("Rp", "RP "));
+	    ctx.setVariable("subscriberID", custNumber);
+	    ctx.setVariable("subscriberName", custName.trim());
+	    /*ctx.setVariable("total", total.replace("Rp", "RP"));
 	    ctx.setVariable("adminCharge", adminCharge.replace("Rp", "RP "));
-	    ctx.setVariable("topUpGopay", amount.replace("Rp", "RP "));
+	    ctx.setVariable("topUpGopay", amount.replace("Rp", "RP "));*/
 	    
-	    
+	    ctx.setVariable("total", total);
+	    ctx.setVariable("adminCharge", adminCharge);
+	    ctx.setVariable("topUpGopay", amount);
 
+	   /* ctx.setVariable("topUpGopay", amount.replace("Rp", "RP "));*/
+	    ctx.setVariable("receipField1", resPurchase.getReceiptField1());
+	    ctx.setVariable("receipField2", resPurchase.getReceiptField2());
+	    ctx.setVariable("receipField3", resPurchase.getReceiptField3());
+	    ctx.setVariable("receipField4", resPurchase.getReceiptField4());
+	    ctx.setVariable("receipField5", resPurchase.getReceiptField5());
+	    ctx.setVariable("receipField6", resPurchase.getReceiptField6());
+
+	    
 	    // Prepare message using a Spring helper
 	    final MimeMessage mimeMessage = this.javaMailSender.createMimeMessage();
 	    final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, StandardCharsets.UTF_8.name());
@@ -178,12 +206,12 @@ public class EMoneyService {
 	    // Create the HTML body using Thymeleaf
 	    final String htmlContent = this.htmlTemplateEngine.process(EMONEY_TEMPLATE_NAME, ctx);
 	    message.setText(htmlContent, true); // true = isHtml
-	    message.addInline("header", new ClassPathResource("/mail/images/Header-M.png"));
-	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-M.png"));
-	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-M.png"));
-	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-M.png"));
-	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-M.png"));
-	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-M.png"));
+	    message.addInline("header", new ClassPathResource("/mail/images/Header-S.png"));
+	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-S.png"));
+	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-S.png"));
+	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-S.png"));
+	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-S.png"));
+	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-S.png"));
 
 	    javaMailSender.send(mimeMessage);
 	    log.debug("EMoney receipt has been sent successfully");

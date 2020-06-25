@@ -72,15 +72,14 @@ public class PLNUtils {
     private static final String SETTLEMENT_ARANET_ID = "00000441001";
     private static final String PRODUCT_CODE_POSTPAID = "003001";
     private static final String FORWARD_ID_BUKOPIN = "441";
-    private static final String TRDES1 = "INET : BAYAR LISTRIK ";// <nopel> paddingRight(space)
-    private static final String TRDES2 = "IB0101 "; // +<yymmddHHmm> paddingLeft(0)
-    private static final String TRDES3 = "INET : LISTRIK 01"; // paddingRight(space)
+    private static final String TRDES1 = "MB : BAYAR LISTRIK ";// +<nopel> paddingRight(40, space)
+    private static final String TRDES2 = "Dr. "; // +<norek sumber> paddingRight(40, space)
+    private static final String TRDES3 = ""; // paddingRight(60, space)
     private static final String ALPHA_NUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
     private static SimpleDateFormat paymentResTime = new SimpleDateFormat("dd MMM yyyy - HH:mm");
     private static DateFormat element7Format = new SimpleDateFormat("MMddHHmmss");
     private static SimpleDateFormat timeLocal = new SimpleDateFormat("HHmmss");
     private static SimpleDateFormat dateLocal = new SimpleDateFormat("MMdd");
-    private static SimpleDateFormat trdes2 = new SimpleDateFormat("yyMMddHHmm");
     private static int PLN_LENGTH_TRXID = 12;
     private static String TIBCO_CLIENT_ID = "MBUKOPIN";
     private static String ADDITIONAL_FEE_DIGIT="00";
@@ -104,9 +103,6 @@ public class PLNUtils {
     private static final String FLAG_CBS = "     ";
     private static final int USER_LOGIN_LENGTH = 15;
     private static final String PAY_ELEMENT_183 = "0000000000000000000"; // 19 chars
-    
-    private static final String PADDING_CHAR_SPACE = " ";
-    private static final String PADDING_CHAR_ZERO = "0";
     
     private static final String KEY_PREV_METER = "previous";
     private static final String KEY_CURRENT_METER = "current";
@@ -187,11 +183,11 @@ public class PLNUtils {
 	paymentRequest.setIdentity(identity);
 	
 	// trdesc1+nopel
-	String trdesc1 = StringUtils.rightPad(TRDES1+request.getSubscriberNumber(), 40, PADDING_CHAR_SPACE);
-	// trdesc2+yymmddHHmm
-	String trdesc2 = StringUtils.leftPad(TRDES2+trdes2.format(date)+PADDING_CHAR_SPACE, 40, PADDING_CHAR_ZERO);
+	String trdesc1 = StringUtils.rightPad(TRDES1+request.getSubscriberNumber(), 40);
+	// trdesc2+sumberdana
+	String trdesc2 = StringUtils.rightPad(TRDES2+request.getAccountNo(), 40);
 	// trdesc3
-	String trdesc3 = StringUtils.rightPad(TRDES3, 60, PADDING_CHAR_SPACE);
+	String trdesc3 = StringUtils.rightPad(TRDES3, 60);
 	// set description
 	String description = trdesc1+trdesc2+trdesc3;
 	
@@ -230,7 +226,7 @@ public class PLNUtils {
 	param.setElement103(PAY_ELEMENT_183);
 	param.setElement120(SETTLEMENT_ARANET_ID+PRODUCT_CODE_POSTPAID+MERCHANT_TYPE_MOBILE+FORWARD_ID_BUKOPIN);
 	param.setElement122(description);
-	String username = StringUtils.rightPad(request.getUsername().toUpperCase(), USER_LOGIN_LENGTH, PADDING_CHAR_SPACE);
+	String username = StringUtils.rightPad(request.getUsername().toUpperCase(), USER_LOGIN_LENGTH);
 	param.setElement123(
 		IDR_CURRENCY_CODE 
 		+ CONVENTION_RATE 

@@ -43,6 +43,8 @@ public class TransactionHistoryInsuranceResponse {
     private BigDecimal adminFee;
 
     private BigDecimal totalAmount;
+    
+    private BigDecimal currentAmount;
 
     /* Transient Attributes: */
 
@@ -226,12 +228,30 @@ public class TransactionHistoryInsuranceResponse {
     public void setTotalAmount(BigDecimal totalAmount) {
         this.totalAmount = totalAmount;
     }
+    
+    
 
     /* Getters & setters for transient attributes: */
 
     /* Functionalities: */
 
     /* Overrides: */
+
+    /**
+     * Gets <code>currentAmount</code>.
+     * @return The <code>currentAmount</code>.
+     */
+    public BigDecimal getCurrentAmount() {
+        return currentAmount;
+    }
+
+    /**
+     * Sets <code>currentAmount</code>.
+     * @param currentAmount The <code>currentAmount</code> to set.
+     */
+    public void setCurrentAmount(BigDecimal currentAmount) {
+        this.currentAmount = currentAmount;
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

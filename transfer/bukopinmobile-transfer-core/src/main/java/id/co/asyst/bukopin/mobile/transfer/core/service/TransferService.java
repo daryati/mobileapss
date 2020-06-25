@@ -184,9 +184,9 @@ public class TransferService {
 	    Bank bank = bankService.findBankByBankCode(resTransfer.getPostingTo().getBankCode());
 	    ctx.setVariable("toAccountType", bank.getBankName()); //?? dpt account type / bank name dr mn?
 	    ctx.setVariable("toAccountNumber", toAccountNumber);	   
-	    ctx.setVariable("total", total.replace("Rp", "RP "));
-	    ctx.setVariable("adminFee", adminCharge.replace("Rp", "RP "));
-	    ctx.setVariable("amount", amount.replace("Rp", "RP "));
+	    ctx.setVariable("total", total.replace("Rp", "Rp"));
+	    ctx.setVariable("adminFee", adminCharge.replace("Rp", "Rp"));
+	    ctx.setVariable("amount", amount.replace("Rp", "Rp"));
 	    
 
 		
@@ -210,12 +210,12 @@ public class TransferService {
 	    message.setTo(user.get("email"));
 	    
 	    message.setText(htmlContent, true); // true = isHtml
-	    message.addInline("header", new ClassPathResource("/mail/images/Header-M.png"));
-	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-M.png"));
-	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-M.png"));
-	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-M.png"));
-	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-M.png"));
-	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-M.png"));
+	    message.addInline("header", new ClassPathResource("/mail/images/Header-S.png"));
+	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-S.png"));
+	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-S.png"));
+	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-S.png"));
+	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-S.png"));
+	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-S.png"));
 
 	    javaMailSender.send(mimeMessage);
 	    log.debug("Transfer receipt struck has been sent successfully");
@@ -298,12 +298,12 @@ public class TransferService {
 		}
 	    
 	    message.setText(htmlContent, true); // true = isHtml
-	    message.addInline("header", new ClassPathResource("/mail/images/Header-M.png"));
-	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-M.png"));
-	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-M.png"));
-	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-M.png"));
-	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-M.png"));
-	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-M.png"));
+	    message.addInline("header", new ClassPathResource("/mail/images/Header-S.png"));
+	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-S.png"));
+	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-S.png"));
+	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-S.png"));
+	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-S.png"));
+	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-S.png"));
 
 	    javaMailSender.send(mimeMessage);
 	    log.debug("Transfer receipt Saved has been sent successfully");

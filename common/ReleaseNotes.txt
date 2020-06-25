@@ -1,4 +1,24 @@
 ===============================================================================
+   Bukopin-Mobile-Common 1.3.Alpha2 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Common - Version 1.3.Alpha2
+** Notes
+	* Release for Email Styling.
+
+** New Utility:
+	* Pretty phone number generator to print phone number with patter (e.g. 0811 2222 3333 4).
+
+** Story
+	* 
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 
+
+
+===============================================================================
    Bukopin-Mobile-Common 1.3.Alpha1 Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Common - Version 1.3.Alpha1

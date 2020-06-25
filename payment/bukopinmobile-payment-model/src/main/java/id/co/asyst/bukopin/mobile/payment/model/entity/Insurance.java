@@ -51,6 +51,9 @@ public class Insurance extends IdBasedObject {
     @Column(name = "TOTAL_AMOUNT", nullable = false)
     private BigDecimal totalAmount;
     
+    @Column(name = "CURRENT_AMOUNT", nullable = false, columnDefinition = "numeric(19,2) default 0")
+    private BigDecimal currentAmount;
+    
     @Column(name = "MONTH", nullable = false, length = 50)
     private String month;
     
@@ -187,6 +190,23 @@ public class Insurance extends IdBasedObject {
 	public void setDestination(
 			id.co.asyst.bukopin.mobile.master.model.entity.Destination destination) {
 		this.destination = destination;
+	}
+
+	
+	/**
+	 * Gets <code>currentAmount</code>.
+	 * @return The <code>currentAmount</code>.
+	 */
+	public BigDecimal getCurrentAmount() {
+	    return currentAmount;
+	}
+
+	/**
+	 * Sets <code>currentAmount</code>.
+	 * @param currentAmount The <code>currentAmount</code> to set.
+	 */
+	public void setCurrentAmount(BigDecimal currentAmount) {
+	    this.currentAmount = currentAmount;
 	}
 
 	@Override

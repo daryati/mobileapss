@@ -540,8 +540,9 @@ public class TransactionHistoryDaoImpl implements TransactionHistoryDao {
 	result.setParticipant(insuranceResp.get(8));
 	result.setPrepaidInsurance(new BigDecimal(String.valueOf(insuranceResp.get(9)).replace(".00", "")));
 	result.setTotalAmount(new BigDecimal(String.valueOf(insuranceResp.get(10)).replace(".00", "")));
-	result.setSubscriberNumber(insuranceResp.get(13).trim());
-	result.setSubscriberName(insuranceResp.get(14).trim());
+	result.setCurrentAmount(new BigDecimal(String.valueOf(insuranceResp.get(13)).replace(".00", "")));
+	result.setSubscriberNumber(insuranceResp.get(14).trim());
+	result.setSubscriberName(insuranceResp.get(15).trim());
 	response = Optional.of(result);
 
 	entityManager.close();
