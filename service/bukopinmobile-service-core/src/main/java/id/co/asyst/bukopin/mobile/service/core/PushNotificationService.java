@@ -24,9 +24,9 @@ import retrofit2.http.POST;
  * @version $Revision$, Jun 2, 2020
  * @since 1.2.Alpha1
  */
-@ServiceUrl("https://fcm.googleapis.com")
+@ServiceUrl("https://fcm.googleapis.com/")
 public interface PushNotificationService {
 
-    @POST("/fcm/send")
+    @POST("fcm/send")
     Call<Object> pushNotif(@Header("Authorization") String auth, @Header("Content-Type") String contentType, @Body Object req);
 }
