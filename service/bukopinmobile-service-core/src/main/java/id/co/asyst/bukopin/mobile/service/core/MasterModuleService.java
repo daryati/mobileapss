@@ -26,7 +26,8 @@ import retrofit2.http.Path;
  * @version $Revision$, Dec 19, 2019
  * @since 1.0.Alpha1
  */
-@ServiceUrl("http://10.2.62.221:8082/bukopinmobile-master/") // dev LB
+@ServiceUrl("http://localhost:8082/bukopinmobile-master/") // non LB
+//@ServiceUrl("http://10.2.62.221:8082/bukopinmobile-master/") // dev LB
 //@ServiceUrl("http://10.0.13.54:8082/bukopinmobile-master/") // prod LB
 public interface MasterModuleService {
 
