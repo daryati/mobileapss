@@ -272,7 +272,7 @@ public class TelcoService {
 		    	subject = "Telepon & TV Kabel";
 				desc ="Telepon & TV Kabel";
 				fieldBill = "Nomor/ID Pelanggan";
-				billPeriode = resTelcoPayment.getBillPeriode();
+				billPeriode = resTelcoPayment.getBillPeriode().concat(" " + "BULAN");
 				
 		    } else {
 		    	subject = "Pulsa Pascabayar";
