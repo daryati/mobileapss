@@ -248,17 +248,7 @@ public class TelcoService {
 	    String subject = " ";
 	    String desc = "";
 	    String fieldBill = "";
-	    if(category.equalsIgnoreCase(CATEGORY_TELEPHONE_TV)) {
-		// send struk emoney by email
-	    	subject = "Telepon & TV Kabel";
-			desc ="Telepon & TV Kabel";
-			fieldBill = "Nomor/ID Pelanggan";
-		
-	    } else {
-	    	subject = "Pulsa Pascabayar";
-			desc ="Pulsa Pascabayar";
-			fieldBill ="Nomor Tagihan";
-	    }
+	    
 	    
 	    //set full name
 	    String fullName = "";
@@ -277,7 +267,18 @@ public class TelcoService {
 		log.error(e.getMessage());
 	    }
 		
-	     
+	    if(category.equalsIgnoreCase(CATEGORY_TELEPHONE_TV)) {
+			// send struk emoney by email
+		    	subject = "Telepon & TV Kabel";
+				desc ="Telepon & TV Kabel";
+				fieldBill = "Nomor/ID Pelanggan";
+				billPeriode = resTelcoPayment.getBillPeriode().concat(" " + "BULAN");
+				
+		    } else {
+		    	subject = "Pulsa Pascabayar";
+				desc ="Pulsa Pascabayar";
+				fieldBill ="Nomor Tagihan";
+		    }
 	    
 	    //set format rupiah
 	    NumberFormat id = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
