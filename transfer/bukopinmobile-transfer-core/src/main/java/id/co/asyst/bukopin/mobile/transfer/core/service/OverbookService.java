@@ -307,7 +307,7 @@ public class OverbookService {
 						tf.setUsername(user);
 						
 						tf.setMessage(request.getMessage());
-						tf.setReferenceCode(result.getAuthID());
+						tf.setReferenceCode(result.getBankReference());
 						tf.setStatus(BkpmConstants.STATUS_SUCCESS);
 						
 						// find existing receiver info
