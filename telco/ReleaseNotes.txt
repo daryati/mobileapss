@@ -6,7 +6,9 @@ Release Notes - Bukopin-Mobile-Telco - Version 1.3.Alpha2
 	* Release for Email Styling.
 
 ** Story
-	* 
+	* [BKPM-349] - [Backend] Email Telephone & Tv Cable
+	* [BKPM-351] - [Backend] Change font-size on transaction receipt email
+	* [BKPM-353] - [Backend] Format idPelanggan / Nomor Telephone di Struk Email
 	
 ** Bug Fixed
 	* 

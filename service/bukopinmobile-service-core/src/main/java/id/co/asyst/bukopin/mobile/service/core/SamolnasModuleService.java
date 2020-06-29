@@ -26,7 +26,7 @@ import retrofit2.http.POST;
  * @since 1.2.Alpha1
  */
 //@ServiceUrl("http://10.2.62.80:55557") // dev
-@ServiceUrl("http://10.0.13.20:55557") // prod
+@ServiceUrl("http://10.0.13.20:55559") // prod
 public interface SamolnasModuleService {
 	
 	@POST("/")
