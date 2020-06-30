@@ -205,7 +205,6 @@ public class AccountController {
     @PostMapping("/verification")
     public CommonResponse verification(@Valid @RequestBody CommonRequest<AccountVerificationRequest> request)
 	    throws DatatypeConfigurationException {
-	log.debug("REST request to Verification : {}", request.getData());
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
 	String username = request.getData().getDebitCard().getUsername();
@@ -213,7 +212,6 @@ public class AccountController {
 	String otp = request.getData().getOtp();
 	ActivateDebitCardRequest debitCard = request.getData().getDebitCard();
 	Date currentTime = new Date();
-	log.debug("Account - List Account for receiver : " + receiver);
 	
 	// Verify User
 	User user = userService.findUserByUsername(username);
@@ -359,8 +357,6 @@ public class AccountController {
 	    throws Exception {
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
-	log.debug("Account - Activation: " + request.getData().getUsername());
-
 	String username = request.getData().getUsername();
 	String mainAccount = request.getData().getMainAccountNo();
 
@@ -514,7 +510,6 @@ public class AccountController {
     @PostMapping("/preverification")
     public CommonResponse preVerification(@Valid @RequestBody CommonRequest<ActivateDebitCardRequest> request)
 	    throws DatatypeConfigurationException, NoSuchAlgorithmException, IOException, ParseException {
-	log.debug("REST request to Preverification : {}", request.getData().getRegisteredCard());
 	ActivateDebitCardRequest debitCard = request.getData();
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
@@ -675,7 +670,6 @@ public class AccountController {
     @PostMapping("/findUserByUsername")
     public CommonResponse findUserByUsername(@Valid @RequestBody CommonRequest<User> request)
 	    throws DatatypeConfigurationException, NoSuchAlgorithmException, IOException {
-	log.debug("REST find user by username... " + request.getData().getUsername());
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
 
@@ -701,14 +695,11 @@ public class AccountController {
      */
     @GetMapping("/findUserIdByUsername/{username}")
     public CommonResponse findUserIdByUsername(@PathVariable String username) {
-	log.debug("Find user Id by Username " + username);
-
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
 
 	User user = userService.findUserByUsername(username);
 	if (null != user) {
-	    log.debug("User id Successfully retrieved ....");
 	    response.setData(user.getId());
 	} else {
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
@@ -731,8 +722,6 @@ public class AccountController {
     public CommonResponse changeMainAccount(@Valid @RequestBody CommonRequest<AccountActivationRequest> request) {
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
-	log.debug("Account - Change main account: " + request.getData().getUsername());
-
 	String username = request.getData().getUsername();
 	String mainAccount = request.getData().getMainAccountNo();
 
@@ -802,14 +791,11 @@ public class AccountController {
      */
     @GetMapping("/findUserByUsername/{username}")
     public CommonResponse findUserByUsername(@PathVariable String username) {
-	log.debug("Find user by Username " + username);
-
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
 
 	User user = userService.findUserByUsername(username);
 	if (null != user) {
-	    log.debug("User Successfully retrieved ....");
 	    Map<String, Object> res = new HashMap<>();
 	    res.put("user", user);
 	    response.setData(res);
@@ -832,14 +818,12 @@ public class AccountController {
      */
     @GetMapping("/findAccountInfoByAccountNo/{accountNo}")
     public CommonResponse findAccountInfoByAccountNo(@PathVariable String accountNo) {
-	log.debug("Find Account Info by Account No : " + accountNo);
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
 	
 	accountNo = CryptoUtil.decryptAESHex(accountNo);
 	AccountInfo accInfo = accInfoUserService.findByAccountNo(accountNo);
 	if(null!=accInfo) {
-	    log.debug("Account Info Successfully retrieved ....");
 	    Map<String, Object> res = new HashMap<>();
 	    res.put("accountInfo", accInfo);
 	    response.setData(res);
@@ -864,7 +848,6 @@ public class AccountController {
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse verifyAccountOwner(@Valid @RequestBody 
 	    CommonRequest<VerifyAccountOwnerRequest> request) {
-	log.debug("Verify account owner request: " +BkpmUtil.convertToJson(request));
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
 	
@@ -904,7 +887,6 @@ public class AccountController {
 	    response.setData(data);
 	}
 	
-	log.debug("Verify account owner response: " +BkpmUtil.convertToJson(response));
 	return response;
     }
 
@@ -917,7 +899,6 @@ public class AccountController {
     @GetMapping("/getAccountCard/{username}")
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse getAccountCardByUsername(@PathVariable String username) {
-	log.debug("REST request to get account card by username");
         CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(), messageUtil.get("success", servletRequest.getLocale()));
         
 //        AccountCard result = accountCardService.findByUsername(username);
@@ -943,7 +924,6 @@ public class AccountController {
             i++;
         }
         
-        log.debug("Data Account Card {} " + BkpmUtil.convertToJson(result));
         response.setData(result);
         
         return response;

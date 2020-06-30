@@ -17,24 +17,18 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.apache.lucene.store.VerifyingLockFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.net.HttpHeaders;
 
-import id.co.asyst.bukopin.mobile.common.core.exception.DataNotMatchException;
 import id.co.asyst.bukopin.mobile.common.core.exception.ForbiddenAccessException;
 import id.co.asyst.bukopin.mobile.common.core.service.impl.BkpmService;
 import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
@@ -51,7 +45,6 @@ import id.co.asyst.bukopin.mobile.user.core.service.UserMailService;
 import id.co.asyst.bukopin.mobile.user.core.service.UserPINService;
 import id.co.asyst.bukopin.mobile.user.core.service.UserService;
 import id.co.asyst.bukopin.mobile.user.core.service.UserTokenService;
-import id.co.asyst.bukopin.mobile.user.core.util.AuthUtil;
 import id.co.asyst.bukopin.mobile.user.model.AccountBalanceByAccNoReq;
 import id.co.asyst.bukopin.mobile.user.model.AccountBalanceQRReq;
 import id.co.asyst.bukopin.mobile.user.model.AccountBalanceReq;
@@ -156,7 +149,6 @@ public class AccountInfoController {
      */
 	@PostMapping("/getInquiryTransaction/preHandle")
     public CommonResponse getInquiryTransaction(@Valid @RequestBody CommonRequest<InquiryTransactionReq> inquiryTransactionReq) throws URISyntaxException {
-        log.debug("REST request to get Inquiry Transaction");
         CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(), messageUtil.get("success", httpServletRequest.getLocale()));
         InquiryTransactionRes result = inquiryTransactionService.getInquiry(inquiryTransactionReq.getData());
         if (null != result) {
@@ -171,7 +163,6 @@ public class AccountInfoController {
     
     @PostMapping("/getAccountBalance/preHandle")
     public  CommonResponse getAccountBalance(@Valid @RequestBody CommonRequest<AccountBalanceReq> accountBalanceReq) throws Exception {
-        log.debug("REST request to get account balance");
         CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(), messageUtil.get("success", httpServletRequest.getLocale()));
         
         User user = UserService.findUserByUsername(accountBalanceReq.getData().getUsername());
@@ -181,7 +172,6 @@ public class AccountInfoController {
 		    accountBalanceReq.getData().getUsername(), httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION),
 		    httpServletRequest.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
 	    if (!verifyToken.isValid()) {
-		log.error("Token or device owner not valid");
 		throw new ForbiddenAccessException();
 	    }
 	}
@@ -228,7 +218,6 @@ public class AccountInfoController {
      */
     @PostMapping("/getAccountBalanceQR")
     public  CommonResponse getAccountBalanceQR(@Valid @RequestBody CommonRequest<AccountBalanceQRReq> request) throws Exception {
-        log.debug("REST request to get account balance by QR Code: {}"+BkpmUtil.convertToJson(request));
         CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(), messageUtil.get("success", httpServletRequest.getLocale()));
         
 	if (!commonService.verifyLocalIp(httpServletRequest)) {
@@ -237,7 +226,6 @@ public class AccountInfoController {
 		    request.getData().getUsername(), httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION),
 		    httpServletRequest.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
 	    if (!verifyToken.isValid()) {
-		log.error("Token or device owner not valid");
 		throw new ForbiddenAccessException();
 	    }
 	}
@@ -273,7 +261,6 @@ public class AccountInfoController {
     
     @GetMapping("/getAccountInfo/{username}/preHandle")
     public CommonResponse getAccountInfo(@PathVariable String username) {
-	log.debug("Find Account Info for username " + username);
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(), messageUtil.get("success", httpServletRequest.getLocale()));
 	
 	User user = null;
@@ -284,7 +271,6 @@ public class AccountInfoController {
 		    httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION),
 		    httpServletRequest.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
 	    if (!verifyToken.isValid()) {
-		log.error("Token or device owner not valid");
 		throw new ForbiddenAccessException();
 	    }
 	    user = verifyToken.getUser();
@@ -294,7 +280,6 @@ public class AccountInfoController {
 	
 	// Validate User
 	if(user == null) {
-	    log.debug("Cannot find user with username " + username);
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 	    response.setMessage(messageUtil.get("error.data.not.found", httpServletRequest.getLocale()));
 	    return response;
@@ -302,7 +287,6 @@ public class AccountInfoController {
 	
 	List<AccountInfo> findAccountInfo = acUserService.findByActiveCif(user.getCifNumber());
 	if (findAccountInfo.isEmpty()) {
-	    log.debug("Cannot find account info with CIF number" + user.getCifNumber());
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 	    response.setMessage(messageUtil.get("error.data.not.found", httpServletRequest.getLocale()));
 	    return response;
@@ -312,7 +296,6 @@ public class AccountInfoController {
 	for (int i = 0; i < findAccountInfo.size(); i++) {
 	    // set request get account balance
 	    AccountBalanceByAccNoReq accountBalanceReq = new AccountBalanceByAccNoReq();
-	    log.debug("account type "+findAccountInfo.get(i).getAccountType().getValue());
 	    accountBalanceReq.setAccountType(BigInteger.valueOf(findAccountInfo.get(i).getAccountType().getValue()));
 	    accountBalanceReq.setUsername(username);
 	    accountBalanceReq.setAccountNo(findAccountInfo.get(i).getAccountNo());
@@ -348,7 +331,6 @@ public class AccountInfoController {
     
     @PostMapping("/getAccountBalanceByAccNo/preHandle")
     public  CommonResponse getAccountBalanceByAccNo(@Valid @RequestBody CommonRequest<AccountBalanceByAccNoReq> accountBalanceByAccNoReq) throws URISyntaxException {
-        log.debug("REST request to get account balance by Account Number");
         CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(), messageUtil.get("success", httpServletRequest.getLocale()));
         AccountBalanceRes result = accountBalanceService.getAccountBalanceByAccountNum(accountBalanceByAccNoReq.getData());
         response.setData(result);

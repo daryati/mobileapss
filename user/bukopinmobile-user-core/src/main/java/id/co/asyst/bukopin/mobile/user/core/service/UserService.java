@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +35,6 @@ import id.co.asyst.bukopin.mobile.user.core.util.AuthUtil;
 import id.co.asyst.bukopin.mobile.user.model.centagate.LoginResultData;
 import id.co.asyst.bukopin.mobile.user.model.entity.CustomerLogin;
 import id.co.asyst.bukopin.mobile.user.model.entity.User;
-import id.co.asyst.bukopin.mobile.user.model.payload.LoginResponse;
 import id.co.asyst.bukopin.mobile.user.model.security.UserToken;
 import id.co.asyst.foundation.service.connector.Services;
 import retrofit2.Response;
@@ -117,7 +114,6 @@ public class UserService {
      * @return user
      */
     public User save(User user) {
-	log.debug("Save User with username : {} " + user.getUsername());
 	return userRepository.save(user);
     }
 
@@ -128,7 +124,6 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public List<User> findAll() {
-	log.debug("Find all user : {}");
 	return userRepository.findAll();
     }
 
@@ -140,7 +135,6 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public User findUserByUsername(String username) {
-	log.debug("Find user with username : {} " + username);
 	return userRepository.findByUsername(username);
     }
 
@@ -152,13 +146,11 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public User findUserByMobilePhone(String mobilePhone) {
-	log.debug("Find user with Mobile Phone : {} " + mobilePhone);
 	return userRepository.findByMobilePhone(mobilePhone);
     }
 
     @Transactional(readOnly = true)
     public User findUserByEmail(String email) {
-	log.debug("Find user by Email : {} " + email);
 	return userRepository.getUserByEmail(email);
     }
 
@@ -168,7 +160,6 @@ public class UserService {
      * @param username
      */
     public void delete(String username) {
-	log.debug("Delete user with username : {} " + username);
 	User user = findUserByUsername(username);
 	userRepository.deleteById(user.getId());
     }
@@ -281,7 +272,6 @@ public class UserService {
 	if (logoutResponse.isSuccessful() && BkpmConstants.CODE_CTG_SUCCESS.equals(logoutResponse.body().getCode())) {
 	    this.insertLogoutData(user);
 	} else {
-	    log.error("Logout failed");
 	    log.debug(BkpmUtil.convertToJson(logoutResponse.body()));
 
 	    response.setCode(ResponseMessage.ERROR.getCode());

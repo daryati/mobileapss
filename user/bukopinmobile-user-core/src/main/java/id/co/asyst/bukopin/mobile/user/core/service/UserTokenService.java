@@ -82,7 +82,6 @@ public class UserTokenService {
      * @return The persisted UserToken.
      */
     public UserToken save(UserToken userToken) {
-        log.debug("Request to save UserToken : {}");
         return userTokenRepository.save(userToken);
     }
 
@@ -93,7 +92,6 @@ public class UserTokenService {
      */
     @Transactional(readOnly = true)
     public List<UserToken> findAll() {
-        log.debug("Request to get all UserTokens");
         return userTokenRepository.findAll();
     }
 
@@ -105,7 +103,6 @@ public class UserTokenService {
      */
     @Transactional(readOnly = true)
     public Page<UserToken> findAll(Pageable pageable) {
-        log.debug("Request to get all UserTokens");
         return userTokenRepository.findAll(pageable);
     }
 
@@ -117,13 +114,11 @@ public class UserTokenService {
      */
     @Transactional(readOnly = true)
     public Optional<UserToken> findOne(String id) {
-        log.debug("Request to get UserToken : {}", id);
         return userTokenRepository.findById(id);
     }
     
     @Transactional(readOnly = true)
     public UserToken findByToken(String token) {
-        log.debug("Request to get UserToken : {}", token);
         return userTokenRepository.getUserTOkenByToken(token);
     }
 
@@ -133,7 +128,6 @@ public class UserTokenService {
      * @param id the id of the entity
      */
     public void delete(String id) {
-        log.debug("Request to delete UserToken : {}", id);
         userTokenRepository.deleteById(id);
     }
     
@@ -162,7 +156,6 @@ public class UserTokenService {
      *         body will contains User and UserToken.
      */
     public VerifyTokenOwnerResponse verifyTokenOwner(String username, String token) {
-	log.info("verify token owner: "+username+" "+token);
 	VerifyTokenOwnerResponse data = new VerifyTokenOwnerResponse();
 	
 	// find active token
@@ -191,7 +184,6 @@ public class UserTokenService {
      *         body will contains User and UserToken.
      */
     public VerifyTokenOwnerResponse verifyTokenAndPhoneOwner(String username, String token, String phoneId) {
-	log.info("verify token and phone owner: "+username+" "+token+" "+phoneId);
 	VerifyTokenOwnerResponse data = new VerifyTokenOwnerResponse();
 	if(phoneId==null) {
 	    phoneId = "";
@@ -286,7 +278,6 @@ public class UserTokenService {
      * Check Validity of Login Session
      */
     private boolean checkSession(UserToken token) {
-	log.info("Checking session..");
 	boolean isValid = false;
 
 	// Get duration from Configuration
@@ -309,7 +300,6 @@ public class UserTokenService {
 	    // Update user token
 	    this.save(token);
 	}
-	log.info("token valid: " + isValid);
 
 	return isValid;
     }

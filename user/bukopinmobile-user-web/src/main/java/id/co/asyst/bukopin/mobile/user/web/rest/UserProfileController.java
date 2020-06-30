@@ -102,7 +102,6 @@ public class UserProfileController {
 		    servletRequest.getHeader(HttpHeaders.AUTHORIZATION),
 		    servletRequest.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
 	    if (!verifyToken.isValid()) {
-		log.error("Token or device owner not valid");
 		throw new ForbiddenAccessException();
 	    }
 	    user = verifyToken.getUser();
@@ -112,7 +111,6 @@ public class UserProfileController {
 
 	// error handle when user not found
 	if (user == null) {
-	    log.error("User not found");
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 	    response.setMessage(messageUtil.get("error.data.not.found", servletRequest.getLocale()));
 	} else {
@@ -129,7 +127,6 @@ public class UserProfileController {
 	    userProfile.setPhoneNumber(user.getMobilePhone());
 	    userProfile.setEmail(user.getEmail());
 
-	    log.debug("User has been retrieved successfully");
 	    response.setCode(ResponseMessage.SUCCESS.getCode());
 	    response.setMessage(messageUtil.get("success", servletRequest.getLocale()));
 	    response.setData(userProfile);

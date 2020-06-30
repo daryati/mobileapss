@@ -109,7 +109,6 @@ public class OTPService {
      * @return The persisted OTP.
      */
     public OneTimePassword save(OneTimePassword otp) {
-	log.debug("Saving OneTimePassword : {}");
 	return otpRepository.save(otp);
     }
 

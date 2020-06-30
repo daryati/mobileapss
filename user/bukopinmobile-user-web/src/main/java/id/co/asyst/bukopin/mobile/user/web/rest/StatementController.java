@@ -85,7 +85,6 @@ public class StatementController {
      */
     @PostMapping("/getMiniStatement")
     public MiniStatementRes getMiniStatement(@Valid @RequestBody MiniStatementReq miniStatementReq) throws URISyntaxException {
-        log.debug("REST request to get Mini Statement");
         MiniStatementRes miniStatementResult = new MiniStatementRes();
         miniStatementResult = miniStatementService.getMiniStatement(miniStatementReq);
         return miniStatementResult;

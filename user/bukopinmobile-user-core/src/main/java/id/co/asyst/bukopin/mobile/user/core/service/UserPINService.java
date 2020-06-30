@@ -128,19 +128,13 @@ public class UserPINService {
 	    List<ReqQAChallengeResultData> getQuestResCTGObj = mapper.readValue(
 		    String.valueOf(getQuestCTGRes.getObject()), new TypeReference<List<ReqQAChallengeResultData>>() {
 		    });
-	    log.debug("Response get question");
-	    log.debug("---------------------");
-	    log.debug(BkpmUtil.convertToJson(getQuestResCTGObj));
 
 	    // verify PIN
-	    log.debug("verify question and answer (PIN)");
-	    log.debug("id quest : " + getQuestResCTGObj.get(0).getId());
 	    QuestionAuthRequest secQAuthReq = AuthUtil.generateSecurityQuestionAuthRequest(username,
 		    getQuestResCTGObj.get(0).getId(), pin);
 	    secQAuthRes = Services.create(CentagateService.class).authPin(secQAuthReq).execute().body();
 
 	    if (!BkpmConstants.CODE_CTG_SUCCESS.equals(secQAuthRes.getCode())) {
-		log.error("response auth PIN: ", secQAuthRes);
 		if (CTG_AUTH_FAILED_MSG.equalsIgnoreCase(secQAuthRes.getMessage())) {
 		    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
 		    response.setMessage(messageUtil.get("auth.pin.failed", locale));
