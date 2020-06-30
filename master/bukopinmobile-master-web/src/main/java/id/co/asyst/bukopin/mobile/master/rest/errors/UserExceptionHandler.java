@@ -34,6 +34,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import id.co.asyst.bukopin.mobile.common.core.exception.DataNotFoundException;
 import id.co.asyst.bukopin.mobile.common.core.exception.DataNotMatchException;
+import id.co.asyst.bukopin.mobile.common.core.exception.ForbiddenAccessException;
 import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.FieldValidatorEnum;
@@ -82,6 +83,18 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
     /* Getters & setters for transient attributes: */
 
     /* Functions: */
+    // 403 - Forbidden Access Exception
+    @ExceptionHandler({ ForbiddenAccessException.class })
+    protected ResponseEntity<Object> handleForbiddenException(final RuntimeException ex, final WebRequest request) {
+	log.error("Forbidden Access Exception: " + ex.getMessage(), ex);
+	
+	CommonResponse response = new CommonResponse();
+	response.setCode(String.valueOf(HttpStatus.FORBIDDEN.value()));
+	response.setMessage(messageUtil.get("error.forbidden.access", servletRequest.getLocale()));
+
+	return handleExceptionInternal(ex, response, new HttpHeaders(), HttpStatus.OK, request);
+    }
+    
     // 200 - Data Not Match Exception
     @ExceptionHandler({ DataNotMatchException.class })
     protected ResponseEntity<Object> handleDataNotMatchException(final RuntimeException ex, final WebRequest request) {

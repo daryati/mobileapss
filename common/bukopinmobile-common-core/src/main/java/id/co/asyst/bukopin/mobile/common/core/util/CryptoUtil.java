@@ -150,7 +150,6 @@ public class CryptoUtil {
      * @return The encrypted text in base64.
      */
     public static String encryptAES(String plainText, String keyText) {
-	System.out.println("Encrypting AES: "+plainText);
 	byte[] aes = processAES(plainText.getBytes(StandardCharsets.UTF_8), keyText, true);
 	String encrypted = Base64.getEncoder().encodeToString(aes);
 	
@@ -175,7 +174,6 @@ public class CryptoUtil {
      * @return The encrypted text in Hex.
      */
     public static String encryptAESHex(String plainText) {
-	System.out.println("Encrypting AES Hex: "+plainText);
 	byte[] aes = processAES(plainText.getBytes(StandardCharsets.UTF_8), BkpmConstants.AES_SECRET_KEY, true);
 	String encrypted = new String(Hex.encode(aes));
 	
@@ -230,7 +228,6 @@ public class CryptoUtil {
      * @return True, if plainText and decrypted of encryptedText is equals. Else return false.
      */
     public static boolean matchAES(String plainText, String encryptedText) {
-	System.out.println("Matching AES: "+plainText+" "+encryptedText);
 	String decrypted = decryptAES(encryptedText, BkpmConstants.AES_SECRET_KEY);
 	return plainText.equals(decrypted);
     }

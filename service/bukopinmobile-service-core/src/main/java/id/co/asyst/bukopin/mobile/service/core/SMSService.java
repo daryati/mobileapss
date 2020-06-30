@@ -22,8 +22,8 @@ import retrofit2.http.POST;
  * @version $Revision$, Oct 30, 2019
  * @since 1.0.Alpha1-SNAPSHOT
  */
-//@ServiceUrl("http://10.2.62.239:8080/") // dev
-@ServiceUrl("http://10.0.14.115:80/") // prod
+@ServiceUrl("http://10.2.62.239:8080/") // dev
+//@ServiceUrl("http://10.0.14.115:80/") // prod
 public interface SMSService {
 	
 	@POST("/E-MobileSMSMTPushBKP/EMobileSMSMTPushBKP")

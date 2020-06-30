@@ -51,8 +51,8 @@ logging:
 ## url for other module
 url:
    masterdata:
-      configuration: http://localhost:8082/
-   user: http://localhost:8080/
+      configuration: http://10.0.13.54:8082/
+   user: http://10.0.13.54:8080/
    
 config:
    pln:

@@ -46,6 +46,13 @@ public class PreExecuteConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 	// add paths which needs token to access.
-	registry.addInterceptor(controllerInterceptor);
+	registry.addInterceptor(controllerInterceptor)
+		.addPathPatterns(
+			"/**/destination/**",
+			"/**/rate/**",
+			"/**/faq/**",
+			"/**/listEMoney/**",
+			"/**/listInsurance/**",
+			"/**/prefixTelco/**");
     }
 }

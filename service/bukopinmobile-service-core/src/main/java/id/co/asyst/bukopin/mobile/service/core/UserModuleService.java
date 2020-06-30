@@ -30,8 +30,8 @@ import retrofit2.http.Path;
  * @since 2.0
  */
 //@ServiceUrl("http://localhost:8080/") // non LB
-//@ServiceUrl("http://10.2.62.221:8080/") // dev LB
-@ServiceUrl("http://10.0.13.54:8080/") // prod LB
+@ServiceUrl("http://10.2.62.221:8080/") // dev LB
+//@ServiceUrl("http://10.0.13.54:8080/") // prod LB
 public interface UserModuleService {
 
     @GET("bukopinmobile-user/api/getAccountInfo/{username}/preHandle")

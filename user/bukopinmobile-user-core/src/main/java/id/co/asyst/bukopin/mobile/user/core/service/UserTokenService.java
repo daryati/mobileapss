@@ -225,29 +225,29 @@ public class UserTokenService {
 	UserToken userToken = this.findByToken(token);
 	// Check double device
 	if (null != userToken) {
-	    log.info("token login exist");
+//	    log.info("token login exist");
 	    // Check session
 	    boolean isSessionValid = checkSession(userToken);
 	    User user = userService.findUserByUsername(userToken.getUsername());
 	    if (isSessionValid) {
-		log.info("session valid");
+//		log.info("session valid");
 		// Check User locked
 		if(user.isLocked()) { // user locked in db
 		    String username = user.getUsername();
-		    log.error("user locked in db: {}",username);
+//		    log.error("user locked in db: {}",username);
 		    // Check locked status in centagate
 		    ChallengeQuestionRequest getQuestReq = AuthUtil.generateChallengeRequest(username, "");
 		    CentagateCommonResponse getQuestCTGRes = Services.create(CentagateService.class)
 			    .requestQuestion(getQuestReq).execute().body();
-		    log.info("check locked status to ctg: {}",username);
+//		    log.info("check locked status to ctg: {}",username);
 		    if (BkpmConstants.CODE_CTG_SUCCESS.equals(getQuestCTGRes.getCode())) {
-			log.info("user is not locked in ctg: {}",username);
+//			log.info("user is not locked in ctg: {}",username);
 			// unlock user status db
 			user.setLocked(false);
 			user = userService.save(user);
 		    } else if (BkpmConstants.CODE_STG_USER_LOCKED.equals(getQuestCTGRes.getCode())) {
-			log.error("user locked in ctg: {}", username);
-			log.error("User Locked: {}", user.getUsername());
+//			log.error("user locked in ctg: {}", username);
+//			log.error("User Locked: {}", user.getUsername());
 			// logout
 			userService.logoutCentagate(user, token, locale);
 
@@ -258,7 +258,7 @@ public class UserTokenService {
 		}
 	    } else {
 		// session timeout
-		log.error("Session Timeout: " + userToken.getUsername());
+//		log.error("Session Timeout: " + userToken.getUsername());
 
 		// logout
 		userService.logoutCentagate(user, token, locale);
@@ -271,7 +271,7 @@ public class UserTokenService {
 	    }
 	} else {
 	    // status = false;
-	    log.error("double device login ");
+//	    log.error("double device login ");
 
 	    String errorCode = ResponseMessage.ERROR_DOUBLE_LOGIN.getCode();
 	    String errorMessage = messageUtil.get("error.double.login", locale);
