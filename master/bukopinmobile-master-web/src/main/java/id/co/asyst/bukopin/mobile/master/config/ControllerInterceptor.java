@@ -118,7 +118,8 @@ public class ControllerInterceptor implements HandlerInterceptor {
 	    String token = request.getHeader(HttpHeaders.AUTHORIZATION);
 	    if(StringUtils.isBlank(token)) {
 		final String faqPath = "/faq/";
-		if(url.contains(faqPath)) {
+		final String ratePath = "/rate/";
+		if(url.contains(faqPath) || url.contains(ratePath)) {
 		    // faq can accessed after or before login (without token)
 		    status = HandlerInterceptor.super.preHandle(request, response, handler);
 		} else {
