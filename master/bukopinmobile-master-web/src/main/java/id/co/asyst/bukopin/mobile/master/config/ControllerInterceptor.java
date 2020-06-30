@@ -110,7 +110,6 @@ public class ControllerInterceptor implements HandlerInterceptor {
         }
 	
 	String url = request.getRequestURL().toString();
-	log.debug("source url: "+url);
 	boolean status = HandlerInterceptor.super.preHandle(request, response, handler);
 	if (commonService.verifyLocalIp(request)) { // ip local doesn't need token
 	    status = HandlerInterceptor.super.preHandle(request, response, handler);
