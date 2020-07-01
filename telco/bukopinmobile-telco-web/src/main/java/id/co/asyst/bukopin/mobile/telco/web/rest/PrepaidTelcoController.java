@@ -174,53 +174,43 @@ public class PrepaidTelcoController {
      * @param req 
      * 
      * @return Response status and list of mobile data and pulsa
+     * @throws IOException 
      */
     
 	@PostMapping("/listMobileDataPulsa")
     @ResponseStatus(HttpStatus.OK)
 	public CommonResponse listMobileDataAndPulsa(@Valid @RequestBody CommonRequest<PrefixTelcoRequest> request)
-		    throws DatatypeConfigurationException {		
-		CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
-			messageUtil.get("success", httpServletRequest.getLocale()));		
-		PrefixTelcoRequest req =request.getData();
-		
-		if(!(req.getPhoneNumber().length()<4)) {
-			req.setType(PREPAID_TYPE);
-			request.setData(req);
-			
-			try {
-				CommonResponse prefixTelcoRes = Services.create(MasterModuleService.class)
-						.findByPrefixNoAndType(httpServletRequest.getLocale().getLanguage(),request).execute().body();
-				
+	    throws DatatypeConfigurationException, IOException {
+	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
+		messageUtil.get("success", httpServletRequest.getLocale()));
+	PrefixTelcoRequest req = request.getData();
 
-				if (!ResponseMessage.SUCCESS.getCode().equals(prefixTelcoRes.getCode())) {
-					// response not success
-					return prefixTelcoRes;
-				}
-			    
-				log.debug("RESPONSE : "+prefixTelcoRes.toString());
-				
-				ObjectMapper mapper = new ObjectMapper();	
-				PrefixTelcoMapper prefixRes = mapper.convertValue(prefixTelcoRes.getData(), PrefixTelcoMapper.class);
-				log.debug("prefixTelcoRes: "+prefixRes.toString());
-				response.setData(prefixRes);
-				
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			
-		} else {
-			log.error("Phone number length less than 4");
-		    response.setCode(ResponseMessage.INVALID_INPUT.getCode());
-		    response.setMessage(messageUtil.get("error.invalid.input", httpServletRequest.getLocale()));
-		    return response;
-		}
-		
-		
-		return response;
+	if (!(req.getPhoneNumber().length() < 4)) {
+	    req.setType(PREPAID_TYPE);
+	    request.setData(req);
+
+	    CommonResponse prefixTelcoRes = Services.create(MasterModuleService.class)
+		    .findByPrefixNoAndType(httpServletRequest.getLocale().getLanguage(), request).execute().body();
+
+	    log.debug(BkpmUtil.convertToJson(prefixTelcoRes));
+	    if (!ResponseMessage.SUCCESS.getCode().equals(prefixTelcoRes.getCode())) {
+		// response not success
+		return prefixTelcoRes;
+	    }
+
+	    ObjectMapper mapper = new ObjectMapper();
+	    PrefixTelcoMapper prefixRes = mapper.convertValue(prefixTelcoRes.getData(), PrefixTelcoMapper.class);
+	    response.setData(prefixRes);
+
+	} else {
+	    log.error("Phone number length less than 4");
+	    response.setCode(ResponseMessage.INVALID_INPUT.getCode());
+	    response.setMessage(messageUtil.get("error.invalid.input", httpServletRequest.getLocale()));
+	    return response;
 	}
+
+	return response;
+    }
     
 	/**
      * inquiry pulsa

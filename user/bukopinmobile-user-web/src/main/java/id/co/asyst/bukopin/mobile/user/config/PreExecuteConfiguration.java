@@ -58,7 +58,7 @@ public class PreExecuteConfiguration implements WebMvcConfigurer {
 			"/**/logout",
 			"/**/forgotPassword",
 			"/**/crypto/**",
-			"/**/validateSession",
+			"/**/validateSession/**",
 			"/**/verifyPhoneOwner",
 			"/**/verifyTokenOwner",
 			"/**/unlockUser",
