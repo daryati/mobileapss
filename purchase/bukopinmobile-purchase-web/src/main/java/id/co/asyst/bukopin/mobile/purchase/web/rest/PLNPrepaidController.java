@@ -164,14 +164,16 @@ public class PLNPrepaidController {
     @PostMapping("/inquiry")
     private CommonResponse inquiryResult(@Valid @RequestBody CommonRequest<inquiryPrepaidRequestPLN> req)
 	    throws IOException {
-	log.debug("REST request to inquiry PLN : {}", req.getData());
 	CommonResponse response = new CommonResponse();
 
 	String forwardInsCode = env.getProperty("spring.pln.forwarding-institution-code");
+	
 	PrepaidInquiryRequest reqInquiryPrepaidPLNAranet = PLNUtils
 		.generateInquiryPrepaidPLNReq(req.getData().getSubscriberID(), forwardInsCode);
+	log.debug("PLN prepaid req-inq to tibco: {}", BkpmUtil.convertToJson(reqInquiryPrepaidPLNAranet));
 	PrepaidInquiryResponse resInquiryPrepaidPLNAranet = Services.create(PLNService.class)
 		.prepaidInquiry(reqInquiryPrepaidPLNAranet).execute().body();
+	log.debug("PLN prepaid resp-inq from tibco: {}", BkpmUtil.convertToJson(resInquiryPrepaidPLNAranet));
 
 	String codeRes = resInquiryPrepaidPLNAranet.getRespayment().getResult().getElement39();
 	if (PLN_CUT_OFF.equals(codeRes) || PLN_CUT_OFF_GIRO.equals(codeRes)) {
@@ -250,15 +252,14 @@ public class PLNPrepaidController {
      */
     @GetMapping("/inquiry/{id}")
     private CommonResponse inquirySubscriberName(@PathVariable String id) throws IOException {
-	log.debug("REST request to inquiry search subscriber name by ID : {}", id);
 	CommonResponse response = new CommonResponse();
 
 	String forwardInsCode = env.getProperty("spring.pln.forwarding-institution-code");
 	PrepaidInquiryRequest reqInquiryPrepaidPLNAranet = PLNUtils.generateInquiryPrepaidPLNReq(id, forwardInsCode);
-	log.debug("request to aranet : "+BkpmUtil.convertToJson(reqInquiryPrepaidPLNAranet));
+	log.debug("PLN prepaid req-inq to tibco: {}", BkpmUtil.convertToJson(reqInquiryPrepaidPLNAranet));
 	PrepaidInquiryResponse resInquiryPrepaidPLNAranet = Services.create(PLNService.class)
 		.prepaidInquiry(reqInquiryPrepaidPLNAranet).execute().body();
-	log.debug("pln inquiry req: "+BkpmUtil.convertToJson(resInquiryPrepaidPLNAranet));
+	log.debug("PLN prepaid resp-inq from tibco: {}", BkpmUtil.convertToJson(resInquiryPrepaidPLNAranet));
 
 	String codeRes = resInquiryPrepaidPLNAranet.getRespayment().getResult().getElement39();
 	if (PLN_CUT_OFF.equals(codeRes) || PLN_CUT_OFF_GIRO.equals(codeRes)) {
@@ -388,11 +389,11 @@ public class PLNPrepaidController {
 	String accType = resAccount.getAccountInfo().getAccountType().name();
 
 	PrepaidPurchaseRequest reqPurchasePrepaidPLNAranet = PLNUtils.generatePurchasePrepaidPLNReq(req.getData(), forwardInsCode, accType);
-	log.debug("request to aranet : " + BkpmUtil.convertToJson(reqPurchasePrepaidPLNAranet.getParameter()));
+	log.debug("PLN prepaid req-purchase to tibco: {}",BkpmUtil.convertToJson(reqPurchasePrepaidPLNAranet.getParameter()));
 	PrepaidPurchaseResponse resPurchasePrepaidPLNAranet = new PrepaidPurchaseResponse();
 	resPurchasePrepaidPLNAranet = Services.create(PLNService.class)
 	    	.prepaidPurchase(reqPurchasePrepaidPLNAranet).execute().body();
-	log.debug("response : " + BkpmUtil.convertToJson(resPurchasePrepaidPLNAranet.getRespayment().getResult()));
+	log.debug("PLN prepaid resp-purchase from tibco: {}",BkpmUtil.convertToJson(resPurchasePrepaidPLNAranet.getRespayment().getResult()));
 	String codeRes = resPurchasePrepaidPLNAranet.getRespayment().getResult().getElement39();
 	String postRes = resPurchasePrepaidPLNAranet.getRespayment().getResult().getElement121().substring(0, 3);
 	

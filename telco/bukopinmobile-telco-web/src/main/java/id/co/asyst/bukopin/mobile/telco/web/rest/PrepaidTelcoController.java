@@ -192,7 +192,6 @@ public class PrepaidTelcoController {
 	    CommonResponse prefixTelcoRes = Services.create(MasterModuleService.class)
 		    .findByPrefixNoAndType(httpServletRequest.getLocale().getLanguage(), request).execute().body();
 
-	    log.debug(BkpmUtil.convertToJson(prefixTelcoRes));
 	    if (!ResponseMessage.SUCCESS.getCode().equals(prefixTelcoRes.getCode())) {
 		// response not success
 		return prefixTelcoRes;
