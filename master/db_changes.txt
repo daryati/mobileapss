@@ -8,9 +8,11 @@ UPDATE DB_MBANKING.dbo.CONFIGURATION SET VALUE='10' WHERE NAME='SESSION_TIME_OUT
    Bukopin-Mobile-Transfer 1.3.Alpha2 Database Structure Changes
 ===============================================================================
 FAQ Table
-ALTER TABLE DB_MBANKING.dbo.FAQ ALTER COLUMN ANSWER varchar(2000)
-ALTER TABLE DB_MBANKING.dbo.FAQ ALTER COLUMN QUESTION varchar(2000)
+ALTER TABLE DB_MBANKING.dbo.FAQ ALTER COLUMN ANSWER varchar(2000) NOT NULL
+ALTER TABLE DB_MBANKING.dbo.FAQ ALTER COLUMN QUESTION varchar(2000) NOT NULL
 
+PUSH_NOTIFICATION table
+ALTER TABLE DB_MBANKING.dbo.PUSH_NOTIFICATION ALTER COLUMN content varchar(400) NOT NULL
 
 ===============================================================================
    Bukopin-Mobile-Transfer 1.3.Alpha1 Database Structure Changes
