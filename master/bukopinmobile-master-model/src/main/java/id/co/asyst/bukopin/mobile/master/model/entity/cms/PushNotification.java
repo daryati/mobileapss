@@ -52,7 +52,7 @@ public class PushNotification extends IdBasedObject {
      * content
      */
     @JsonProperty("content")
-    @Column(name = "content", length = 255, nullable = false)
+    @Column(name = "content", length = 400, nullable = false)
     private String content;
 
     /**
