@@ -67,7 +67,14 @@ public class PaymentInsuranceResponse {
 	@JsonIgnore
     private String codeIns;
 	
+	@JsonProperty("notes1")
+    private String notes1;
 	
+	@JsonProperty("notes2")
+    private String notes2;
+	
+	@JsonProperty("currentAmount")
+	    private BigDecimal currentAmount;
 	
 	
 
@@ -254,6 +261,38 @@ public class PaymentInsuranceResponse {
 
 	public void setCodeIns(String codeIns) {
 		this.codeIns = codeIns;
+	}
+
+	public String getNotes1() {
+		return notes1;
+	}
+
+	public void setNotes1(String notes1) {
+		this.notes1 = notes1;
+	}
+
+	public String getNotes2() {
+		return notes2;
+	}
+
+	public void setNotes2(String notes2) {
+		this.notes2 = notes2;
+	}
+
+	/**
+	 * Gets <code>currentAmount</code>.
+	 * @return The <code>currentAmount</code>.
+	 */
+	public BigDecimal getCurrentAmount() {
+	    return currentAmount;
+	}
+
+	/**
+	 * Sets <code>currentAmount</code>.
+	 * @param currentAmount The <code>currentAmount</code> to set.
+	 */
+	public void setCurrentAmount(BigDecimal currentAmount) {
+	    this.currentAmount = currentAmount;
 	}
 
 	

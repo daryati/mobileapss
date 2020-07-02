@@ -32,7 +32,7 @@ import retrofit2.http.POST;
  * @since 1.1.Alpha1-SNAPSHOT
  */
 @ServiceUrl("http://10.2.62.80:55557") // dev
-//@ServiceUrl("http://10.0.13.61:8080/") // prod
+//@ServiceUrl("http://10.0.13.20:55559") // prod
 public interface TelcoModuleService {
     
     @POST("/")

@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,7 +28,6 @@ import javax.validation.Valid;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.ws.Holder;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +54,7 @@ import id.co.asyst.bukopin.mobile.service.core.CentagateService;
 import id.co.asyst.bukopin.mobile.service.model.payload.CentagateCommonResponse;
 import id.co.asyst.bukopin.mobile.service.model.payload.LoginCentagateRequest;
 import id.co.asyst.bukopin.mobile.service.model.payload.UpdateUserProfileRequest;
+import id.co.asyst.bukopin.mobile.user.core.config.GetConfiguration;
 import id.co.asyst.bukopin.mobile.user.core.service.AccountCardService;
 import id.co.asyst.bukopin.mobile.user.core.service.AccountInfoUserService;
 import id.co.asyst.bukopin.mobile.user.core.service.BukopinService;
@@ -160,6 +161,13 @@ public class AccountController {
 
     @Autowired
     private UserMailService userMailService;
+    
+    /**
+     * Get Configuration Service
+     */
+    @Autowired
+    private GetConfiguration configuration;
+    
     /**
      * Environment
      */
@@ -197,7 +205,6 @@ public class AccountController {
     @PostMapping("/verification")
     public CommonResponse verification(@Valid @RequestBody CommonRequest<AccountVerificationRequest> request)
 	    throws DatatypeConfigurationException {
-	log.debug("REST request to Verification : {}", request.getData());
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
 	String username = request.getData().getDebitCard().getUsername();
@@ -205,7 +212,6 @@ public class AccountController {
 	String otp = request.getData().getOtp();
 	ActivateDebitCardRequest debitCard = request.getData().getDebitCard();
 	Date currentTime = new Date();
-	log.debug("Account - List Account for receiver : " + receiver);
 	
 	// Verify User
 	User user = userService.findUserByUsername(username);
@@ -231,14 +237,16 @@ public class AccountController {
 	// Delete OTP
 	otpService.inactivateOTP(receiver, OTPTypeEnum.SMS, currentTime);
 	
-	// Get CIF from Tibco and Get Inquiry CIF from SOAP
+	// Get Card from DB and Get Inquiry CIF from Tibco
 	// --------------------------------------
+	// Get cards from XLINK db
 	List<DebitCardInfo> cards = bukopinService.getCardByCardNumber(debitCard.getRegisteredCard());
 	if (cards.isEmpty()) {
 	    log.error("debit card is empty");
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 	    response.setMessage(messageUtil.get("card.not.found", servletRequest.getLocale()));
 	} else {
+	    // Inq CIF to tibco
 	    log.debug("Card found, get Inquiry CIF to WSDL (verification)");
 	    response = gettingInquiryCIF(cards.get(0).getCif());
 	}
@@ -255,30 +263,31 @@ public class AccountController {
 	    throw new ResourceNotFoundException("Debit Card has no Account info : " + debitCard.getRegisteredCard());
 	}
 
-	// List all Products
-	List<Product> products = productService.findAll();
-	List<Product> listProduct = new ArrayList<>();
+	// Get list pdid that couldn't be activated (e.g. 21|87|63)
+	String blackListPdidConfig = configuration.getConfigValue(BkpmConstants.KEY_ACCOUNT_NOT_ACTIVATED);
+	Pattern separator = Pattern.compile("\\|");
+	// Convert blacklist id to array
+	List<Integer> blackListPdid = separator.splitAsStream(blackListPdidConfig)
+		.map(Integer::valueOf)
+		.collect(Collectors.toList());
+	
+	List<Product> products = productService.findAll(); // all Products in DB
+	List<Product> listProduct = new ArrayList<>(); // products (saving and gyro) can be activated
 	CIFResType.getAccounts().forEach(accounts -> {
 	    if(BkpmConstants.CODE_TYPE_SAVING.equals(String.valueOf(accounts.getAcctype()))
 			|| BkpmConstants.CODE_TYPE_GIRO.equals(String.valueOf(accounts.getAcctype()))) {
-		// get accounts only in pdid in table PRODUCT 
 		listProduct.addAll(
 			products.stream().filter(
-				p -> accounts.getProductid()==p.getPdId())
+				// Make sure account's pdid is exist in table PRODUCT
+				p -> accounts.getProductid()==p.getPdId()
+				// Exclude accounts from tibco with blackListPdid
+				&& !blackListPdid.contains(accounts.getProductid()))
 			.collect(Collectors.toList()));
 	    }
 	});
-	
-//	for (GetInquiryCIFResType.Accounts accounts : CIFResType.getAccounts()) {
-//	    if(BkpmConstants.CODE_TYPE_SAVING.equals(String.valueOf(accounts.getAcctype()))
-//			|| BkpmConstants.CODE_TYPE_GIRO.equals(String.valueOf(accounts.getAcctype()))) {
-//		listProduct.add(productService.findByPdId(accounts.getProductid()));
-//	    }
-//	}
 
 	List<AccountInfo> listSaveAccInfo = new ArrayList<>();
 	AccountCard accCard = new AccountCard();
-//	String cif = CIFResType.getAccInfo().getCifnumber();
 	String registCard = cards.get(0).getCardNumber();
 	
 	accCard = accountCardService.findByRegisteredCard(registCard);
@@ -288,7 +297,7 @@ public class AccountController {
 	    accCard = AccountUtil.setDataAccountCard(debitCard, CIFResType, user);
 	    accCard = accountCardService.save(accCard);
 	    listSaveAccInfo = AccountUtil.setDataAccountInfo(CIFResType, accCard, cards, listProduct);
-	    if(listSaveAccInfo==null || listSaveAccInfo.isEmpty()) {
+	    if(listSaveAccInfo==null) {
 		log.error("Account Number not match between db Xlink and Tibco");
 		// no accNo match between db xlink and tibco
 		response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
@@ -296,13 +305,16 @@ public class AccountController {
 			new Object[] {cards.get(0).getAccountNumber()}, servletRequest.getLocale()));
 		response.setData(null);
 		return response;
+	    } else if(listSaveAccInfo.isEmpty()) {
+		log.warn("Account info is empty, all of Products cannot be activated.");
+	    } else {
+		accInfoUserService.saveAll(listSaveAccInfo);
 	    }
-	    accInfoUserService.saveAll(listSaveAccInfo);
 	} else {
 	    log.debug("Account Info with Regist Card " + registCard + " is Exist");
 	    accInfoUserService.deleteByAccountCardId(accCard.getId());
 	    listSaveAccInfo = AccountUtil.setDataAccountInfo(CIFResType, accCard, cards, listProduct);
-	    if(listSaveAccInfo==null || listSaveAccInfo.isEmpty()) {
+	    if(listSaveAccInfo==null) {
 		log.error("Account Number not match between db Xlink and Tibco");
 		// no accNo match between db xlink and tibco
 		response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
@@ -310,13 +322,15 @@ public class AccountController {
 			new Object[] {cards.get(0).getAccountNumber()}, servletRequest.getLocale()));
 		response.setData(null);
 		return response;
+	    } else if(listSaveAccInfo.isEmpty()) {
+		log.warn("Account info is empty, all of Products cannot be activated.");
+	    } else {
+		accInfoUserService.saveAll(listSaveAccInfo);
 	    }
-	    accInfoUserService.saveAll(listSaveAccInfo);
 	}
 
-//	List<AccountInfo> listAccInfoByCIF = accInfoUserService.findByCIF(cif);
 	List<AccountInfo> listAccInfoByCIF = AccountUtil.generateResponseVerification(
-		CIFResType, cards, products);
+		CIFResType, cards, products, blackListPdid);
 	if (listAccInfoByCIF==null || listAccInfoByCIF.size() < 1) {
 	    throw new ResourceNotFoundException("Account Info Not Found: " + user.getUsername());
 	}
@@ -343,15 +357,15 @@ public class AccountController {
 	    throws Exception {
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
-	log.debug("Account - Activation: " + request.getData().getUsername());
-
 	String username = request.getData().getUsername();
 	String mainAccount = request.getData().getMainAccountNo();
 
 	// Update Account Status (Backend DB)
 	// --------------------------------------
-	AccountCard accountCard = accountCardService.findByUsername(username);
-	if (accountCard == null) {
+//	AccountCard accountCard = accountCardService.findByUsername(username);
+	List<AccountCard> acs = accountCardService.findListByUsername(username);
+//	if (accountCard == null) {
+	if (acs == null || acs.isEmpty()) {
 	    log.error("Account not found: " + username);
 	    String message = messageUtil.get("activation.failed", new Object[] { username },
 		    servletRequest.getLocale());
@@ -360,23 +374,40 @@ public class AccountController {
 	    return response;
 	}
 	
-	String receiver = accountCard.getUser().getEmail();
+//	String receiver = accountCard.getUser().getEmail();
+	String receiver = acs.get(0).getUser().getEmail();
 	
-	log.debug("Accounts: " + accountCard.getAccounts().size());
+//	log.debug("Accounts: " + accountCard.getAccounts().size());
 	// find mainAccount
 	AtomicBoolean isMainAccountFound = new AtomicBoolean(false);
-	accountCard.getAccounts().forEach(acc -> {
-	    // verifying all account
-	    acc.setStatus(AccountInfoStatusEnum.VERIFIED);
-	    // set main account
-	    if (mainAccount.equals(acc.getAccountNo())) {
-		isMainAccountFound.set(true);
-		acc.setMainAccount(true);
-	    } else {
-		// set other main account false
-		acc.setMainAccount(false);
-	    }
+//	accountCard.getAccounts().forEach(acc -> {
+//	    // verifying all account
+//	    acc.setStatus(AccountInfoStatusEnum.VERIFIED);
+//	    // set main account
+//	    if (mainAccount.equals(acc.getAccountNo())) {
+//		isMainAccountFound.set(true);
+//		acc.setMainAccount(true);
+//	    } else {
+//		// set other main account false
+//		acc.setMainAccount(false);
+//	    }
+//	});
+	
+	acs.forEach(ac -> {
+	    ac.getAccounts().forEach(acc -> {
+		// verifying all account
+		acc.setStatus(AccountInfoStatusEnum.VERIFIED);
+		// set main account
+		if (mainAccount.equals(acc.getAccountNo())) {
+		    isMainAccountFound.set(true);
+		    acc.setMainAccount(true);
+		} else {
+		    // set other main account false
+		    acc.setMainAccount(false);
+		}
+	    });
 	});
+	
 	// error main account not found
 	if (!isMainAccountFound.get()) {
 	    log.error("Account number not found: " + mainAccount);
@@ -385,10 +416,26 @@ public class AccountController {
 		    messageUtil.get("account.not.found", new Object[] { mainAccount }, servletRequest.getLocale()));
 	    return response;
 	}
-	accountCard = accountCardService.save(accountCard);
+	
+//	accountCard = accountCardService.save(accountCard);
+	List<AccountCard> newCards = new ArrayList<>();
+	newCards = accountCardService.saveAll(acs);
+	
+	// find current card
+//	currentCard = newCards.stream().filter(cards -> cards.get);
+	AccountCard currentCard = newCards.get(0);
+	for(AccountCard ac : newCards) {
+	    for(AccountInfo ai: ac.getAccounts()) {
+		if(ai.isMainAccount()) {
+		    currentCard = ac;
+		    break;
+		}
+	    }
+	}
 	
 	//sent activation email
-	userMailService.sentActivationMail(receiver, accountCard,servletRequest.getLocale());
+//	userMailService.sentActivationMail(receiver, accountCard,servletRequest.getLocale());
+	userMailService.sentActivationMail(receiver, currentCard,servletRequest.getLocale());
 	
 	// Login Centagate Admin
 	// --------------------------------------
@@ -463,7 +510,6 @@ public class AccountController {
     @PostMapping("/preverification")
     public CommonResponse preVerification(@Valid @RequestBody CommonRequest<ActivateDebitCardRequest> request)
 	    throws DatatypeConfigurationException, NoSuchAlgorithmException, IOException, ParseException {
-	log.debug("REST request to Preverification : {}", request.getData().getRegisteredCard());
 	ActivateDebitCardRequest debitCard = request.getData();
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
@@ -482,6 +528,17 @@ public class AccountController {
 	    response = gettingInquiryCIF(cards.get(0).getCif());
 
 	    if (!ResponseMessage.SUCCESS.getCode().equals(response.getCode())) {
+		response.setData(null);
+		return response;
+	    }
+	    
+	    // validate add account card with same CIF number
+	    User user = userService.findUserByUsername(request.getData().getUsername());
+	    String cif = user.getCifNumber();
+	    if (null != cif && !cif.equals(cards.get(0).getCif())) {
+		log.error("Card invalid, CIF number is not match");
+		response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+		response.setMessage(messageUtil.get("card.invalid", servletRequest.getLocale()));
 		response.setData(null);
 		return response;
 	    }
@@ -613,7 +670,6 @@ public class AccountController {
     @PostMapping("/findUserByUsername")
     public CommonResponse findUserByUsername(@Valid @RequestBody CommonRequest<User> request)
 	    throws DatatypeConfigurationException, NoSuchAlgorithmException, IOException {
-	log.debug("REST find user by username... " + request.getData().getUsername());
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
 
@@ -639,14 +695,11 @@ public class AccountController {
      */
     @GetMapping("/findUserIdByUsername/{username}")
     public CommonResponse findUserIdByUsername(@PathVariable String username) {
-	log.debug("Find user Id by Username " + username);
-
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
 
 	User user = userService.findUserByUsername(username);
 	if (null != user) {
-	    log.debug("User id Successfully retrieved ....");
 	    response.setData(user.getId());
 	} else {
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
@@ -669,36 +722,51 @@ public class AccountController {
     public CommonResponse changeMainAccount(@Valid @RequestBody CommonRequest<AccountActivationRequest> request) {
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
-	log.debug("Account - Change main account: " + request.getData().getUsername());
-
 	String username = request.getData().getUsername();
 	String mainAccount = request.getData().getMainAccountNo();
 
 	// Update Account Status (Backend DB)
 	// --------------------------------------
-	AccountCard accountCard = accountCardService.findByUsername(username);
-	if (accountCard == null) {
+//	AccountCard accountCard = accountCardService.findByUsername(username);
+	List<AccountCard> acs = accountCardService.findListByUsername(username);
+//	if (accountCard == null) {
+	if (acs == null || acs.isEmpty()) {
 	    log.error("Account not found: " + username);
-	    String message = messageUtil.get("change.main.account.failed", new Object[] { username },
+	    String message = messageUtil.get("activation.failed", new Object[] { username },
 		    servletRequest.getLocale());
-	    response.setCode(ResponseMessage.ERROR_UPDATE_USER.getCode());
+	    response.setCode(ResponseMessage.ACTIVATION_USER_FAILED.getCode());
 	    response.setMessage(message);
 	    return response;
 	}
 
-	log.debug("Accounts: " + accountCard.getAccounts().size());
+//	log.debug("Accounts: " + accountCard.getAccounts().size());
 	// find mainAccount
 	AtomicBoolean isMainAccountFound = new AtomicBoolean(false);
-	accountCard.getAccounts().forEach(acc -> {
-	    // set main account
-	    if (mainAccount.equals(acc.getAccountNo())) {
-		isMainAccountFound.set(true);
-		acc.setMainAccount(true);
-	    } else {
-		// set other main account false
-		acc.setMainAccount(false);
-	    }
+//	accountCard.getAccounts().forEach(acc -> {
+//	    // set main account
+//	    if (mainAccount.equals(acc.getAccountNo())) {
+//		isMainAccountFound.set(true);
+//		acc.setMainAccount(true);
+//	    } else {
+//		// set other main account false
+//		acc.setMainAccount(false);
+//	    }
+//	});
+	acs.forEach(ac -> {
+	    ac.getAccounts().forEach(acc -> {
+		// verifying all account
+		acc.setStatus(AccountInfoStatusEnum.VERIFIED);
+		// set main account
+		if (mainAccount.equals(acc.getAccountNo())) {
+		    isMainAccountFound.set(true);
+		    acc.setMainAccount(true);
+		} else {
+		    // set other main account false
+		    acc.setMainAccount(false);
+		}
+	    });
 	});
+	
 	// error main account not found
 	if (!isMainAccountFound.get()) {
 	    log.error("Account number not found: " + mainAccount);
@@ -707,7 +775,9 @@ public class AccountController {
 		    messageUtil.get("account.not.found", new Object[] { mainAccount }, servletRequest.getLocale()));
 	    return response;
 	}
-	accountCardService.save(accountCard);
+	
+//	accountCardService.save(accountCard);
+	accountCardService.saveAll(acs);
 
 	return response;
     }
@@ -721,14 +791,11 @@ public class AccountController {
      */
     @GetMapping("/findUserByUsername/{username}")
     public CommonResponse findUserByUsername(@PathVariable String username) {
-	log.debug("Find user by Username " + username);
-
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
 
 	User user = userService.findUserByUsername(username);
 	if (null != user) {
-	    log.debug("User Successfully retrieved ....");
 	    Map<String, Object> res = new HashMap<>();
 	    res.put("user", user);
 	    response.setData(res);
@@ -751,14 +818,12 @@ public class AccountController {
      */
     @GetMapping("/findAccountInfoByAccountNo/{accountNo}")
     public CommonResponse findAccountInfoByAccountNo(@PathVariable String accountNo) {
-	log.debug("Find Account Info by Account No : " + accountNo);
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
 	
 	accountNo = CryptoUtil.decryptAESHex(accountNo);
 	AccountInfo accInfo = accInfoUserService.findByAccountNo(accountNo);
 	if(null!=accInfo) {
-	    log.debug("Account Info Successfully retrieved ....");
 	    Map<String, Object> res = new HashMap<>();
 	    res.put("accountInfo", accInfo);
 	    response.setData(res);
@@ -783,7 +848,6 @@ public class AccountController {
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse verifyAccountOwner(@Valid @RequestBody 
 	    CommonRequest<VerifyAccountOwnerRequest> request) {
-	log.debug("Verify account owner request: " +BkpmUtil.convertToJson(request));
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
 	
@@ -823,7 +887,6 @@ public class AccountController {
 	    response.setData(data);
 	}
 	
-	log.debug("Verify account owner response: " +BkpmUtil.convertToJson(response));
 	return response;
     }
 
@@ -836,11 +899,12 @@ public class AccountController {
     @GetMapping("/getAccountCard/{username}")
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse getAccountCardByUsername(@PathVariable String username) {
-	log.debug("REST request to get account card by username");
         CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(), messageUtil.get("success", servletRequest.getLocale()));
         
-        AccountCard result = accountCardService.findByUsername(username);
-        if(result == null) {
+//        AccountCard result = accountCardService.findByUsername(username);
+        List<AccountCard> results = accountCardService.findListByUsername(username);
+//        if(result == null) {
+        if(results == null || results.isEmpty()) {
             log.error("Data Account Card not found for user : " + username);
             response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
             response.setMessage(messageUtil.get("error.not.found", servletRequest.getLocale()));
@@ -848,7 +912,18 @@ public class AccountController {
             return response;
         }
         
-        log.debug("Data Account Card {} " + BkpmUtil.convertToJson(result));
+        AccountCard result = new AccountCard();
+        int i=0;
+        // combine all account info in one account card
+        for(AccountCard ac: results) {
+            if(i==0) {
+        	result = ac;
+            } else {
+        	result.getAccounts().addAll(ac.getAccounts());
+            }
+            i++;
+        }
+        
         response.setData(result);
         
         return response;

@@ -62,7 +62,10 @@ config:
 ## IP CONFIG
    ip:
       passtrough: # client ip no need token
-         10.2.62.163, 
+         10.0.13.61,
+         10.0.13.51,
+         10.0.13.52,
+         10.0.13.53, 
          0:0:0:0:0:0:0:1,
          127.0.0.1
    header:
@@ -72,5 +75,5 @@ config:
 ## url for other module
 url:
    masterdata:
-      configuration: http://10.0.13.61:8082/
-   user: http://10.0.13.61:8080/
+      configuration: http://10.0.13.54:8082/
+   user: http://10.0.13.54:8080/

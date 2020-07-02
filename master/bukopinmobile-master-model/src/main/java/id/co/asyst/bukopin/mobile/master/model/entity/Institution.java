@@ -37,8 +37,8 @@ public class Institution extends IdBasedObject implements Serializable {
 
     /* Constants: */
     /**
-    * serialVersionUID
-    */
+     * serialVersionUID
+     */
     private static final long serialVersionUID = 1L;
 
     /* Attributes: */
@@ -127,13 +127,10 @@ public class Institution extends IdBasedObject implements Serializable {
     @JsonProperty("prefixTelcoId")
     private PrefixTelco prefixTelcoId;
 
-    /**
-     * institution category
-     */
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "INSTITUTION_CATEGORY_ID")
-    @JsonProperty("insCategoryId")
-    private InstitutionCategory insCategoryId;
+    @JsonProperty("institutionCategoryId")
+    private InstitutionCategory institutionCategory;
 
     /* Getters & setters for attributes: */
     /**
@@ -365,25 +362,6 @@ public class Institution extends IdBasedObject implements Serializable {
     }
 
     /**
-     * Gets <code>insCategoryId</code>.
-     * 
-     * @return The <code>insCategoryId</code>.
-     */
-    public InstitutionCategory getInsCategoryId() {
-	return insCategoryId;
-    }
-
-    /**
-     * Sets <code>insCategoryId</code>.
-     * 
-     * @param insCategoryId
-     *            The <code>insCategoryId</code> to set.
-     */
-    public void setInsCategoryId(InstitutionCategory insCategoryId) {
-	this.insCategoryId = insCategoryId;
-    }
-
-    /**
      * Gets <code>id</code>.
      * 
      * @return The <code>id</code>.
@@ -402,9 +380,17 @@ public class Institution extends IdBasedObject implements Serializable {
 	this.id = id;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Sets <code>institutionCategory</code>.
      * 
+     * @param institutionCategory
+     *            The <code>institutionCategory</code> to set.
+     */
+    public void setInstitutionCategory(InstitutionCategory institutionCategory) {
+	this.institutionCategory = institutionCategory;
+    }
+
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
@@ -412,8 +398,8 @@ public class Institution extends IdBasedObject implements Serializable {
 	return "Institution [codeArra=" + codeArra + ", codeCbs=" + codeCbs + ", name=" + name + ", status=" + status
 		+ ", billSummary=" + billSummary + ", institutionType=" + institutionType + ", adminFee=" + adminFee
 		+ ", displayMessage=" + displayMessage + ", selection=" + selection + ", nameLocal=" + nameLocal
-		+ ", nameEnglish=" + nameEnglish + ", prefixTelcoId=" + prefixTelcoId + ", insCategoryId="
-		+ insCategoryId + "]";
+		+ ", nameEnglish=" + nameEnglish + ", prefixTelcoId=" + prefixTelcoId + ", institutionCategory="
+		+ institutionCategory + "]";
     }
 
 }

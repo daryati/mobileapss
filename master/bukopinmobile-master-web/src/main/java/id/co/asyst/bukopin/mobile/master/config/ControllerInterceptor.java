@@ -10,24 +10,26 @@
 package id.co.asyst.bukopin.mobile.master.config;
 
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import id.co.asyst.bukopin.mobile.common.core.service.LoggingService;
+import id.co.asyst.bukopin.mobile.common.core.service.impl.BkpmService;
+import id.co.asyst.bukopin.mobile.common.core.util.CryptoUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
@@ -49,7 +51,6 @@ public class ControllerInterceptor implements HandlerInterceptor {
      */
     private final Logger log = LoggerFactory.getLogger(ControllerInterceptor.class);
     
-
     /**
      * Get Message Util
      */
@@ -61,24 +62,20 @@ public class ControllerInterceptor implements HandlerInterceptor {
      */
     @Autowired
     private LoggingService loggingService;
+    
+    /**
+     * Bkpm Common Service
+     */
+    @Autowired
+    private BkpmService commonService;
 
     /**
      * Http Servlet Request
      */
     @Autowired
     private HttpServletRequest httpServletRequest;
-    
-    /**
-     * Environment
-     */
-    @Autowired
-    private Environment env;
 
     /* Constants: */
-    /**
-     * Default IP Local
-     */
-    private static final String DEFAULT_LOCAL_IP = "0.0.0.1";
 
     /* Attributes: */
 
@@ -106,8 +103,6 @@ public class ControllerInterceptor implements HandlerInterceptor {
 	@Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 	    throws Exception {
-	log.debug("Pre handle User");
-	
 	// log GET request
 	if (DispatcherType.REQUEST.name().equals(request.getDispatcherType().name())
                 && request.getMethod().equals(HttpMethod.GET.name())) {
@@ -115,58 +110,46 @@ public class ControllerInterceptor implements HandlerInterceptor {
         }
 	
 	String url = request.getRequestURL().toString();
-	log.debug("source url: "+url);
 	boolean status = HandlerInterceptor.super.preHandle(request, response, handler);
-
-//	String ip = request.getHeader("X-FORWARDED-FOR") == null ? request.getRemoteAddr()
-//		: request.getHeader("X-FORWARDED-FOR");
-//	ip = ip.trim();
-//	log.debug("client ip address: " + ip);
-//	log.debug("token: "+request.getHeader(HttpHeaders.AUTHORIZATION));
-//	
-//	String passtrough = env.getProperty("config.ip.passtrough", DEFAULT_LOCAL_IP);
-//	log.debug("passtrough: "+passtrough);
-//	if (passtrough.contains(ip)) { // ip local doesn't need token
-//	    log.debug("ip local");
-//	    status = HandlerInterceptor.super.preHandle(request, response, handler);
-//	} else {
-//	    log.debug("ip luar");
-//	    log.debug("ke pre handle dr ip luar");
-//		String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-//		Map<String,String> tokenReq = new HashMap<>();
-//		tokenReq.put("token", token);
-//		CommonResponse findUser = Services.create(UserModuleService.class).findUserByToken(tokenReq)
-//		    	.execute().body();		
-//		log.debug("SISNIII "+findUser);
-//		/*UserToken userToken = userTokenService.findByToken(token);
-//		JSONObject dataJson = new JSONObject();*/
-//		JSONObject dataJson = new JSONObject();
-//		if (ResponseMessage.SUCCESS.getCode().equalsIgnoreCase(findUser.getCode())) {
-//		    System.out.println("token login success");
-//
-//		    String errorCode = ResponseMessage.SUCCESS.getCode();
-//		    String errorMessage = messageUtil.get("success", httpServletRequest.getLocale());
-//
-//		    dataJson.put("message", errorMessage);
-//		    dataJson.put("code", errorCode);
-//		    // status= true;
-//		    status = HandlerInterceptor.super.preHandle(request, response, handler);
-//		} else {
-//		    status = false;
-//		    System.out.println("double device login ");
-//
-//		    String errorCode = ResponseMessage.ERROR_DOUBLE_LOGIN.getCode();
-//		    String errorMessage = messageUtil.get("error.double.login", httpServletRequest.getLocale());
-//		    dataJson.put("message", errorMessage);
-//		    dataJson.put("code", errorCode);
-//		    PrintWriter out = response.getWriter();
-//		    response.setContentType("application/json");
-//		    response.setCharacterEncoding("UTF-8");
-//		    out.print(dataJson.toJSONString());
-//		    out.flush();
-//		}
-//	    
-//	}
+	if (commonService.verifyLocalIp(request)) { // ip local doesn't need token
+	    status = HandlerInterceptor.super.preHandle(request, response, handler);
+	} else {
+	    JSONObject dataJson = new JSONObject();
+	    String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+	    if(StringUtils.isBlank(token)) {
+		final String faqPath = "/faq/";
+		final String ratePath = "/rate/";
+		if(url.contains(faqPath) || url.contains(ratePath)) {
+		    // faq can accessed after or before login (without token)
+		    status = HandlerInterceptor.super.preHandle(request, response, handler);
+		} else {
+		    status = false;
+		    dataJson.put("message", messageUtil.get("error.forbidden.access", httpServletRequest.getLocale()));
+		    dataJson.put("code", String.valueOf(HttpStatus.FORBIDDEN.value()));
+		    PrintWriter out = response.getWriter();
+		    response.setContentType("application/json");
+		    response.setCharacterEncoding("UTF-8");
+		    out.print(dataJson.toJSONString());
+		    out.flush();
+		}
+	    } else {
+		String encryptedToken = CryptoUtil.encryptAESHex(token);
+		CommonResponse sessionResponse = Services.create(UserModuleService.class)
+			.validateLoginSession(encryptedToken).execute().body();
+		if(ResponseMessage.SUCCESS.getCode().equals(sessionResponse.getCode())) {
+		    status = HandlerInterceptor.super.preHandle(request, response, handler);
+		} else {
+		    status = false;
+		    dataJson.put("message", sessionResponse.getMessage());
+		    dataJson.put("code", sessionResponse.getCode());
+		    PrintWriter out = response.getWriter();
+		    response.setContentType("application/json");
+		    response.setCharacterEncoding("UTF-8");
+		    out.print(dataJson.toJSONString());
+		    out.flush();
+		}
+	    }
+	}
 
 	return status;
     }

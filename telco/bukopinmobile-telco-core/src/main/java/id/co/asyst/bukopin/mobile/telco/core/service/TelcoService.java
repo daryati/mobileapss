@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
@@ -154,10 +155,7 @@ public class TelcoService {
 
 	    // set mobile number per segmant
 	    String mobNum = resPurchase.getPhoneNumber();
-	    String mob1 = mobNum.substring(0,4);
-	    String mob2 = mobNum.substring(4,8);
-	    String mob3 = mobNum.substring(8,mobNum.length());
-	    String mobileNumber = mob1.concat(" "+mob2.concat(" "+mob3));
+	    String mobileNumber = BkpmUtil.prettyPhone(mobNum);
 
 	    // thymleaf template mail
 	    // Prepare the evaluation context
@@ -172,8 +170,8 @@ public class TelcoService {
 	    ctx.setVariable("mobileNumber", mobileNumber);
 	    ctx.setVariable("provider", resPurchase.getpGroup());
 	    ctx.setVariable("total", total.replace("Rp", "RP "));
-	    ctx.setVariable("adminCharge", adminCharge.replace("Rp", "RP "));
-	    ctx.setVariable("voucher", amount.replace("Rp", "RP "));
+	    ctx.setVariable("adminCharge", adminCharge.replace("Rp", "Rp "));
+	    ctx.setVariable("voucher", amount.replace("Rp", "Rp "));
 
 	    String htmlContent = "";
 	    if ("Prepaid".equalsIgnoreCase(resPurchase.getInstitutionType())) {
@@ -199,12 +197,12 @@ public class TelcoService {
 	    // final String htmlContent =
 	    // this.htmlTemplateEngine.process(TELCO_TEMPLATE_NAME, ctx);
 	    message.setText(htmlContent, true); // true = isHtml
-	    message.addInline("header", new ClassPathResource("/mail/images/Header-M.png"));
-	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-M.png"));
-	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-M.png"));
-	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-M.png"));
-	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-M.png"));
-	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-M.png"));
+	    message.addInline("header", new ClassPathResource("/mail/images/Header-S.png"));
+	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-S.png"));
+	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-S.png"));
+	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-S.png"));
+	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-S.png"));
+	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-S.png"));
 
 	    javaMailSender.send(mimeMessage);
 	    log.debug("Prepaid Telco receipt has been sent successfully");
@@ -249,15 +247,8 @@ public class TelcoService {
 	    
 	    String subject = " ";
 	    String desc = "";
-	    if(category.equalsIgnoreCase(CATEGORY_TELEPHONE_TV)) {
-		// send struk emoney by email
-	    	subject = "Telepon & TV Kabel";
-			desc ="Telepon & TV Kabel";
-		
-	    } else {
-	    	subject = "Pulsa Pascabayar";
-			desc ="Pulsa Pascabayar";
-	    }
+	    String fieldBill = "";
+	    
 	    
 	    //set full name
 	    String fullName = "";
@@ -276,7 +267,18 @@ public class TelcoService {
 		log.error(e.getMessage());
 	    }
 		
-	     
+	    if(category.equalsIgnoreCase(CATEGORY_TELEPHONE_TV)) {
+			// send struk emoney by email
+		    	subject = "Telepon & TV Kabel";
+				desc ="Telepon & TV Kabel";
+				fieldBill = "Nomor/ID Pelanggan";
+				billPeriode = resTelcoPayment.getBillPeriode().concat(" " + "BULAN");
+				
+		    } else {
+		    	subject = "Pulsa Pascabayar";
+				desc ="Pulsa Pascabayar";
+				fieldBill ="Nomor Tagihan";
+		    }
 	    
 	    //set format rupiah
 	    NumberFormat id = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
@@ -296,23 +298,32 @@ public class TelcoService {
 	    String accNoSeg4 = accNoOri.substring(7, 10);
 	    String accountNumber = accNoSeg1.concat(" "+accNoSeg2.concat(" "+accNoSeg3.concat(" "+accNoSeg4)));
 	    
+	    //set mobile number
+	    String custNoOri = resTelcoPayment.getCustNo();
+	    String custNumber = BkpmUtil.prettyPhone(custNoOri);
+	    
 	    // thymleaf template mail
 	    // Prepare the evaluation context
 	    final Locale locale = new Locale("en_US.UTF-8");
 	    final Context ctx = new Context(locale);
+	    ctx.setVariable("fieldBill", fieldBill);
 	    ctx.setVariable("desc", desc);
 	    ctx.setVariable("fullname", fullName);
 	    ctx.setVariable("reference", resTelcoPayment.getReferensi());
 	    ctx.setVariable("date", date);
 	    ctx.setVariable("time", time);
 	    ctx.setVariable("accountNumber", accountNumber);
-	    ctx.setVariable("mobileNumber", resTelcoPayment.getCustNo());
+	    ctx.setVariable("mobileNumber", custNumber);
 	    ctx.setVariable("customerName", resTelcoPayment.getCustName());
 	    ctx.setVariable("billPeriode", billPeriode);
 	    ctx.setVariable("provider", resTelcoPayment.getProductName());
-	    ctx.setVariable("total", total.replace("Rp", "RP "));
-	    ctx.setVariable("adminCharge", adminCharge.replace("Rp", "RP "));
-	    ctx.setVariable("bill", amount.replace("Rp", "RP "));
+	    ctx.setVariable("total", total);
+	    ctx.setVariable("adminCharge", adminCharge);
+	    ctx.setVariable("bill", amount);
+	    
+	    ctx.setVariable("total", total);
+	    ctx.setVariable("adminCharge", adminCharge);
+	    ctx.setVariable("bill", amount);
 	    
 
 	    // Prepare message using a Spring helper
@@ -325,12 +336,12 @@ public class TelcoService {
 	    // Create the HTML body using Thymeleaf
 	    final String htmlContent = this.htmlTemplateEngine.process(TELCO_POSTPAID_TEMPLATE_NAME, ctx);
 	    message.setText(htmlContent, true); // true = isHtml
-	    message.addInline("header", new ClassPathResource("/mail/images/Header-M.png"));
-	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-M.png"));
-	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-M.png"));
-	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-M.png"));
-	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-M.png"));
-	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-M.png"));
+	    message.addInline("header", new ClassPathResource("/mail/images/Header-S.png"));
+	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-S.png"));
+	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-S.png"));
+	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-S.png"));
+	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-S.png"));
+	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-S.png"));
 
 	    javaMailSender.send(mimeMessage);
 	    log.debug("Postpaid Telco receipt has been sent successfully");

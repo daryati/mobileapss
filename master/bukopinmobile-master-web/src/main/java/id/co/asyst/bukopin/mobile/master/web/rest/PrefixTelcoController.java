@@ -204,7 +204,7 @@ public class PrefixTelcoController {
 		} else {
 			 log.debug("data not found ");
 			 response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
-			 response.setMessage(messageUtil.get("error.data.not.found", httpServletRequest.getLocale()));
+			 response.setMessage(messageUtil.get("error.number.not.found", httpServletRequest.getLocale()));
 		}
 		return response;
 	}
@@ -239,7 +239,7 @@ public class PrefixTelcoController {
 		} else {
 			 log.debug("data not found ");
 			 response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
-			 response.setMessage(messageUtil.get("error.data.not.found", httpServletRequest.getLocale()));
+			 response.setMessage(messageUtil.get("error.number.not.found", httpServletRequest.getLocale()));
 		}
 		return response;
 	}
@@ -266,7 +266,7 @@ public class PrefixTelcoController {
 		if(null == prefixRespObj) {
 		    log.error("error while get prefix with number : "+custNo);
 		    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
-		    response.setMessage(messageUtil.get("error.data.not.found", httpServletRequest.getLocale()));
+		    response.setMessage(messageUtil.get("error.number.not.found", httpServletRequest.getLocale()));
 		    return response;
 		}
 		

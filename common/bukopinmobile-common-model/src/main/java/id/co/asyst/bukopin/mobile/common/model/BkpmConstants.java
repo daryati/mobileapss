@@ -36,6 +36,7 @@ public class BkpmConstants {
     public static final String CODE_CTG_USER_LIMIT_REACH = "22013";
     public static final String CODE_CTG_DUPLICATE_USERNAME = "22025";
     public static final String CODE_CTG_INVALID_LICENSE_FILE = "27001";
+    public static final String CODE_CTG_USER_NOT_LOCKED = "22016";
     // Fields
     public static final String FIELD_HMAC = "hmac";
     public static final String FIELD_SERIAL_UID = "serialVersionUID";
@@ -137,13 +138,21 @@ public class BkpmConstants {
     /**
      * Http Header: Device Id/ Phone Identity
      */
-    public final static String HTTP_HEADER_DEVICE_ID = "Phone_Identity";
+    public final static String HTTP_HEADER_DEVICE_ID = "Phone-Identity";
     
     
-    /* Configuration Keys: */
+    /* CONFIGURATION KEYS (NAME in table CONFIGURATION): */
     /**
      * name of session timeout in CONFIGURATION table
      */
     public static final String KEY_SESSION_TIME_OUT = "SESSION_TIME_OUT";
+    /**
+     * Reset Password Duration
+     */
+    public static final String KEY_RESET_PASSWORD_DURATION = "RESET_PASSWORD_DURATION";
+    /**
+     * Not activated accounts 
+     */
+    public static final String KEY_ACCOUNT_NOT_ACTIVATED = "NOT_ACTIVATED";
     
 }

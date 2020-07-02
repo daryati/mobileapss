@@ -21,7 +21,7 @@
 		<!-- will create new file log each day or size > maxFileSize -->
 		<rollingPolicy
 			class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_DIR}/telco.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<fileNamePattern>${LOG_DIR}/telco.%d{yyyy-MM-dd}.%i.zip</fileNamePattern>
 			<!-- each archived file, size max 50MB -->
 			<maxFileSize>50MB</maxFileSize>
 			<!-- total size of all archive files, if total size > 100GB, it will delete 

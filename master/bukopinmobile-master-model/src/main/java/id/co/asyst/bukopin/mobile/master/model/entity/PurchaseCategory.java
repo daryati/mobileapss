@@ -19,6 +19,9 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * 
@@ -29,6 +32,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @Entity
 @Table(name = "CATEGORY")
+@JsonInclude(Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class PurchaseCategory implements Serializable{
 
     /* Constants: */
@@ -51,6 +56,8 @@ public class PurchaseCategory implements Serializable{
     @Type(type = "yes_no")
     private Boolean isActive;
 
+    @Column(name = "ENGLISH_NAME")
+    private String englishName;
     /* Transient Attributes: */
 
     /* Constructors: */
@@ -103,11 +110,35 @@ public class PurchaseCategory implements Serializable{
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
     }
+
+	/**
+	 * Gets <code>englishName</code>.
+	 * @return The <code>englishName</code>.
+	 */
+	public String getEnglishName() {
+		return englishName;
+	}
+
+	/**
+	 * Sets <code>englishName</code>.
+	 * @param englishName The <code>englishName</code> to set.
+	 */
+	public void setEnglishName(String englishName) {
+		this.englishName = englishName;
+	}
     
     /* Getters & setters for transient attributes: */
 
     /* Functionalities: */
 
     /* Overrides: */
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "PurchaseCategory [idCategory=" + idCategory + ", name=" + name + ", isActive=" + isActive
+				+ ", englishName=" + englishName + "]";
+	}
     
 }

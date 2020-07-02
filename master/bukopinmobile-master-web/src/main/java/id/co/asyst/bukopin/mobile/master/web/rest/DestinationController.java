@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -155,6 +156,8 @@ public class DestinationController {
 				messageUtil.get("success", servletRequest.getLocale()));
 //	Optional<PurchaseCategory> category = categoryService.findById(request.getData().getCategoryId());
 
+		String locale = servletRequest.getLocale().toString();
+
 		Optional<Destination> oldData = destinationService.findById(request.getData().getId());
 
 		if (!oldData.isPresent()) {
@@ -168,6 +171,16 @@ public class DestinationController {
 			oldData.get().setIsFavorite(request.getData().getIsFavorite());
 
 			destinationService.save(oldData.get());
+
+			if (locale.equals("in")) {
+
+				oldData.get().getCategory().setEnglishName(null);
+			} else {
+				String englishName = oldData.get().getCategory().getEnglishName();
+
+				oldData.get().getCategory().setEnglishName(null);
+				oldData.get().getCategory().setName(englishName);
+			}
 
 			response.setData(oldData.get());
 
@@ -214,6 +227,8 @@ public class DestinationController {
 		CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 				messageUtil.get("success", servletRequest.getLocale()));
 
+		String locale = servletRequest.getLocale().toString();
+
 		Optional<Destination> oldData = destinationService.findById(request.getData().getId());
 
 		if (!oldData.isPresent()) {
@@ -221,6 +236,16 @@ public class DestinationController {
 			response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 			response.setMessage(messageUtil.get("error.data.not.found", servletRequest.getLocale()));
 		} else {
+			if (locale.equals("in")) {
+
+				oldData.get().getCategory().setEnglishName(null);
+			} else {
+				String englishName = oldData.get().getCategory().getEnglishName();
+
+				oldData.get().getCategory().setEnglishName(null);
+				oldData.get().getCategory().setName(englishName);
+			}
+
 			response.setData(oldData);
 			log.debug("SHOWING DESTINATION DATA FOR ID : " + request.getData().getId());
 		}
@@ -239,6 +264,8 @@ public class DestinationController {
 	public CommonResponse checkData(@RequestBody CommonRequest<Map<String, String>> request) {
 		CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 				messageUtil.get("success", servletRequest.getLocale()));
+
+		String locale = servletRequest.getLocale().toString();
 
 		// validate, id is required
 		String idDestinationStr = request.getData().get("id_destination");
@@ -279,6 +306,17 @@ public class DestinationController {
 		}
 		// set response
 		Destination responseData = DestinationUtil.generateAddFavResponse(destination);
+
+		if(locale.equals("in")) {
+			
+			responseData.getCategory().setEnglishName(null);
+		}else {
+			String englishName = responseData.getCategory().getEnglishName();
+			
+			responseData.getCategory().setEnglishName(null);
+			responseData.getCategory().setName(englishName);
+		}
+
 		response.setData(responseData);
 
 		return response;
@@ -297,6 +335,8 @@ public class DestinationController {
 	public CommonResponse findByUserId(@RequestBody CommonRequest<Destination> request) throws IOException {
 		CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 				messageUtil.get("success", servletRequest.getLocale()));
+
+		String locale = servletRequest.getLocale().toString();
 
 		if (!commonService.verifyLocalIp(servletRequest)) {
 			// Validate Token and Phone Owner
@@ -334,7 +374,12 @@ public class DestinationController {
 		for (int i = 0; i < categories.size(); i++) {
 			FavoriteResponse fav = new FavoriteResponse();
 			fav.setId_category(categories.get(i).getIdCategory().toString());
-			fav.setCategory_name(categories.get(i).getName());
+			if (locale.equals("in")) {
+				fav.setCategory_name(categories.get(i).getName());
+			} else {
+				fav.setCategory_name(categories.get(i).getEnglishName());
+			}
+
 			respons.add(fav);
 
 			List<Destination> data = new ArrayList<Destination>();
@@ -561,8 +606,8 @@ public class DestinationController {
 				transaction.setNoteId(NOTE_ID_CREDITCARDPOST.concat(subNumber));
 				transaction.setNoteEn(NOTE_EN_CREDITCARDPOST.concat(subNumber));
 			} else if (TransactionTypeEnum.SAMOLNAS.name().equalsIgnoreCase(transactionType)) {
-			    transaction.setNoteId(NOTE_ID_SAMOLNAS.concat(subNumber));
-			    transaction.setNoteEn(NOTE_EN_SAMOLNAS.concat(subNumber));
+				transaction.setNoteId(NOTE_ID_SAMOLNAS.concat(subNumber));
+				transaction.setNoteEn(NOTE_EN_SAMOLNAS.concat(subNumber));
 			}
 
 			log.info("Save to Transaction");
@@ -577,37 +622,6 @@ public class DestinationController {
 
 		return response;
 	}
-
-	/*
-	 * @GetMapping("/mostFrequent/{username}/{categoryId}") public CommonResponse
-	 * mostFrequentTransaction(@PathVariable String username, @PathVariable long
-	 * categoryId) throws IOException { CommonResponse response = new
-	 * CommonResponse(ResponseMessage.SUCCESS.getCode(), messageUtil.get("success",
-	 * servletRequest.getLocale()));
-	 * 
-	 * CommonResponse findUserByUsername =
-	 * Services.create(UserModuleService.class).getUserIdByUsername(username)
-	 * .execute().body();
-	 * 
-	 * int userId = (int) findUserByUsername.getData(); long id =
-	 * Long.parseLong(String.valueOf(userId));
-	 * 
-	 * List<Destination> most =
-	 * destinationService.getMostFavoriteByUsernameAndCategory(username,
-	 * categoryId); if (most == null || most.isEmpty()) { // set empty object most =
-	 * new ArrayList<Destination>(); // set error message
-	 * response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
-	 * response.setMessage(messageUtil.get("data.not.found",
-	 * servletRequest.getLocale())); } else { int limit =
-	 * Integer.valueOf(env.getProperty("config.max.most.frequent")); most =
-	 * most.stream().limit(limit).collect(Collectors.toList());
-	 * 
-	 * most.forEach(ri -> { ri.setUserName(null); });
-	 * 
-	 * } response.setData(most);
-	 * 
-	 * return response; }
-	 */
 
 	/* Overrides: */
 }

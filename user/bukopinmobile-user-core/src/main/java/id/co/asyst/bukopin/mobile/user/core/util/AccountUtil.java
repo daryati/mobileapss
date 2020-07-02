@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -149,13 +150,22 @@ public class AccountUtil {
      *            result from get Inquiry CIF
      * @param accCard
      *            information from Account Card
+     * @param cards
+     * 		  Account Cards from XLINK db
+     * @param listProduct
+     * 		  Products list (Gyro and Saving only) that could be activated
      * 
-     * @return The List Object request.
+     * @return 
+     * <ul>
+     * 	<li><b>null</b> if no match between account card from Tibco and XLINK DB.</li>
+     *  <li><b>Empty List</b> if all of Products cannot be activated.</li>
+     * 	<li>else will return The List Object request.</b>
+     * </ul>
      */
     public static List<AccountInfo> setDataAccountInfo(GetInquiryCIFResType inquiryCIFRS, AccountCard accCard,
 	    List<DebitCardInfo> cards, List<Product> listProduct) {
 	log.debug("Set List Data Account Info : {} ");
-	List<AccountInfo> listAccountInfo = new ArrayList<>();
+	List<AccountInfo> listAccountInfo = null;
 
 	for (DebitCardInfo card : cards) {
 	    for (GetInquiryCIFResType.Accounts accounts : inquiryCIFRS.getAccounts()) {
@@ -170,26 +180,31 @@ public class AccountUtil {
 		    continue;
 		}
 
+		if(listAccountInfo==null) {
+		    listAccountInfo = new ArrayList<>();
+		}
+		
 		if (BkpmConstants.CODE_TYPE_SAVING.equals(String.valueOf(accounts.getAcctype()))
 			|| BkpmConstants.CODE_TYPE_GIRO.equals(String.valueOf(accounts.getAcctype()))) {
-		    AccountInfo accInfo = new AccountInfo();
-		    accInfo.setAccountName(accounts.getAccname());
-		    accInfo.setAccountNo(card.getAccountNumber());
-		    accInfo.setAccountStatus(AccountStatusEnum.getEnum(accounts.getStatus()));
-		    accInfo.setAccountType(AccountTypeEnum.getEnum((accounts.getAcctype())));
-		    accInfo.setCreateDate(new Date());
-		    accInfo.setCif(inquiryCIFRS.getAccInfo().getCifnumber());
-		    accInfo.setMainAccount(false);
-		    accInfo.setStatus(AccountInfoStatusEnum.getEnum(1));
-		    accInfo.setAccountCard(accCard);
-		    for (Product product : listProduct) {
-			if (product.getPdId() == accounts.getProductid()) {
-			    accInfo.setProduct(product);
-			    break;
-			}
-		    }
+		    // Find product in Can Activated Products list
+		    Optional<Product> ps = listProduct.stream().filter(
+			    p -> p.getPdId()==accounts.getProductid()).findFirst();
+		    if(ps.isPresent()) { // if product can be activated, insert into Account Info
+			Product product = ps.get();
+			AccountInfo accInfo = new AccountInfo();
+			accInfo.setAccountName(accounts.getAccname());
+			accInfo.setAccountNo(card.getAccountNumber());
+			accInfo.setAccountStatus(AccountStatusEnum.getEnum(accounts.getStatus()));
+			accInfo.setAccountType(AccountTypeEnum.getEnum((accounts.getAcctype())));
+			accInfo.setCreateDate(new Date());
+			accInfo.setCif(inquiryCIFRS.getAccInfo().getCifnumber());
+			accInfo.setMainAccount(false);
+			accInfo.setStatus(AccountInfoStatusEnum.getEnum(1));
+			accInfo.setAccountCard(accCard);
+			accInfo.setProduct(product);
 
-		    listAccountInfo.add(accInfo);
+			listAccountInfo.add(accInfo);
+		    }
 		}
 	    }
 	}
@@ -203,11 +218,12 @@ public class AccountUtil {
      * @param inquiryCIFRS Result Get CIF from Tibco
      * @param cards Cards from DB Xlink
      * @param listProduct List all products from PRODUCT table
+     * @param blackListPdid Black list PDIDs
      * 
      * @return List of Account Info ordered by notActivated ASC
      */
     public static List<AccountInfo> generateResponseVerification(GetInquiryCIFResType inquiryCIFRS, 
-	    List<DebitCardInfo> cards, List<Product> listProduct) {
+	    List<DebitCardInfo> cards, List<Product> listProduct, List<Integer> blackListPdid) {
 	log.debug("Set response Verification...");
 	List<AccountInfo> listAccountInfo = new ArrayList<>();
 	
@@ -233,14 +249,16 @@ public class AccountUtil {
 			accInfo.setCif(inquiryCIFRS.getAccInfo().getCifnumber());
 			accInfo.setMainAccount(false);
 			accInfo.setStatus(AccountInfoStatusEnum.getEnum(1));
-//			accInfo.setAccountCard(accCard);
 			
-			// Find product in PRODUCT table
 			List<Product> products = listProduct.stream().distinct().filter(
-				p -> accounts.getProductid()==p.getPdId()).collect(Collectors.toList());
+				// Make sure account's pdid is exist in table PRODUCT
+				p -> accounts.getProductid()==p.getPdId()
+				// Exclude accounts from tibco with blackListPdid
+				&& !blackListPdid.contains(accounts.getProductid()) )
+				.collect(Collectors.toList());
 			Product product = new Product();
 			if(products==null || products.isEmpty()) {
-			    // if product not exist in PRODUCT table, acc cannot be activated
+			    // if product not exist in PRODUCT table or blacklisted, acc cannot be activated
 			    product.setPdId(accounts.getProductid());
 			    accInfo.setNotActivated(true);
 			} else {

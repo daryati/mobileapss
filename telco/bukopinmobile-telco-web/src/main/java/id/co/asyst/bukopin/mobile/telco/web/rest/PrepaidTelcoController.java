@@ -104,6 +104,22 @@ public class PrepaidTelcoController {
     private static final String SYSTEM_BROKEN_196 = "196";
     private static final String AMOUNT_NOT_ENOUGH_BALANCE = "851";
     private static final String PASSIVE_ACCOUNT = "839";
+    
+    //giro error handling
+    private static final String GIRO_AMOUNT_NOT_ENOUGH_BALANCE = "805";
+    private static final String GIRO_LIMIT_TRANSFER = "802";
+    private static final String GIRO_ACCOUNT_WAS_BLOCKED = "806";
+    private static final String GIRO_OVER_LIMIT = "808";
+    private static final String GIRO_ACCOUNT_BLOCKED= "814";
+    private static final String GIRO_CUT_OFF= "818";
+    private static final String GIRO_INACTIVE_ACCOUNT= "822";
+    private static final String GIRO_USER_NOT_FOUND= "831";
+    private static final String GIRO_ACCOUNT_NOT_ACCEPTED= "839";
+    private static final String GIRO_DUPLICATE_DATA= "869";
+    private static final String GIRO_CLOSED_ACCOUNT= "878";
+    private static final String GIRO_ERROR_VALUTA_CODE= "885";
+    private static final String GIRO_LIMITED_BALANCE= "897";
+    
     private DateFormat paymentTelkomselDate = new SimpleDateFormat("dd MMM yyyy");
     
     
@@ -158,53 +174,42 @@ public class PrepaidTelcoController {
      * @param req 
      * 
      * @return Response status and list of mobile data and pulsa
+     * @throws IOException 
      */
     
 	@PostMapping("/listMobileDataPulsa")
     @ResponseStatus(HttpStatus.OK)
 	public CommonResponse listMobileDataAndPulsa(@Valid @RequestBody CommonRequest<PrefixTelcoRequest> request)
-		    throws DatatypeConfigurationException {		
-		CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
-			messageUtil.get("success", httpServletRequest.getLocale()));		
-		PrefixTelcoRequest req =request.getData();
-		
-		if(!(req.getPhoneNumber().length()<4)) {
-			req.setType(PREPAID_TYPE);
-			request.setData(req);
-			
-			try {
-				CommonResponse prefixTelcoRes = Services.create(MasterModuleService.class)
-						.findByPrefixNoAndType(request).execute().body();
-				
+	    throws DatatypeConfigurationException, IOException {
+	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
+		messageUtil.get("success", httpServletRequest.getLocale()));
+	PrefixTelcoRequest req = request.getData();
 
-				if (!ResponseMessage.SUCCESS.getCode().equals(prefixTelcoRes.getCode())) {
-					// response not success
-					return prefixTelcoRes;
-				}
-			    
-				log.debug("RESPONSE : "+prefixTelcoRes.toString());
-				
-				ObjectMapper mapper = new ObjectMapper();	
-				PrefixTelcoMapper prefixRes = mapper.convertValue(prefixTelcoRes.getData(), PrefixTelcoMapper.class);
-				log.debug("prefixTelcoRes: "+prefixRes.toString());
-				response.setData(prefixRes);
-				
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			
-		} else {
-			log.error("Phone number length less than 4");
-		    response.setCode(ResponseMessage.INVALID_INPUT.getCode());
-		    response.setMessage(messageUtil.get("error.invalid.input", httpServletRequest.getLocale()));
-		    return response;
-		}
-		
-		
-		return response;
+	if (!(req.getPhoneNumber().length() < 4)) {
+	    req.setType(PREPAID_TYPE);
+	    request.setData(req);
+
+	    CommonResponse prefixTelcoRes = Services.create(MasterModuleService.class)
+		    .findByPrefixNoAndType(httpServletRequest.getLocale().getLanguage(), request).execute().body();
+
+	    if (!ResponseMessage.SUCCESS.getCode().equals(prefixTelcoRes.getCode())) {
+		// response not success
+		return prefixTelcoRes;
+	    }
+
+	    ObjectMapper mapper = new ObjectMapper();
+	    PrefixTelcoMapper prefixRes = mapper.convertValue(prefixTelcoRes.getData(), PrefixTelcoMapper.class);
+	    response.setData(prefixRes);
+
+	} else {
+	    log.error("Phone number length less than 4");
+	    response.setCode(ResponseMessage.INVALID_INPUT.getCode());
+	    response.setMessage(messageUtil.get("error.invalid.input", httpServletRequest.getLocale()));
+	    return response;
 	}
+
+	return response;
+    }
     
 	/**
      * inquiry pulsa
@@ -362,7 +367,7 @@ public class PrepaidTelcoController {
 	CommonRequest<InstitutionRequest> ins = new CommonRequest<InstitutionRequest>();
 	ins.setData(insReq);
 	CommonResponse institutionRes = Services.create(MasterModuleService.class)
-			.findByPrefixIdAndInstitutionType(ins).execute().body();
+			.findByPrefixIdAndInstitutionType(httpServletRequest.getLocale().getLanguage(),ins).execute().body();
 	if (!ResponseMessage.SUCCESS.getCode().equals(institutionRes.getCode())) {
 		// response not success
 		return institutionRes;
@@ -474,17 +479,20 @@ public class PrepaidTelcoController {
 	    response = new CommonResponse();
 	    response.setCode(ResponseMessage.INVALID_AMOUNT.getCode());
 	    response.setMessage(messageUtil.get("error.invalid.amount", httpServletRequest.getLocale()));
-	} else if (PHONENUMBER_NOT_FOUND.equals(codeRes)) {
+	} else if (PHONENUMBER_NOT_FOUND.equals(codeRes) 
+			|| GIRO_USER_NOT_FOUND.equals(codeRes)) {
 	    log.error("prepaid telco - phone number not found");
 	    response = new CommonResponse();
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
-	    response.setMessage(messageUtil.get("error.phone.number.not.found", httpServletRequest.getLocale()));
+	    response.setMessage(messageUtil.get("error.number.not.found", httpServletRequest.getLocale()));
 	}else if (VOUCHER_OUT_OF_STOCK.equals(codeRes)) {
 	    log.error("prepaid telco - Voucher out of stock");
 	    response = new CommonResponse();
 	    response.setCode(ResponseMessage.ERROR_VOUCHER_OUT_OF_STOCK.getCode());
 	    response.setMessage(messageUtil.get("error.voucher.out.of.stock", httpServletRequest.getLocale()));
-	} else if(ACCOUNT_WAS_BLOCKED.equals(codeRes)) {
+	} else if(ACCOUNT_WAS_BLOCKED.equals(codeRes)
+			|| GIRO_ACCOUNT_BLOCKED.equals(codeRes)
+			|| GIRO_ACCOUNT_WAS_BLOCKED.equals(codeRes)) {
 	    log.error("prepaid telco - blocked account");
 	    response = new CommonResponse();
 	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
@@ -495,16 +503,38 @@ public class PrepaidTelcoController {
 	    response = new CommonResponse();
 	    response.setCode(ResponseMessage.PHONE_NUMBER_EXPIRED.getCode());
 	    response.setMessage(messageUtil.get("error.phone.number.expired", httpServletRequest.getLocale()));
-	} else if (AMOUNT_NOT_ENOUGH_BALANCE.equals(codeRes)) {
+	} else if (AMOUNT_NOT_ENOUGH_BALANCE.equals(codeRes)
+			|| GIRO_AMOUNT_NOT_ENOUGH_BALANCE.equals(codeRes)
+			|| GIRO_ERROR_VALUTA_CODE.equals(codeRes)
+			|| GIRO_LIMITED_BALANCE.equals(codeRes)) {		
 	    log.error("not enough balance");
 	    response = new CommonResponse();
 	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
 	    response.setMessage(messageUtil.get("error.amount.not.enough", httpServletRequest.getLocale()));
-	} else if (PASSIVE_ACCOUNT.equals(codeRes)) {
+	} else if (PASSIVE_ACCOUNT.equals(codeRes)
+			|| GIRO_INACTIVE_ACCOUNT.equals(codeRes)
+			|| GIRO_ACCOUNT_NOT_ACCEPTED.equals(codeRes)
+			|| GIRO_CLOSED_ACCOUNT.equals(codeRes)) {
 	    log.error("passive account");
 	    response = new CommonResponse();
 	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
 	    response.setMessage(messageUtil.get("error.inactive.bank.account", httpServletRequest.getLocale()));
+	} else if (GIRO_LIMIT_TRANSFER.equals(codeRes) 
+			|| GIRO_OVER_LIMIT.equals(codeRes)) {
+	    log.error("exceed limit");
+	    response = new CommonResponse();
+	    response.setCode(ResponseMessage.LIMIT_TRANSFER_DAY.getCode());
+	    response.setMessage(messageUtil.get("error.exceed.limit", httpServletRequest.getLocale()));
+	} else if (GIRO_CUT_OFF.equals(codeRes)) {
+	    log.error("Giro cut off");
+	    response = new CommonResponse();
+	    response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
+	    response.setMessage(messageUtil.get("error.cutoff", httpServletRequest.getLocale()));
+	} else if (GIRO_DUPLICATE_DATA.equals(codeRes)) {
+	    log.error("Giro Duplicate Data");
+	    response = new CommonResponse();
+	    response.setCode(ResponseMessage.DUPLICATE_DATA.getCode());
+	    response.setMessage(messageUtil.get("error.duplicate.data", httpServletRequest.getLocale()));
 	} else if (SYSTEM_BROKEN_189.equalsIgnoreCase(codeRes) || SYSTEM_BROKEN_196.equalsIgnoreCase(codeRes) ) {
 	    log.error("prepaid telco - System failure");
 	    response = new CommonResponse();

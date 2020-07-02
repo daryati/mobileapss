@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import id.co.asyst.bukopin.mobile.common.core.exception.DataNotMatchException;
+import id.co.asyst.bukopin.mobile.common.core.exception.MiddlewareException;
 import id.co.asyst.bukopin.mobile.common.core.service.impl.BkpmService;
 import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
@@ -64,7 +65,6 @@ import id.co.asyst.bukopin.mobile.service.model.payload.pln.prepaid.PrepaidInqui
 import id.co.asyst.bukopin.mobile.service.model.payload.pln.prepaid.PrepaidInquiryResponse;
 import id.co.asyst.bukopin.mobile.service.model.payload.pln.prepaid.PrepaidPurchaseRequest;
 import id.co.asyst.bukopin.mobile.service.model.payload.pln.prepaid.PrepaidPurchaseResponse;
-import id.co.asyst.bukopin.mobile.user.model.entity.User;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyAccountOwnerRequest;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyAccountOwnerResponse;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyPhoneOwnerRequest;
@@ -91,6 +91,22 @@ public class PLNPrepaidController {
     private static final String PRR_SUBSCRIBER = "116";
     private static final String SUBSCRIBER_SUSPENDED = "177";
     private static final String PLN_CUT_OFF = "190";
+    
+    // Giro
+    private static final String PLN_EXCEED_LIMIT = "802"; // limit pembayaran tidak cukup
+    private static final String PLN_NOT_ENOUGH_BALANCE_GIRO = "805"; // salmin tidak cukup
+    private static final String PLN_BLOCKED_ACCOUNT_DEBET = "806"; // Rekening diblok debet
+    private static final String PLN_TRX_OVER_LIMIT = "808"; // Transaction over limit
+    private static final String PLN_BLOCKED_ACCOUNT = "814"; // Rekening diblok
+    private static final String PLN_CUT_OFF_GIRO = "818"; // Cutoff in progress
+    private static final String PLN_INACTIVE_ACCOUNT_GIRO = "822"; // Rekening inaktif
+    private static final String PLN_USER_NOT_FOUND = "831"; // User Not found
+    private static final String PLN_INACTIVE_ACCOUNT_APPROVE_GIRO = "839"; // Rekening belum disetujui
+    private static final String PLN_TRX_DUPLICATE = "869"; // Transaction duplicate
+    private static final String PLN_INACTIVE_ACCOUNT_CLOSED_GIRO = "878"; // Rekening ditutup
+    private static final String PLN_NOT_ENOUGH_BALANCE_VALUTA_GIRO = "885"; // Kode valuta tidak ada dalam batch
+    private static final String PLN_NOT_ENOUGH_BALANCE_GIRO2 = "897"; // Saldo dibawah minimum
+    
     private static final String PLN_NOT_ENOUGH_BALANCE = "851";
     private static final String PLN_INACTIVE_ACCOUNT = "839";
     
@@ -148,21 +164,24 @@ public class PLNPrepaidController {
     @PostMapping("/inquiry")
     private CommonResponse inquiryResult(@Valid @RequestBody CommonRequest<inquiryPrepaidRequestPLN> req)
 	    throws IOException {
-	log.debug("REST request to inquiry PLN : {}", req.getData());
 	CommonResponse response = new CommonResponse();
 
 	String forwardInsCode = env.getProperty("spring.pln.forwarding-institution-code");
+	
 	PrepaidInquiryRequest reqInquiryPrepaidPLNAranet = PLNUtils
 		.generateInquiryPrepaidPLNReq(req.getData().getSubscriberID(), forwardInsCode);
+	log.debug("PLN prepaid req-inq to tibco: {}", BkpmUtil.convertToJson(reqInquiryPrepaidPLNAranet));
 	PrepaidInquiryResponse resInquiryPrepaidPLNAranet = Services.create(PLNService.class)
 		.prepaidInquiry(reqInquiryPrepaidPLNAranet).execute().body();
+	log.debug("PLN prepaid resp-inq from tibco: {}", BkpmUtil.convertToJson(resInquiryPrepaidPLNAranet));
 
 	String codeRes = resInquiryPrepaidPLNAranet.getRespayment().getResult().getElement39();
-	if (PLN_CUT_OFF.equals(codeRes)) {
+	if (PLN_CUT_OFF.equals(codeRes) || PLN_CUT_OFF_GIRO.equals(codeRes)) {
 	    log.error("Cut Off PLN");
 	    response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
 	    response.setMessage(messageUtil.get("error.cutoff.pln", servletRequest.getLocale()));
-	} else if (UNREGISTERED_BILLER.equals(codeRes) || UNREGISTERED_SUBSCRIBER_NUMBER.equals(codeRes)) {
+	} else if (UNREGISTERED_BILLER.equals(codeRes) || UNREGISTERED_SUBSCRIBER_NUMBER.equals(codeRes)
+		|| PLN_USER_NOT_FOUND.equals(codeRes)) {
 	    log.error("Unregistered biller or subscriber number");
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 	    response.setMessage(messageUtil.get("error.id.pln.not.found", servletRequest.getLocale()));
@@ -175,10 +194,23 @@ public class PLNPrepaidController {
 	    response.setCode(ResponseMessage.PLN_SUBSCRIBER_SUSPENDED.getCode());
 	    response.setMessage(messageUtil.get("error.user.pln.block",
 		    new Object[] { req.getData().getSubscriberID() }, servletRequest.getLocale()));
+	} else if (PLN_EXCEED_LIMIT.equals(codeRes) 
+		|| PLN_TRX_OVER_LIMIT.equals(codeRes)) {
+	    log.error("exceed limit");
+	    response.setCode(ResponseMessage.LIMIT_TRANSFER_DAY.getCode());
+	    response.setMessage(messageUtil.get("error.exceed.limit", servletRequest.getLocale()));
+	} else if (PLN_BLOCKED_ACCOUNT_DEBET.equals(codeRes)
+			|| PLN_BLOCKED_ACCOUNT.equals(codeRes)) {
+	    log.error("account was blocked");
+	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
+	    response.setMessage(messageUtil.get("error.customer.was.blocked", servletRequest.getLocale()));    
+	} else if (PLN_TRX_DUPLICATE.equals(codeRes)) {
+	    log.error("Giro Duplicate Data");
+	    response.setCode(ResponseMessage.DUPLICATE_DATA.getCode());
+	    response.setMessage(messageUtil.get("error.duplicate.data", servletRequest.getLocale()));
 	} else if (!SUCCESS_CODE.equals(codeRes)) {
 	    log.error("Error from Aranet with code : "+codeRes);
-	    response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
-	    response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
+	    throw new MiddlewareException(codeRes);
 	} else {
 	    log.debug("Inquiry PLN success");
 	    String dataResp = resInquiryPrepaidPLNAranet.getRespayment().getResult().getElement48();
@@ -220,22 +252,22 @@ public class PLNPrepaidController {
      */
     @GetMapping("/inquiry/{id}")
     private CommonResponse inquirySubscriberName(@PathVariable String id) throws IOException {
-	log.debug("REST request to inquiry search subscriber name by ID : {}", id);
 	CommonResponse response = new CommonResponse();
 
 	String forwardInsCode = env.getProperty("spring.pln.forwarding-institution-code");
 	PrepaidInquiryRequest reqInquiryPrepaidPLNAranet = PLNUtils.generateInquiryPrepaidPLNReq(id, forwardInsCode);
-	log.debug("request to aranet : "+BkpmUtil.convertToJson(reqInquiryPrepaidPLNAranet));
+	log.debug("PLN prepaid req-inq to tibco: {}", BkpmUtil.convertToJson(reqInquiryPrepaidPLNAranet));
 	PrepaidInquiryResponse resInquiryPrepaidPLNAranet = Services.create(PLNService.class)
 		.prepaidInquiry(reqInquiryPrepaidPLNAranet).execute().body();
-	log.debug("pln inquiry req: "+BkpmUtil.convertToJson(resInquiryPrepaidPLNAranet));
+	log.debug("PLN prepaid resp-inq from tibco: {}", BkpmUtil.convertToJson(resInquiryPrepaidPLNAranet));
 
 	String codeRes = resInquiryPrepaidPLNAranet.getRespayment().getResult().getElement39();
-	if (PLN_CUT_OFF.equals(codeRes)) {
+	if (PLN_CUT_OFF.equals(codeRes) || PLN_CUT_OFF_GIRO.equals(codeRes)) {
 	    log.error("Cut Off PLN");
 	    response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
 	    response.setMessage(messageUtil.get("error.cutoff.pln", servletRequest.getLocale()));
-	} else if (UNREGISTERED_BILLER.equals(codeRes) || UNREGISTERED_SUBSCRIBER_NUMBER.equals(codeRes)) {
+	} else if (UNREGISTERED_BILLER.equals(codeRes) || UNREGISTERED_SUBSCRIBER_NUMBER.equals(codeRes)
+		|| PLN_USER_NOT_FOUND.equals(codeRes)) {
 	    log.error("Unregistered biller or subscriber number");
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 	    response.setMessage(messageUtil.get("error.id.pln.not.found", servletRequest.getLocale()));
@@ -247,10 +279,23 @@ public class PLNPrepaidController {
 	    log.error("Subscriber was blocked");
 	    response.setCode(ResponseMessage.ERROR.getCode());
 	    response.setMessage(messageUtil.get("error.user.pln.block",new Object[] {id}, servletRequest.getLocale()));
+	}  else if (PLN_EXCEED_LIMIT.equals(codeRes) 
+		|| PLN_TRX_OVER_LIMIT.equals(codeRes)) {
+	    log.error("exceed limit");
+	    response.setCode(ResponseMessage.LIMIT_TRANSFER_DAY.getCode());
+	    response.setMessage(messageUtil.get("error.exceed.limit", servletRequest.getLocale()));
+	} else if (PLN_BLOCKED_ACCOUNT_DEBET.equals(codeRes)
+			|| PLN_BLOCKED_ACCOUNT.equals(codeRes)) {
+	    log.error("account was blocked");
+	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
+	    response.setMessage(messageUtil.get("error.customer.was.blocked", servletRequest.getLocale()));    
+	} else if (PLN_TRX_DUPLICATE.equals(codeRes)) {
+	    log.error("Giro Duplicate Data");
+	    response.setCode(ResponseMessage.DUPLICATE_DATA.getCode());
+	    response.setMessage(messageUtil.get("error.duplicate.data", servletRequest.getLocale()));
 	} else if (!SUCCESS_CODE.equals(codeRes)) {
 	    log.error("Error from Aranet with code : "+codeRes);
-	    response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
-	    response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
+	    throw new MiddlewareException(codeRes);
 	} else {
 	    log.debug("Inquiry subscriber PLN success");
 	    String dataResp = resInquiryPrepaidPLNAranet.getRespayment().getResult().getElement48();
@@ -344,27 +389,47 @@ public class PLNPrepaidController {
 	String accType = resAccount.getAccountInfo().getAccountType().name();
 
 	PrepaidPurchaseRequest reqPurchasePrepaidPLNAranet = PLNUtils.generatePurchasePrepaidPLNReq(req.getData(), forwardInsCode, accType);
-	log.debug("request to aranet : " + BkpmUtil.convertToJson(reqPurchasePrepaidPLNAranet.getParameter()));
+	log.debug("PLN prepaid req-purchase to tibco: {}",BkpmUtil.convertToJson(reqPurchasePrepaidPLNAranet.getParameter()));
 	PrepaidPurchaseResponse resPurchasePrepaidPLNAranet = new PrepaidPurchaseResponse();
 	resPurchasePrepaidPLNAranet = Services.create(PLNService.class)
 	    	.prepaidPurchase(reqPurchasePrepaidPLNAranet).execute().body();
-	log.debug("response : " + BkpmUtil.convertToJson(resPurchasePrepaidPLNAranet.getRespayment().getResult()));
+	log.debug("PLN prepaid resp-purchase from tibco: {}",BkpmUtil.convertToJson(resPurchasePrepaidPLNAranet.getRespayment().getResult()));
 	String codeRes = resPurchasePrepaidPLNAranet.getRespayment().getResult().getElement39();
 	String postRes = resPurchasePrepaidPLNAranet.getRespayment().getResult().getElement121().substring(0, 3);
 	
-	if(PLN_NOT_ENOUGH_BALANCE.equals(codeRes)) {
+	if (PLN_CUT_OFF.equals(codeRes) || PLN_CUT_OFF_GIRO.equals(codeRes)) {
+	    log.error("Giro cut off");
+	    response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
+	    response.setMessage(messageUtil.get("error.cutoff.pln", servletRequest.getLocale()));
+	} else if(PLN_NOT_ENOUGH_BALANCE.equals(codeRes) || PLN_NOT_ENOUGH_BALANCE_GIRO.equals(codeRes)
+		|| PLN_NOT_ENOUGH_BALANCE_VALUTA_GIRO.equals(codeRes) 
+		|| PLN_NOT_ENOUGH_BALANCE_GIRO2.equals(codeRes)) {
 	    log.error("Not enough balance: "+accountNo);
 	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
 	    response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
-	} else if(PLN_INACTIVE_ACCOUNT.equals(codeRes)) {
+	} else if(PLN_INACTIVE_ACCOUNT.equals(codeRes) || PLN_INACTIVE_ACCOUNT_GIRO.equals(codeRes)
+		|| PLN_INACTIVE_ACCOUNT_APPROVE_GIRO.equals(codeRes) 
+		|| PLN_INACTIVE_ACCOUNT_CLOSED_GIRO.equals(codeRes)) {
 	    log.error("Account inactive: "+accountNo);
 	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
 	    response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
+	}  else if (PLN_EXCEED_LIMIT.equals(codeRes) 
+		|| PLN_TRX_OVER_LIMIT.equals(codeRes)) {
+	    log.error("exceed limit");
+	    response.setCode(ResponseMessage.LIMIT_TRANSFER_DAY.getCode());
+	    response.setMessage(messageUtil.get("error.exceed.limit", servletRequest.getLocale()));
+	} else if (PLN_BLOCKED_ACCOUNT_DEBET.equals(codeRes)
+			|| PLN_BLOCKED_ACCOUNT.equals(codeRes)) {
+	    log.error("account was blocked");
+	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
+	    response.setMessage(messageUtil.get("error.customer.was.blocked", servletRequest.getLocale()));    
+	} else if (PLN_TRX_DUPLICATE.equals(codeRes)) {
+	    log.error("Giro Duplicate Data");
+	    response.setCode(ResponseMessage.DUPLICATE_DATA.getCode());
+	    response.setMessage(messageUtil.get("error.duplicate.data", servletRequest.getLocale()));
 	} else if(!SUCCESS_CODE.equals(codeRes) && !ARANET_TIME_OUT_CODE.equals(codeRes)) {
-	    log.error("Purchase Failed (response) : "+resPurchasePrepaidPLNAranet.getRespayment().getResult().getElement39());
-	    response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
-	    response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
-	    return response;
+	    log.error("Purchase Failed (response) : "+codeRes);
+	    throw new MiddlewareException(codeRes);
 	}
 	
 	PurchasePrepaidResponsePLN purchasePrepaidResPLN = new PurchasePrepaidResponsePLN();

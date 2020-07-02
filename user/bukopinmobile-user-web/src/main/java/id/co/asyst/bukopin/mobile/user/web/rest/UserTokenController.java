@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.CryptoUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
@@ -100,7 +99,6 @@ public class UserTokenController {
      */
     @GetMapping("/userTokens")
     public List<UserToken> getAllUserTokens() {
-        log.debug("REST request to get UserTokens");
         return userTokenService.findAll();
     }
 
@@ -114,7 +112,6 @@ public class UserTokenController {
     @PostMapping("/userTokens")
     @ResponseStatus(HttpStatus.CREATED)
     public UserToken createUserToken(@Valid @RequestBody UserToken userToken) throws URISyntaxException {
-        log.debug("REST request to save UserToken : {}", userToken);
         if (userToken.getId() != null) {
             // throw new BadRequestAlertException("A new userToken cannot already have an
             // ID", "UserToken", "idexists");
@@ -151,13 +148,11 @@ public class UserTokenController {
     @DeleteMapping("/userTokens/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteUserToken(@PathVariable String id) {
-        log.debug("REST request to delete UserTOken : {}", id);
         userTokenService.delete(id);
     }
     
     @PostMapping("/userToken/getByToken")
     public CommonResponse findUserToken(@RequestBody UserToken token) {
-        log.debug("REST request to get UserToken by token "+token);
         CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(), messageUtil.get("success", httpServletRequest.getLocale()));
         UserToken userToken = userTokenService.findByToken(token.getToken());    	
     	log.debug("userToken "+userToken);

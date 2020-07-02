@@ -1,4 +1,74 @@
 ===============================================================================
+   Bukopin-Mobile-Telco 1.3.Alpha3 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Telco - Version 1.3.Alpha3
+** Notes
+	* Release for patching previous version.
+
+** Story
+	* 
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
+   Bukopin-Mobile-Telco 1.3.Alpha2 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Telco - Version 1.3.Alpha2
+** Notes
+	* Release for Email Styling.
+
+** Story
+	* [BKPM-349] - [Backend] Email Telephone & Tv Cable
+	* [BKPM-351] - [Backend] Change font-size on transaction receipt email
+	* [BKPM-353] - [Backend] Format idPelanggan / Nomor Telephone di Struk Email
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 
+
+
+===============================================================================
+   Bukopin-Mobile-Telco 1.3.Alpha2 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Telco - Version 1.3.Alpha2
+** Notes
+	* Release for phase 3b: CC & Paket Data.
+
+** Story
+	* 
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 
+
+
+===============================================================================
+   Bukopin-Mobile-Telco 1.3.Alpha1 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Telco - Version 1.3.Alpha1
+** Notes
+	* Release for phase 3a: BPJS & Samolnas.
+
+** Story
+	* 
+
+** Bug Fixed
+	*   
+	
+** Deprecated Service
+	* 
+
+
+===============================================================================
    Bukopin-Mobile-Telco 1.2.Alpha1 Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Telco - Version 1.0.Alpha1-SNAPSHOT
@@ -8,8 +78,31 @@ Initial prototype, features:
 
 ** Notes
     * Added Liquibase DB load-data Support.
+    * Release for phase 2b & 2c, Telco & PSTN.
     * Supported Databases (Generation Type AUTO): MySQL.
     * Upgrade foundation version to 3.0.Beta1-SNAPSHOT
 
 ** Story
 	* Logging Request & Response
+	* [BKPM-141] - [Backend] Telco Postpaid : Inquiry & Payment
+	* [BKPM-142] - [Backend] Telco Postpaid : Telkomsel Halo
+	* [BKPM-143] - [Backend] Telco Postpaid : Indosat Matrix
+	* [BKPM-144] - [Backend] Telco Postpaid : XL Xplor
+	* [BKPM-148] - [Backend] Telco Prepaid - List Available Quota
+	* [BKPM-149] - [Backend] Telco Prepaid - Inquiry Pulsa
+	* [BKPM-150] - [Backend] Telco Prepaid - Purchase
+	* [BKPM-152] - [Backend] Inquiries Telco Postpaid Telkom PSTN & Speedy
+	* [BKPM-155] - [Backend] Telco Telco PSTN dan Speedy : Inquiry & Payment
+	* [BKPM-157] - [Backend] Telco Telkom PSTN & Speedy Inquiry
+	* [BKPM-158] - [Backend] Telco Telkom PSTN & Speedy Purchase
+	* [BKPM-159] - [Backend] Telco Telkom PSTN & Speedy Inquiry
+	* [BKPM-160] - [Backend] Telco Telkom PSTN & Speedy Purchase
+	* [BKPM-165] - [Backend] Get prefix telco postpaid
+	* [BKPM-179] - [Backend] Telco Postpaid : Tri
+	* [BKPM-180] - [Backend] Telco Postpaid : Smartfren
+	* [BKPM-305] - [Backend] Telkom PSTN and Speedy - Add Npwp in Payment Response
+	* [BKPM-306] - [Backend] Telkom PSTN and Speedy - Add Npwp in Inquiry Respose 
+	
+** Bugs Fixed
+	* [BKPM-257] - [Backend] Telco Postpaid - Favorite
+	

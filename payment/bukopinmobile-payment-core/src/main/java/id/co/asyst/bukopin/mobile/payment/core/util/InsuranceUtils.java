@@ -69,13 +69,13 @@ public class InsuranceUtils {
     private static final String IDR_CURRENCY_TRAN = "360";
     private static final String IDR_CURRENCY_CODE = "360";
     private static final String TERMINAL_IDENTIFICATION = "5413954120960104";
-    private static final String LANGUAGE_CODE = "0";
+    //private static final String LANGUAGE_CODE = "0";
     
     //-- description
-    private static final String TRDES1_BPJSKES = "INET : BAYAR BPJSKS ";
-    private static final String TRDES2 = "00000000000000000000000IB0101 ";
-    private static final String TRDES31_BPJSKES = "Dr. ";
-    private static final String TRDES32_BPJSKES = " Cr. 2090070101";
+    private static final String TRDES1_BPJSKES = "MB : BYR BPJS KESEHATAN ";
+    //private static final String TRDES2 = "00000000000000000000000IB0101 ";
+    private static final String TRDES2_BPJSKES= "Dr. ";
+    private static final String TRDES3_BPJSKES = " ";
     
     
     private static final String CONVENTION_RATE = "0000000000000000000";
@@ -115,7 +115,7 @@ public class InsuranceUtils {
      * @return
      */
     public static InsuranceInquiryRequest generateInquiryInsuranceReq(String codeIns, Integer month, String subscribernumber,
-    		String forwardInsCode, InstitutionMapper institution) {
+    		String forwardInsCode, InstitutionMapper institution, String language) {
     	InsuranceInquiryRequest req = new InsuranceInquiryRequest();
     	String adminFee= String.valueOf(Integer.valueOf(institution.getAdminFee().intValue()));
     	// generate STAN
@@ -135,6 +135,13 @@ public class InsuranceUtils {
     	identity.setCredentials(credentials);
     	
     	//-- set element 48
+    	String LANGUAGE_CODE = "";
+    	if ("ID".equalsIgnoreCase(language) || "IN".equalsIgnoreCase(language)) {
+    		LANGUAGE_CODE = "0";
+    	} else if ("EN".equalsIgnoreCase(language)) {
+    		LANGUAGE_CODE = "1";
+    	}
+    			
     	String paddingSubsNumb = subscribernumber.concat(new String(new char[24 - subscribernumber.length()]).replace('\0', ' '));
     	String paddingMonth = new String(new char[2 - String.valueOf(month).length()]).replace('\0', '0').concat(String.valueOf(month));
     	String paddingAdminFee = new String(new char[12 - adminFee.length()]).replace('\0', '0').concat(adminFee);
@@ -156,7 +163,7 @@ public class InsuranceUtils {
     	param.setElement18(MERCHANT_TYPE_MOBILE);
     	param.setElement32(ACQUIRING_INSTITUTION_CODE);
     	param.setElement33(forwardInsCode);
-    	param.setElement37(generateAlphaNumeric(12));
+    	param.setElement37(generateSTAN(12));
     	param.setElement41(TERMINAL_IDENTIFICATION);
     	param.setElement48(element48);
     	param.setElement63(element63);
@@ -230,8 +237,8 @@ public class InsuranceUtils {
 	
 	if("BPJSKES".equalsIgnoreCase(request.getCodeIns())) {
 		des1 = StringUtils.rightPad(TRDES1_BPJSKES.concat(request.getSubscriberNumber()), 40);
-		des2 = StringUtils.rightPad(TRDES2.concat(trdes2.format(date)), 40);
-		des3 = StringUtils.leftPad(TRDES31_BPJSKES.concat(request.getAccountNumber()).concat(TRDES32_BPJSKES), 60);
+		des2 = StringUtils.rightPad(TRDES2_BPJSKES.concat(request.getAccountNumber()), 40);
+		des3 = StringUtils.leftPad(TRDES3_BPJSKES, 60);
 	} else if("INHEALTH".equalsIgnoreCase(request.getCodeIns())) {
 		//des1 = StringUtils.rightPad(TRDES1_PULSA_INDOSAT.concat(request.getPhoneNumber()), 40);
 		//des2 = StringUtils.rightPad(TRDES2.concat(trdes2.format(date)), 40);

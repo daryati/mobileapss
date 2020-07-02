@@ -82,7 +82,6 @@ public class UserTokenService {
      * @return The persisted UserToken.
      */
     public UserToken save(UserToken userToken) {
-        log.debug("Request to save UserToken : {}");
         return userTokenRepository.save(userToken);
     }
 
@@ -93,7 +92,6 @@ public class UserTokenService {
      */
     @Transactional(readOnly = true)
     public List<UserToken> findAll() {
-        log.debug("Request to get all UserTokens");
         return userTokenRepository.findAll();
     }
 
@@ -105,7 +103,6 @@ public class UserTokenService {
      */
     @Transactional(readOnly = true)
     public Page<UserToken> findAll(Pageable pageable) {
-        log.debug("Request to get all UserTokens");
         return userTokenRepository.findAll(pageable);
     }
 
@@ -117,13 +114,11 @@ public class UserTokenService {
      */
     @Transactional(readOnly = true)
     public Optional<UserToken> findOne(String id) {
-        log.debug("Request to get UserToken : {}", id);
         return userTokenRepository.findById(id);
     }
     
     @Transactional(readOnly = true)
     public UserToken findByToken(String token) {
-        log.debug("Request to get UserToken : {}", token);
         return userTokenRepository.getUserTOkenByToken(token);
     }
 
@@ -133,7 +128,6 @@ public class UserTokenService {
      * @param id the id of the entity
      */
     public void delete(String id) {
-        log.debug("Request to delete UserToken : {}", id);
         userTokenRepository.deleteById(id);
     }
     
@@ -162,7 +156,6 @@ public class UserTokenService {
      *         body will contains User and UserToken.
      */
     public VerifyTokenOwnerResponse verifyTokenOwner(String username, String token) {
-	log.info("verify token owner: "+username+" "+token);
 	VerifyTokenOwnerResponse data = new VerifyTokenOwnerResponse();
 	
 	// find active token
@@ -191,7 +184,6 @@ public class UserTokenService {
      *         body will contains User and UserToken.
      */
     public VerifyTokenOwnerResponse verifyTokenAndPhoneOwner(String username, String token, String phoneId) {
-	log.info("verify token and phone owner: "+username+" "+token+" "+phoneId);
 	VerifyTokenOwnerResponse data = new VerifyTokenOwnerResponse();
 	if(phoneId==null) {
 	    phoneId = "";
@@ -225,29 +217,29 @@ public class UserTokenService {
 	UserToken userToken = this.findByToken(token);
 	// Check double device
 	if (null != userToken) {
-	    log.info("token login exist");
+//	    log.info("token login exist");
 	    // Check session
 	    boolean isSessionValid = checkSession(userToken);
 	    User user = userService.findUserByUsername(userToken.getUsername());
 	    if (isSessionValid) {
-		log.info("session valid");
+//		log.info("session valid");
 		// Check User locked
 		if(user.isLocked()) { // user locked in db
 		    String username = user.getUsername();
-		    log.error("user locked in db: {}",username);
+//		    log.error("user locked in db: {}",username);
 		    // Check locked status in centagate
 		    ChallengeQuestionRequest getQuestReq = AuthUtil.generateChallengeRequest(username, "");
 		    CentagateCommonResponse getQuestCTGRes = Services.create(CentagateService.class)
 			    .requestQuestion(getQuestReq).execute().body();
-		    log.info("check locked status to ctg: {}",username);
+//		    log.info("check locked status to ctg: {}",username);
 		    if (BkpmConstants.CODE_CTG_SUCCESS.equals(getQuestCTGRes.getCode())) {
-			log.info("user is not locked in ctg: {}",username);
+//			log.info("user is not locked in ctg: {}",username);
 			// unlock user status db
 			user.setLocked(false);
 			user = userService.save(user);
 		    } else if (BkpmConstants.CODE_STG_USER_LOCKED.equals(getQuestCTGRes.getCode())) {
-			log.error("user locked in ctg: {}", username);
-			log.error("User Locked: {}", user.getUsername());
+//			log.error("user locked in ctg: {}", username);
+//			log.error("User Locked: {}", user.getUsername());
 			// logout
 			userService.logoutCentagate(user, token, locale);
 
@@ -258,7 +250,7 @@ public class UserTokenService {
 		}
 	    } else {
 		// session timeout
-		log.error("Session Timeout: " + userToken.getUsername());
+//		log.error("Session Timeout: " + userToken.getUsername());
 
 		// logout
 		userService.logoutCentagate(user, token, locale);
@@ -271,7 +263,7 @@ public class UserTokenService {
 	    }
 	} else {
 	    // status = false;
-	    log.error("double device login ");
+//	    log.error("double device login ");
 
 	    String errorCode = ResponseMessage.ERROR_DOUBLE_LOGIN.getCode();
 	    String errorMessage = messageUtil.get("error.double.login", locale);
@@ -286,7 +278,6 @@ public class UserTokenService {
      * Check Validity of Login Session
      */
     private boolean checkSession(UserToken token) {
-	log.info("Checking session..");
 	boolean isValid = false;
 
 	// Get duration from Configuration
@@ -309,7 +300,6 @@ public class UserTokenService {
 	    // Update user token
 	    this.save(token);
 	}
-	log.info("token valid: " + isValid);
 
 	return isValid;
     }

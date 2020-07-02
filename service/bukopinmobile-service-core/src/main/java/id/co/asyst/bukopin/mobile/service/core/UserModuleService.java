@@ -9,7 +9,6 @@
  */
 package id.co.asyst.bukopin.mobile.service.core;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonRequest;
@@ -30,9 +29,9 @@ import retrofit2.http.Path;
  * @version $Revision$, Nov 27, 2019
  * @since 2.0
  */
-@ServiceUrl("http://10.2.62.163:8080/") // dev
-//@ServiceUrl("http://10.0.13.61:8080/") // prod
-//@ServiceUrl("http://localhost:8080/") // local
+@ServiceUrl("http://localhost:8080/") // non LB
+//@ServiceUrl("http://10.2.62.221:8080/") // dev LB
+//@ServiceUrl("http://10.0.13.54:8080/") // prod LB
 public interface UserModuleService {
 
     @GET("bukopinmobile-user/api/getAccountInfo/{username}/preHandle")

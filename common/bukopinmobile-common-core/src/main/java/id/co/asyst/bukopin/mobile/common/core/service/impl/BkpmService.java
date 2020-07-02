@@ -66,15 +66,12 @@ public class BkpmService {
      * @return true if request from local, either false.
      */
     public boolean verifyLocalIp(HttpServletRequest request) {
-	log.debug("Verify local ip...");
 	boolean isLocalIp = false;
 	String ip = request.getHeader("X-FORWARDED-FOR") == null ? request.getRemoteAddr()
 		: request.getHeader("X-FORWARDED-FOR");
 	ip = ip.trim();
-	log.debug("source ip: " + ip);
 	
 	String passtrough = env.getProperty("config.ip.passtrough", DEFAULT_LOCAL_IP);
-	log.debug("passtrough: "+passtrough);
 	if (passtrough.contains(ip)) { // ip local doesn't need token
 	    log.debug("ip local");
 	    isLocalIp = true;
@@ -107,7 +104,6 @@ public class BkpmService {
 	    JSONParser parser = new JSONParser();
 	    if (res != null) {
 		JSONObject responseJson = (JSONObject) parser.parse(res);
-		log.debug("response " + responseJson);
 
 		String statusObj = (String) responseJson.get("message");
 		if ("success".equalsIgnoreCase(statusObj)) {

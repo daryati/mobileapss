@@ -10,21 +10,19 @@
 package id.co.asyst.bukopin.mobile.transfer.config;
 
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -36,7 +34,6 @@ import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
 import id.co.asyst.bukopin.mobile.service.core.UserModuleService;
-import id.co.asyst.bukopin.mobile.transfer.core.config.GetConfiguration;
 import id.co.asyst.foundation.service.connector.Services;
 
 /**
@@ -60,9 +57,6 @@ public class ControllerInterceptor implements HandlerInterceptor {
     @Autowired
     private MessageUtil messageUtil;
 
-    @Autowired
-    private GetConfiguration config;
-    
     /**
      * Logging Service 
      */
@@ -74,6 +68,12 @@ public class ControllerInterceptor implements HandlerInterceptor {
      */
     @Autowired
     private BkpmService commonService;
+    
+    /**
+     * Http Servlet Request
+     */
+    @Autowired
+    private HttpServletRequest httpServletRequest;
 
     /* Constants: */
 
@@ -102,7 +102,6 @@ public class ControllerInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 	    throws Exception {
-	log.debug("Pre handle Transfer");
 	// log GET request
 	if (DispatcherType.REQUEST.name().equals(request.getDispatcherType().name())
 		&& request.getMethod().equals(HttpMethod.GET.name())) {
@@ -111,26 +110,35 @@ public class ControllerInterceptor implements HandlerInterceptor {
 
 	boolean status = HandlerInterceptor.super.preHandle(request, response, handler);
 	if (commonService.verifyLocalIp(request)) { // ip local doesn't need token
-	    log.debug("ip local");
 	    status = HandlerInterceptor.super.preHandle(request, response, handler);
 	} else {
-	    log.debug("ip luar");
 	    JSONObject dataJson = new JSONObject();
 	    String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-	    String encryptedToken = CryptoUtil.encryptAESHex(token);
-	    CommonResponse sessionResponse = Services.create(UserModuleService.class)
-		    .validateLoginSession(encryptedToken).execute().body();
-	    if(ResponseMessage.SUCCESS.getCode().equals(sessionResponse.getCode())) {
-		status = HandlerInterceptor.super.preHandle(request, response, handler);
-	    } else {
+	    if (StringUtils.isBlank(token)) {
 		status = false;
-		dataJson.put("message", sessionResponse.getMessage());
-		dataJson.put("code", sessionResponse.getCode());
+		dataJson.put("message", messageUtil.get("error.forbidden.access", httpServletRequest.getLocale()));
+		dataJson.put("code", String.valueOf(HttpStatus.FORBIDDEN.value()));
 		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		out.print(dataJson.toJSONString());
 		out.flush();
+	    } else {
+		String encryptedToken = CryptoUtil.encryptAESHex(token);
+		CommonResponse sessionResponse = Services.create(UserModuleService.class)
+			.validateLoginSession(encryptedToken).execute().body();
+		if (ResponseMessage.SUCCESS.getCode().equals(sessionResponse.getCode())) {
+		    status = HandlerInterceptor.super.preHandle(request, response, handler);
+		} else {
+		    status = false;
+		    dataJson.put("message", sessionResponse.getMessage());
+		    dataJson.put("code", sessionResponse.getCode());
+		    PrintWriter out = response.getWriter();
+		    response.setContentType("application/json");
+		    response.setCharacterEncoding("UTF-8");
+		    out.print(dataJson.toJSONString());
+		    out.flush();
+		}
 	    }
 	}
 

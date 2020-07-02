@@ -75,17 +75,17 @@ public class TelcoUtils {
     private static final String CREDENTIALS_MBUKOPIN = "MBUKOPIN";
     private static final int TELCO_LENGTH_TRXID = 12;
 
-    private static final String TRDES1_INDOSAT = "INET : BAYAR INDOSAT ";
-    private static final String TRDES2 = "00000000000000000000000IB0101 ";
-    private static final String TRDES3_INDOSAT = "INET : BAYAR INDOSAT 01";
-    private static final String TRDES1_TELKOMSEL = "INET : BAYAR HALO ";
-    private static final String TRDES3_TELKOMSEL = "INET : BAYAR HALO 01";
-    private static final String TRDES1_XL = "INET : BAYAR XL ";
-    private static final String TRDES3_XL = "INET : BAYAR XL 01";
-    private static final String TRDES1_TRI = "INET : BAYAR TRI ";
-    private static final String TRDES3_TRI = "INET : BAYAR TRI 01";
-    private static final String TRDES1_SMARTFREN = "INET : BAYAR SMARTFREN ";
-    private static final String TRDES3_SMARTFREN = "INET : BAYAR SMARTFREN 01";
+    private static final String TRDES1_INDOSAT = "MB : BAYAR INDOSAT ";
+    private static final String TRDES2 = "Dr. ";
+    //private static final String TRDES3_INDOSAT = "INET : BAYAR INDOSAT 01";
+    private static final String TRDES1_TELKOMSEL = "MB : BAYAR HALO ";
+    //private static final String TRDES3_TELKOMSEL = "INET : BAYAR HALO 01";
+    private static final String TRDES1_XL = "MB : BAYAR XL ";
+    //private static final String TRDES3_XL = "INET : BAYAR XL 01";
+    private static final String TRDES1_TRI = "MB : BAYAR TRI ";
+    //private static final String TRDES3_TRI = "INET : BAYAR TRI 01";
+    private static final String TRDES1_SMARTFREN = "MB : BAYAR SMARTFREN ";
+    //private static final String TRDES3_SMARTFREN = "INET : BAYAR SMARTFREN 01";
     private static final String CURRENCY_CODE_IDR = "360";
     private static final String ELEMENT123_BIT_4_24 = "000000000000000000000";
     private static final String ELEMENT123_BIT_31_147 = "05                                                                               000000                    0000000000";
@@ -107,10 +107,10 @@ public class TelcoUtils {
     private static final String NOT_BRANCH = "000";
     private static final String NOT_LOCATION = "000";
     private static final String TELKOMPSTN = "TELKOMPSTN";
-    private static final String TRDES1_PSTN = "MBUKOPIN : BYR TLKOM PSTN ";
-    private static final String TRDES1_SPEEDY = "MBUKOPIN : BYR TLM SPEEDY ";
-    private static final String TRDES3_PSTN = "MBUKOPIN :  BYR TLKOM PSTN 1 ";
-    private static final String TRDES3_SPEEDY = "MBUKOPIN :  BYR TLM SPEEDY 1 ";
+    private static final String TRDES1_PSTN = "MB : BAYAR TELKOM ";
+    private static final String TRDES1_SPEEDY = "MB : BAYAR TELKOM ";
+    private static final String TRDES3_PSTN = "";
+    private static final String TRDES3_SPEEDY = "";
 
     private static final String SPEEDY = "SPEEDY";
     private static final String ROUTING_INF = "00000441001";
@@ -283,7 +283,7 @@ public class TelcoUtils {
 	    param.setElement3(PROCCESSING_CODE_PAYMENT_GIRO);
 	}
 	
-	param.setElement4(StringUtils.leftPad(amount + "00", 20));
+	param.setElement4(StringUtils.leftPad(amount.trim() + "00", 20, "0"));
 	param.setElement7(element7Format.format(date));
 	param.setElement11(STAN);
 	param.setElement12(timeLocal.format(date));
@@ -303,19 +303,19 @@ public class TelcoUtils {
 		CURRENCY_CODE_IDR.concat(ELEMENT123_BIT_4_24).concat(codeCbs).concat(ELEMENT123_BIT_31_147));
 	param.setElement120(ROUTING_INFO_PART_1.concat(codeCbs).concat(ROUTING_INFO_PART_2));
 
-	String element122_bit41_80 = custNo.concat(TRDES2).concat(param.getElement13())
-		.concat(param.getElement12().substring(0, 4));
+	/*String element122_bit41_80 = custNo.concat(TRDES2).concat(param.getElement13())
+		.concat(param.getElement12().substring(0, 4));*/
 
 	if (PGROUP_TELKOMSEL.equalsIgnoreCase(group)) {
-	    param.setElement122(TRDES1_TELKOMSEL.concat(element122_bit41_80).concat(TRDES3_TELKOMSEL));
+	    param.setElement122(StringUtils.rightPad(TRDES1_TELKOMSEL.concat(custNo), 40).concat(StringUtils.rightPad(TRDES2.concat(accNo), 40)).concat(StringUtils.rightPad("", 60)));
 	} else if (PGROUP_INDOSAT.equalsIgnoreCase(group)) {
-	    param.setElement122(TRDES1_INDOSAT.concat(element122_bit41_80).concat(TRDES3_INDOSAT));
+	    param.setElement122(StringUtils.rightPad(TRDES1_INDOSAT.concat(custNo), 40).concat(StringUtils.rightPad(TRDES2.concat(accNo), 40)).concat(StringUtils.rightPad("", 60)));
 	} else if (PGROUP_XL.equalsIgnoreCase(group)) {
-	    param.setElement122(TRDES1_XL.concat(element122_bit41_80).concat(TRDES3_XL));
+	    param.setElement122(StringUtils.rightPad(TRDES1_XL.concat(custNo), 40).concat(StringUtils.rightPad(TRDES2.concat(accNo), 40)).concat(StringUtils.rightPad("", 60)));
 	} else if (PGROUP_TRI.equalsIgnoreCase(group)) {
-	    param.setElement122(TRDES1_TRI.concat(element122_bit41_80).concat(TRDES3_TRI));
+	    param.setElement122(StringUtils.rightPad(TRDES1_TRI.concat(custNo), 40).concat(StringUtils.rightPad(TRDES2.concat(accNo), 40)).concat(StringUtils.rightPad("", 60)));
 	} else if (PGROUP_SMARTFREN.equalsIgnoreCase(group)) {
-	    param.setElement122(TRDES1_SMARTFREN.concat(element122_bit41_80).concat(TRDES3_SMARTFREN));
+	    param.setElement122(StringUtils.rightPad(TRDES1_SMARTFREN.concat(custNo), 40).concat(StringUtils.rightPad(TRDES2.concat(accNo), 40)).concat(StringUtils.rightPad("", 60)));
 	}
 
 	req.setIdentity(identity);
@@ -341,7 +341,8 @@ public class TelcoUtils {
 	String custNo = element61.substring(0, 13);
 	String custName = element61.substring(19, 64);
 	String billPeriod = element61.substring(89, 97);
-	String reference = element61.substring(97, 113);
+	//String reference = element61.substring(97, 113);
+	String reference = dataResp.getElement122().substring(144, 159);
 	String amount = element61.substring(114, 126);
 	String amountFee = element61.substring(126, 134);
 
@@ -570,6 +571,7 @@ public class TelcoUtils {
 	identity.setReqdatetime(today);
 	identity.setCredentials(credentials);
 
+	String accNo = dataReq.getAccountNo();
 	String amount = dataReq.getElement61();
 	String amt = amount.substring(78, 89);
 	String paddingEl4 = new String(new char[18 - amt.length()]).replace('\0', '0');
@@ -584,13 +586,13 @@ public class TelcoUtils {
 	String description = "";
 	if (SPEEDY.equals(dataReq.getType())) {
 	    String desc1 = StringUtils.rightPad(TRDES1_SPEEDY.concat(dataReq.getCustNo()), 40);
-	    String desc2 = StringUtils.rightPad(TRDES2.concat(trdes2.format(today)), 40);
+	    String desc2 = StringUtils.rightPad(TRDES2.concat(accNo), 40);
 	    String desc3 = StringUtils.leftPad(TRDES3_SPEEDY, 60);
 	    description = desc1.concat(desc2).concat(desc3);
 
 	} else {
 	    String desc1 = StringUtils.rightPad(TRDES1_PSTN.concat(dataReq.getCustNo()), 40);
-	    String desc2 = StringUtils.rightPad(TRDES2.concat(trdes2.format(today)), 40);
+	    String desc2 = StringUtils.rightPad(TRDES2.concat(accNo), 40);
 	    String desc3 = StringUtils.leftPad(TRDES3_PSTN, 60);
 	    description = desc1.concat(desc2).concat(desc3);
 	}
@@ -643,14 +645,13 @@ public class TelcoUtils {
      * @return Telco Purchase Data Response
      */
     public static TelcoPostpaidPaymentResponse generatePurchaseTelkomPSTNSPeedyResponse(
-	    TelkomPSTNSpeedyPurchaseTibcoDataResp resp) {
+	    TelkomPSTNSpeedyPurchaseTibcoDataResp resp, String custNo) {
 	TelcoPostpaidPaymentResponse response = new TelcoPostpaidPaymentResponse();
 
 	Date today = new Date();
 
 	String element61 = resp.getElement61();
 
-	String custNo = element61.substring(0, 13);
 	String custName = element61.substring(90, 119);
 	String billPeriod = element61.substring(19, 20);
 	String amount = element61.substring(78, 89);

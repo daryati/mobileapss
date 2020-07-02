@@ -47,7 +47,6 @@ import id.co.asyst.bukopin.mobile.master.model.entity.ListInsurance;
  */
 @RestController
 @RequestMapping("/listInsurance")
-@Profile("!prod")
 public class ListInsuranceController {
     /* Constants: */
     private final Logger log = LoggerFactory.getLogger(ListInsuranceController.class);

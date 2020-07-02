@@ -15,12 +15,14 @@ import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -28,6 +30,7 @@ import org.springframework.web.servlet.ModelAndView;
 import id.co.asyst.bukopin.mobile.common.core.service.LoggingService;
 import id.co.asyst.bukopin.mobile.common.core.service.impl.BkpmService;
 import id.co.asyst.bukopin.mobile.common.core.util.CryptoUtil;
+import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
 import id.co.asyst.bukopin.mobile.service.core.UserModuleService;
@@ -59,6 +62,18 @@ public class ControllerInterceptor implements HandlerInterceptor {
      */
     @Autowired
     private BkpmService commonService;
+    
+    /**
+     * Http Servlet Request
+     */
+    @Autowired
+    private HttpServletRequest httpServletRequest;
+    
+    /**
+     * Get Message Util
+     */
+    @Autowired
+    private MessageUtil messageUtil;
 
     /* Constants: */
 
@@ -88,8 +103,6 @@ public class ControllerInterceptor implements HandlerInterceptor {
 	@Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 	    throws Exception {
-	log.debug("Pre handle Telco");
-	
 	// log GET request
 	if (DispatcherType.REQUEST.name().equals(request.getDispatcherType().name())
                 && request.getMethod().equals(HttpMethod.GET.name())) {
@@ -98,26 +111,35 @@ public class ControllerInterceptor implements HandlerInterceptor {
 	
 	boolean status = HandlerInterceptor.super.preHandle(request, response, handler);
 	if (commonService.verifyLocalIp(request)) { // ip local doesn't need token
-	    log.debug("ip local");
 	    status = HandlerInterceptor.super.preHandle(request, response, handler);
 	} else {
-	    log.debug("ip luar");
 	    JSONObject dataJson = new JSONObject();
 	    String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-	    String encryptedToken = CryptoUtil.encryptAESHex(token);
-	    CommonResponse sessionResponse = Services.create(UserModuleService.class)
-		    .validateLoginSession(encryptedToken).execute().body();
-	    if(ResponseMessage.SUCCESS.getCode().equals(sessionResponse.getCode())) {
-		status = HandlerInterceptor.super.preHandle(request, response, handler);
-	    } else {
+	    if (StringUtils.isBlank(token)) {
 		status = false;
-		dataJson.put("message", sessionResponse.getMessage());
-		dataJson.put("code", sessionResponse.getCode());
+		dataJson.put("message", messageUtil.get("error.forbidden.access", httpServletRequest.getLocale()));
+		dataJson.put("code", String.valueOf(HttpStatus.FORBIDDEN.value()));
 		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		out.print(dataJson.toJSONString());
 		out.flush();
+	    } else {
+		String encryptedToken = CryptoUtil.encryptAESHex(token);
+		CommonResponse sessionResponse = Services.create(UserModuleService.class)
+			.validateLoginSession(encryptedToken).execute().body();
+		if (ResponseMessage.SUCCESS.getCode().equals(sessionResponse.getCode())) {
+		    status = HandlerInterceptor.super.preHandle(request, response, handler);
+		} else {
+		    status = false;
+		    dataJson.put("message", sessionResponse.getMessage());
+		    dataJson.put("code", sessionResponse.getCode());
+		    PrintWriter out = response.getWriter();
+		    response.setContentType("application/json");
+		    response.setCharacterEncoding("UTF-8");
+		    out.print(dataJson.toJSONString());
+		    out.flush();
+		}
 	    }
 	}
 
