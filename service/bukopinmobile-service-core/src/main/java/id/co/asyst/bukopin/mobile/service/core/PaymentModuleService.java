@@ -26,8 +26,8 @@ import retrofit2.http.POST;
  * @since 2.0
  */
 
-@ServiceUrl("http://10.2.62.80:55557") // dev
-//@ServiceUrl("http://10.0.13.20:55559") // prod
+//@ServiceUrl("http://10.2.62.80:55557") // dev
+@ServiceUrl("http://10.0.13.20:55559") // prod
 public interface PaymentModuleService {
 
     @POST("/")
