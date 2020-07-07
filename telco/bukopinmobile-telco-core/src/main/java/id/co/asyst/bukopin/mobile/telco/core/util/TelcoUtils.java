@@ -574,9 +574,16 @@ public class TelcoUtils {
 	String accNo = dataReq.getAccountNo();
 	String amount = dataReq.getElement61();
 	String amt = amount.substring(78, 89);
+	String amountFee = amount.substring(160, 167);
+	
 	String paddingEl4 = new String(new char[18 - amt.length()]).replace('\0', '0');
 
 	String element4 = paddingEl4 + amt + "00";
+	
+	String paddingEl28 = new String(new char[18 - amountFee.length()]).replace('\0', '0');
+
+	String element28 = paddingEl28 + amountFee + "00";
+	
 
 	String STAN = generateNumber(6);
 	if(dataReq.getElement11().equals(STAN)) {
@@ -597,6 +604,8 @@ public class TelcoUtils {
 	    description = desc1.concat(desc2).concat(desc3);
 	}
 
+	
+			
 	String space118_147 = new String(new char[148 - 118]).replace('\0', ' ');
 
 	String element123 = IDR_CURRENCY_CODE + CONVENTION_RATE + FEE_CODE + codeCbs + OPERATION_CODE + MIA_POST
@@ -619,6 +628,7 @@ public class TelcoUtils {
 	param.setElement12(timeLocal.format(today));
 	param.setElement13(dateLocal.format(today));
 	param.setElement18(MERCHANT_TYPE_MOBILE);
+	param.setElement28(element28);
 	param.setElement32(ACQUIRING_INSTITUTION_CODE);
 	param.setElement33(forwardInsCode);
 	param.setElement37(dataReq.getElement37());

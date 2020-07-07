@@ -31,6 +31,7 @@ public class TelkomPSTNSpeedyPurchaseTibcoDataResp {
     private String element12;
     private String element13;
     private String element18;
+    private String element28;
     private String element32;
     private String element33;
     private String element37;
@@ -375,22 +376,39 @@ public class TelkomPSTNSpeedyPurchaseTibcoDataResp {
         this.element123 = element123;
     }
 
+    /**
+	 * Gets <code>element28</code>.
+	 * @return The <code>element28</code>.
+	 */
+	public String getElement28() {
+		return element28;
+	}
+	/**
+	 * Sets <code>element28</code>.
+	 * @param element28 The <code>element28</code> to set.
+	 */
+	public void setElement28(String element28) {
+		this.element28 = element28;
+	}
+
     /* Getters & setters for transient attributes: */
 
     /* Functionalities: */
 
-    /* Overrides: */
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-	return "TelkomPSTNSpeedyPurchaseTIbcoDataResp [mti=" + mti + ", element3=" + element3 + ", element4=" + element4
-		+ ", element7=" + element7 + ", element11=" + element11 + ", element12=" + element12 + ", element13="
-		+ element13 + ", element18=" + element18 + ", element32=" + element32 + ", element33=" + element33
-		+ ", element37=" + element37 + ", element39=" + element39 + ", element41=" + element41 + ", element49="
-		+ element49 + ", element61=" + element61 + ", element63=" + element63 + ", element93=" + element93
-		+ ", element100=" + element100 + ", element102=" + element102 + ", element120=" + element120
-		+ ", element121=" + element121 + ", element122=" + element122 + ", element123=" + element123 + "]";
-    }
+	/* Overrides: */
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "TelkomPSTNSpeedyPurchaseTibcoDataResp [mti=" + mti + ", element3=" + element3 + ", element4=" + element4
+				+ ", element7=" + element7 + ", element11=" + element11 + ", element12=" + element12 + ", element13="
+				+ element13 + ", element18=" + element18 + ", element28=" + element28 + ", element32=" + element32
+				+ ", element33=" + element33 + ", element37=" + element37 + ", element39=" + element39 + ", element41="
+				+ element41 + ", element49=" + element49 + ", element61=" + element61 + ", element63=" + element63
+				+ ", element93=" + element93 + ", element100=" + element100 + ", element102=" + element102
+				+ ", element120=" + element120 + ", element121=" + element121 + ", element122=" + element122
+				+ ", element123=" + element123 + "]";
+	}
+    
 }
