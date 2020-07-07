@@ -9,10 +9,7 @@
  */
 package id.co.asyst.bukopin.mobile.common.util;
 
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-
-import java.security.NoSuchAlgorithmException;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -22,7 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 
 /**
- * 
+ * Test Class for <code>Bkpm Util</code>
  * 
  * @author Eka Ariyansyah
  * @version $Revision$, Nov 15, 2019
