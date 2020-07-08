@@ -341,7 +341,8 @@ public class EMoneyController {
 	commonPinRequest.setData(pinRequest);
 	// Verify PIN
 	CommonResponse pinResponse = Services.create(UserModuleService.class)
-		.verifyPIN(commonPinRequest).execute().body();
+		.verifyPIN(servletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE), commonPinRequest)
+		.execute().body();
 	if(!ResponseMessage.SUCCESS.getCode().equals(pinResponse.getCode())) {
 	    // response not success
 	    return pinResponse;
@@ -667,7 +668,8 @@ public class EMoneyController {
 	verifyPINReq.setIdentity(req.getIdentity());
 	verifyPINReq.setData(verifyPINReqData);
 	
-	CommonResponse verifyPINRes = Services.create(UserModuleService.class).verifyPIN(verifyPINReq).execute().body();
+	CommonResponse verifyPINRes = Services.create(UserModuleService.class).verifyPIN(
+		servletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE), verifyPINReq).execute().body();
 	if(!ResponseMessage.SUCCESS.getCode().equals(verifyPINRes.getCode())) {
 	    log.error("Error while verify PIN");
 	    return verifyPINRes;

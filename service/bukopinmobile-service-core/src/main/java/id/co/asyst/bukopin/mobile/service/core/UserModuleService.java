@@ -19,6 +19,7 @@ import id.co.asyst.foundation.service.connector.annotations.ServiceUrl;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -44,7 +45,7 @@ public interface UserModuleService {
     Call<CommonResponse> getAccountBalance (@Body CommonRequest<GetAccountBalanceRequest> accountBalanceReq);
     
     @POST("bukopinmobile-user/api/auth/PIN/verify")
-    Call<CommonResponse> verifyPIN (@Body CommonRequest<GetVerifyPINRequest> verifyPinReq);
+    Call<CommonResponse> verifyPIN (@Header("Accept-Language") String language, @Body CommonRequest<GetVerifyPINRequest> verifyPinReq);
     
     @GET("bukopinmobile-user/account/findUserByUsername/{username}")
     Call<CommonResponse> getUserByUsername (@Path(value = "username") String username);

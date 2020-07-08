@@ -294,7 +294,8 @@ public class SamolnasController {
 	verifyPINReq.setIdentity(req.getIdentity());
 	verifyPINReq.setData(verifyPINReqData);
 
-	CommonResponse verifyPINRes = Services.create(UserModuleService.class).verifyPIN(verifyPINReq).execute().body();
+	CommonResponse verifyPINRes = Services.create(UserModuleService.class).verifyPIN(
+		servletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE), verifyPINReq).execute().body();
 	if (!ResponseMessage.SUCCESS.getCode().equals(verifyPINRes.getCode())) {
 	    log.error("Error while verify PIN");
 	    return verifyPINRes;

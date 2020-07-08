@@ -358,7 +358,8 @@ public class PLNPrepaidController {
 	commPinRequest.setData(pinRequest);
 
 	// verify PIN
-	response = Services.create(UserModuleService.class).verifyPIN(commPinRequest).execute().body();
+	response = Services.create(UserModuleService.class).verifyPIN(
+		servletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE), commPinRequest).execute().body();
 	if (!SUCCESS_CODE.equals(response.getCode())) {
 	    log.error("PIN Tidak Sesuai!");
 	    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());

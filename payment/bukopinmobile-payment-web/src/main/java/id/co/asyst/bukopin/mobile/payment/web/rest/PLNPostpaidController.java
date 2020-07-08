@@ -489,7 +489,8 @@ public class PLNPostpaidController {
 	commonPinRequest.setData(pinRequest);
 	// Verify PIN
 	CommonResponse pinResponse = Services.create(UserModuleService.class)
-		.verifyPIN(commonPinRequest).execute().body();
+		.verifyPIN(servletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE), commonPinRequest)
+		.execute().body();
 	if(!ResponseMessage.SUCCESS.getCode().equals(pinResponse.getCode())) {
 	    // response not success
 	    return pinResponse;

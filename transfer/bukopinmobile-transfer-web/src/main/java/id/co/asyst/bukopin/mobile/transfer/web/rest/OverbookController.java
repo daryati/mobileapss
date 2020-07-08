@@ -123,7 +123,6 @@ public class OverbookController {
     @PostMapping("/postTransaction/preHandle")
     public CommonResponse postTransaction(@Valid @RequestBody CommonRequest<PostingReq> request)
 	    throws URISyntaxException, IOException {
-	log.debug("REST request to postTransaction: {}", BkpmUtil.convertToJson(request));
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
 
@@ -141,7 +140,6 @@ public class OverbookController {
 	}
 
 	// Prepare verify PIN
-	log.debug("verify PIN: " + request.getData().getPin());
 	GetVerifyPINRequest pinRequest = new GetVerifyPINRequest();
 	pinRequest.setPin(request.getData().getPin());
 	pinRequest.setUsername(request.getData().getPostingFrom().getUsername());
@@ -151,8 +149,9 @@ public class OverbookController {
 
 	try {
 	    // Verify PIN
-	    CommonResponse pinResponse = Services.create(UserModuleService.class).verifyPIN(commonPinRequest).execute()
-		    .body();
+	    CommonResponse pinResponse = Services.create(UserModuleService.class).verifyPIN(
+		    servletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE), commonPinRequest)
+		    .execute().body();
 	    if (!ResponseMessage.SUCCESS.getCode().equals(pinResponse.getCode())) {
 		// response not success
 		return pinResponse;
@@ -183,8 +182,6 @@ public class OverbookController {
 			.getUserByUsername(request.getData().getPostingFrom().getUsername()).execute().body();
 
 		if (null != getUser) {
-		    log.debug("Send Email Transfer.. ");
-
 		    // get account info data by accountNo
 		    CommonResponse findAccountInfo = Services.create(UserModuleService.class)
 			    .getAccountInfoByAccountNo(
@@ -210,7 +207,6 @@ public class OverbookController {
 		    oMapper = new ObjectMapper();
 		    Map<String, Object> result = oMapper.convertValue(getUser.getData(), Map.class);
 		    Map<String, String> resUser = oMapper.convertValue(result.get("user"), Map.class);
-		    log.debug("email : " + resUser.get("email"));
 		    transferService.sendEmailReceiptTransfer(res, resUser, servletRequest.getLocale(), productName);
 		    response.setData(res);
 		} else {

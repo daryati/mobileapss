@@ -5,6 +5,7 @@ Release Notes - Bukopin-Mobile-Service - Version 1.3.Alpha3
 ** Notes
 	* Relase for Push Notification & Mobile Data
 	* Add Element 28 for PSTN payload
+	* Add Header "Accept-Language" to Verify PIN service
 
 ** Story
 	* 

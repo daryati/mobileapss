@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -349,7 +350,8 @@ public class PrepaidTelcoController {
 	commonPinRequest.setData(pinRequest);
 	// Verify PIN
 	CommonResponse pinResponse = Services.create(UserModuleService.class)
-		.verifyPIN(commonPinRequest).execute().body();
+		.verifyPIN(httpServletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE), commonPinRequest)
+		.execute().body();
 	if(!ResponseMessage.SUCCESS.getCode().equals(pinResponse.getCode())) {
 	    // response not success
 	    return pinResponse;

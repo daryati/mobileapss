@@ -337,7 +337,8 @@ public class CreditCardController {
 		verifyPinReq.setIdentity(request.getIdentity());
 		verifyPinReq.setData(verifyPinData);
 
-		CommonResponse verifyPinRes = Services.create(UserModuleService.class).verifyPIN(verifyPinReq).execute().body();
+		CommonResponse verifyPinRes = Services.create(UserModuleService.class).verifyPIN(
+			servletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE), verifyPinReq).execute().body();
 
 		if ((verifyPinRes == null) || (!ResponseMessage.SUCCESS.getCode().equals(verifyPinRes.getCode()))) {
 

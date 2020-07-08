@@ -181,7 +181,8 @@ public class LinkAjaController {
 		verifyPINReq.setIdentity(request.getIdentity());
 		verifyPINReq.setData(verifyPINReqData);
 
-		CommonResponse verifyPINRes = Services.create(UserModuleService.class).verifyPIN(verifyPINReq).execute().body();
+		CommonResponse verifyPINRes = Services.create(UserModuleService.class).verifyPIN(
+			servletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE), verifyPINReq).execute().body();
 		log.debug("Verify PIN Response {} : " + BkpmUtil.convertToJson(verifyPINRes));
 		if (!ResponseMessage.SUCCESS.getCode().equals(verifyPINRes.getCode())) {
 
