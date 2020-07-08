@@ -16,6 +16,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import id.co.asyst.bukopin.mobile.common.core.exception.DataNotMatchException;
 import id.co.asyst.bukopin.mobile.common.core.exception.MiddlewareException;
-import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.CryptoUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
@@ -39,6 +39,7 @@ import id.co.asyst.bukopin.mobile.common.model.payload.CommonRequest;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
 import id.co.asyst.bukopin.mobile.service.core.UserModuleService;
 import id.co.asyst.bukopin.mobile.service.model.payload.pln.GetVerifyPINRequest;
+import id.co.asyst.bukopin.mobile.transfer.core.service.LimitPackageService;
 import id.co.asyst.bukopin.mobile.transfer.core.service.OverbookService;
 import id.co.asyst.bukopin.mobile.transfer.core.service.TransferService;
 import id.co.asyst.bukopin.mobile.transfer.model.InquiryAccountReq;
@@ -99,8 +100,17 @@ public class OverbookController {
     @Autowired
     private HttpServletRequest servletRequest;
     
+    /**
+     * Transfer Service
+     */
     @Autowired
     private TransferService transferService;
+    
+    /**
+     * Limit Package Transfer
+     */
+    @Autowired
+    private LimitPackageService limitService;
 
     /* Constructors: */
     /**
@@ -123,7 +133,6 @@ public class OverbookController {
     @PostMapping("/postTransaction/preHandle")
     public CommonResponse postTransaction(@Valid @RequestBody CommonRequest<PostingReq> request)
 	    throws URISyntaxException, IOException {
-	log.debug("REST request to postTransaction: {}", BkpmUtil.convertToJson(request));
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
 
@@ -248,36 +257,73 @@ public class OverbookController {
 	return response;
     }
     
+    /**
+     * Inquiry Account
+     * 
+     * @param request
+     * @return
+     * @throws URISyntaxException
+     * @throws IOException
+     */
     @PostMapping("/inquiryAccount/preHandle")
-    public CommonResponse inquiryAccount (@Valid @RequestBody CommonRequest<InquiryAccountReq> request) throws URISyntaxException {
-        log.debug("REST request to postTransaction: {}", BkpmUtil.convertToJson(request));
+    public CommonResponse inquiryAccount (@Valid @RequestBody CommonRequest<InquiryAccountReq> request) throws URISyntaxException, IOException {
         CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(), messageUtil.get("success", servletRequest.getLocale()));       
         
-        InquiryAccountRes res = overbookService.inquiryAmountViaAPI(request.getData());
-        if(null != res.getConfirmationCode() && !"".equals(res.getConfirmationCode())) {
-        	 response.setData(res);
-        } else if(TRANSFER_NOT_ENOUGH_BALANCE.equalsIgnoreCase(res.getStatusCode())){
-        	log.debug("not enough balance");
-        	response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
-    	    response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
-        } else if(TRANSFER_NOT_ENOUGH_BALANCE_FUNDS.equalsIgnoreCase(res.getStatusCode())){
-        	log.debug("not enough balance");
-        	response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
-    	    response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
-        }else if(TRANSFER_INACTIVE_ACCOUNT.equals(res.getStatusCode())) {
-    	    log.error("Account inactive: "+request.getData().getPostingFrom().getAccountNumber());
-    	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
-    	    response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
-    	} else if (TRANSFER_INACTIVE_ACCOUNT_DEST.equals(res.getStatusCode())) {
-	    log.error("Account destination inactive: " + request.getData().getPostingFrom().getAccountNumber());
-	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
-	    response.setMessage(messageUtil.get("error.inactive.bank.account.dest", servletRequest.getLocale()));
+        // Get User
+        String username = request.getData().getPostingFrom().getUsername();
+        CommonResponse userResponse = Services.create(UserModuleService.class).getUserByUsername(username).execute().body();
+	if(!ResponseMessage.SUCCESS.getCode().equals(userResponse.getCode())) {
+	    log.error("Error while get user by username");
+	    response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
+	    response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
+	    return response;
+	}
+	
+	// Get User's limit package Id
+	ObjectMapper mapper = new ObjectMapper();
+	Map<String, Object> resultUserObj = mapper.convertValue(userResponse.getData(), Map.class);
+	log.debug("resultUserObj: {}"+resultUserObj);
+	Map<String, Object> user = (Map<String, Object>) resultUserObj.get("user");
+	log.debug("user: {}"+user);
+	String limitStr = String.valueOf(user.get("limitId"));
+	long limitId = 0L;
+	if(StringUtils.isBlank(limitStr) || "null".equalsIgnoreCase(limitStr)) {
+	    limitId = Long.valueOf(limitStr);
+	}
+	log.debug("limitId: {}",limitId);
+        
+        // Add limit transfer validation
+        int accountType = Integer.valueOf(request.getData().getPostingFrom().getAccountType());
+        boolean isValid = limitService.checkLimit(limitId, accountType, request.getData().getAmount());
+        if(!isValid) {
+            response.setCode(ResponseMessage.LIMIT_TRANSFER_DAY.getCode());
+            response.setMessage(messageUtil.get("error.limit.day.exceed", servletRequest.getLocale()));
 	} else {
-        	log.error("error code "+res.getStatusCode()+" message: "+res.getStatusDesc());
-        	//response = new CommonResponse(res.getStatusCode(), res.getStatusDesc());   
-        	throw new MiddlewareException(res.getStatusCode());
-        }
-       
+	    InquiryAccountRes res = overbookService.inquiryAmountViaAPI(request.getData());
+	    if (null != res.getConfirmationCode() && !"".equals(res.getConfirmationCode())) {
+		response.setData(res);
+	    } else if (TRANSFER_NOT_ENOUGH_BALANCE.equalsIgnoreCase(res.getStatusCode())) {
+		log.debug("not enough balance");
+		response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
+		response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
+	    } else if (TRANSFER_NOT_ENOUGH_BALANCE_FUNDS.equalsIgnoreCase(res.getStatusCode())) {
+		log.debug("not enough balance");
+		response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
+		response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
+	    } else if (TRANSFER_INACTIVE_ACCOUNT.equals(res.getStatusCode())) {
+		log.error("Account inactive: " + request.getData().getPostingFrom().getAccountNumber());
+		response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
+		response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
+	    } else if (TRANSFER_INACTIVE_ACCOUNT_DEST.equals(res.getStatusCode())) {
+		log.error("Account destination inactive: " + request.getData().getPostingFrom().getAccountNumber());
+		response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
+		response.setMessage(messageUtil.get("error.inactive.bank.account.dest", servletRequest.getLocale()));
+	    } else {
+		log.error("error code " + res.getStatusCode() + " message: " + res.getStatusDesc());
+		// response = new CommonResponse(res.getStatusCode(), res.getStatusDesc());
+		throw new MiddlewareException(res.getStatusCode());
+	    }
+	}
         
         return response;
     }

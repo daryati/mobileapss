@@ -42,15 +42,27 @@ public class LimitPackage  extends IdBasedObject implements Serializable {
     /* Constants: */
 
     /* Attributes: */
+    /**
+     * Limit Package's Profile Name
+     */
     @Column(name="PROFILE_NAME")
     private String profileName;
     
+    /**
+     * Limit Saving Value
+     */
     @Column(name="LIMIT_SAVING")
     private BigDecimal limitSaving;
     
+    /**
+     * Limit Giro value
+     */
     @Column(name="LIMIT_GIRO")
     private BigDecimal limitGiro;
     
+    /**
+     * is default limit package
+     */
     @Type(type = "yes_no")
     @Column(name="IS_DEFAULT", columnDefinition="CHAR(1) DEFAULT 'N'")
     private boolean isDefault;

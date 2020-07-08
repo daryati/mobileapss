@@ -6,7 +6,7 @@ LIMIT PACKAGE table (initial data)
 INSERT INTO DB_MBANKING.dbo.LIMIT_PACKAGE
 	(id, PROFILE_NAME, LIMIT_SAVING, LIMIT_GIRO, IS_DEFAULT)
 	VALUES(1, 'default', 25000000, 25000000, 'N'),
-		(1, 'default', 10000, 20000, 'Y');
+		(2, 'default new', 10000, 20000, 'Y');
 
 
 ===============================================================================

@@ -29,6 +29,11 @@ import id.co.asyst.bukopin.mobile.transfer.model.entity.LimitPackage;
 @Repository
 public interface LimitPackageRepository extends JpaRepository<LimitPackage, Long>{
 
-    public List<LimitPackage> findByIsDefault(String isDefault);
+    /**
+     * Find By IsDefault Y or N
+     * @param isDefault default value to find
+     * @return Persist Limit Package
+     */
+    public List<LimitPackage> findByIsDefault(boolean isDefault);
     
 }

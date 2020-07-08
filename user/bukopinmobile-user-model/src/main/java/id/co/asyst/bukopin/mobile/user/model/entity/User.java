@@ -138,6 +138,12 @@ public class User extends IdBasedObject implements Serializable {
     @Type(type = "yes_no")
     @Column(name="IS_LOGIN", columnDefinition="CHAR(1) DEFAULT 'N'")
     private boolean isLogin;
+    
+    /**
+     * Id in table LIMIT_PACKAGE
+     */
+    @Column(name="LIMIT_ID")
+    private Long limitId;
 
     /* Transient Attributes: */
 
@@ -423,6 +429,22 @@ public class User extends IdBasedObject implements Serializable {
     public void setLogin(boolean isLogin) {
         this.isLogin = isLogin;
     }
+    
+    /**
+     * Gets <code>limitId</code>.
+     * @return The <code>limitId</code>.
+     */
+    public Long getLimitId() {
+        return limitId;
+    }
+
+    /**
+     * Sets <code>limitId</code>.
+     * @param limitId The <code>limitId</code> to set.
+     */
+    public void setLimitId(Long limitId) {
+        this.limitId = limitId;
+    }
 
     /* Getters & setters for transient attributes: */
 
@@ -438,7 +460,8 @@ public class User extends IdBasedObject implements Serializable {
 		+ lastName + ", email=" + email + ", mobilePhone=" + mobilePhone + ", cifNumber=" + cifNumber
 		+ ", createdDate=" + createdDate + ", createdBy=" + createdBy + ", updatedDate=" + updatedDate
 		+ ", updatedBy=" + updatedBy + ", activation=" + activation + ", isLocked=" + isLocked
-		+ ", phoneIdentity=" + phoneIdentity + ", lastResetPassword=" + lastResetPassword + ", isLogin="
-		+ isLogin + "]";
+		+ ", phoneIdentity=" + phoneIdentity + ", lastResetPassword=" + lastResetPassword 
+		+ ", isLogin=" + isLogin + ", limitId=" + limitId
+		+ "]";
     }
 }
