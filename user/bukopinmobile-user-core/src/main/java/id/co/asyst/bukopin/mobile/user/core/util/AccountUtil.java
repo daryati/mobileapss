@@ -171,9 +171,10 @@ public class AccountUtil {
 	    for (GetInquiryCIFResType.Accounts accounts : inquiryCIFRS.getAccounts()) {
 		
 		String tibcoAccNo = String.valueOf(accounts.getAccnumber());
-		if(tibcoAccNo.length()==9) {
+		if(tibcoAccNo.length() < BkpmConstants.BUKOPIN_ACCNO_LENGTH) {
 		    // padding to 10 with 0
-		    tibcoAccNo = StringUtils.leftPad(tibcoAccNo, 10, "0");
+		    tibcoAccNo = StringUtils.leftPad(tibcoAccNo, BkpmConstants.BUKOPIN_ACCNO_LENGTH, 
+			    BkpmConstants.BUKOPIN_ACCNO_PADDING);
 		}
 		
 		if (!card.getAccountNumber().equals(tibcoAccNo)) {

@@ -155,4 +155,11 @@ public class BkpmConstants {
      */
     public static final String KEY_ACCOUNT_NOT_ACTIVATED = "NOT_ACTIVATED";
     
+    
+    /* OTHERS: */
+    /**
+     * Length of Account Number Bukopin
+     */
+    public static final int BUKOPIN_ACCNO_LENGTH = 10;
+    public static final String BUKOPIN_ACCNO_PADDING = "0";
 }

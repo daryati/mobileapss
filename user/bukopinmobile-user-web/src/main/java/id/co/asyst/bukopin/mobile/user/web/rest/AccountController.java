@@ -854,9 +854,10 @@ public class AccountController {
 	
 	String username = request.getData().getUsername();
 	String accountNo = request.getData().getAccountNo();
-	if(accountNo.length()==9) {
+	if(accountNo.length() < BkpmConstants.BUKOPIN_ACCNO_LENGTH) {
 	    // padding to 10 with 0, because account number in db is 10 digit in length and left padded with 0.
-	    accountNo = StringUtils.leftPad(accountNo, 10, "0");
+	    accountNo = StringUtils.leftPad(accountNo, BkpmConstants.BUKOPIN_ACCNO_LENGTH, 
+		    BkpmConstants.BUKOPIN_ACCNO_PADDING);
 	}
 	
 	// Get User
