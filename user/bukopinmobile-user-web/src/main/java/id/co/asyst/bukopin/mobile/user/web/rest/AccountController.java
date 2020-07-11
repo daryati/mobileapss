@@ -28,6 +28,7 @@ import javax.validation.Valid;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.ws.Holder;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -853,6 +854,10 @@ public class AccountController {
 	
 	String username = request.getData().getUsername();
 	String accountNo = request.getData().getAccountNo();
+	if(accountNo.length()==9) {
+	    // padding to 10 with 0, because account number in db is 10 digit in length and left padded with 0.
+	    accountNo = StringUtils.leftPad(accountNo, 10, "0");
+	}
 	
 	// Get User
 	User user = userService.findUserByUsername(username);
