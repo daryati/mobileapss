@@ -14,6 +14,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.Holder;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,8 +141,17 @@ public class AccountBalanceService {
 			List<AccountBalanceTransactionDetailRes> accountList = new ArrayList<>();
 			for (Transaction tx : getAccountBalanceRS.value.getTransaction()) {
 			    AccountBalanceTransactionDetailRes detail = new AccountBalanceTransactionDetailRes();
-			    detail.setAccountNumber(tx.getAccNo());
+			    
+			    //set account no
+			    String accountNo = tx.getAccNo();
+			    if(accountNo.length() < BkpmConstants.BUKOPIN_ACCNO_LENGTH) {
+				    // padding to 10 with 0, because account number in db is 10 digit in length and left padded with 0.
+				    accountNo = StringUtils.leftPad(accountNo, BkpmConstants.BUKOPIN_ACCNO_LENGTH, 
+					    BkpmConstants.BUKOPIN_ACCNO_PADDING);
+				}
+			    detail.setAccountNumber(accountNo);
 
+			    //set status
 			    if (null != tx.getAccStatus()) {
 				detail.setAccountStatus(CIFStatusEnum.getEnum(Integer.valueOf(tx.getAccStatus())));
 			    }
