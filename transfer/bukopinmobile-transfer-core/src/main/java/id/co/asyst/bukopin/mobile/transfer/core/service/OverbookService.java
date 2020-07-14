@@ -317,10 +317,17 @@ public class OverbookService {
 						
 						if(null!=receiver) {
 							boolean oldSave = receiver.isSave();
+							
+							if(oldSave == true) {
+								receiver.setSave(oldSave);
+							} else {
+								receiver.setSave(request.getPostingTo().isSave());
+							}
+							
 						    //exist
 						    receiver.setAlias(request.getPostingTo().getAlias());
 						    receiver.setCounter(receiver.getCounter()+1);   
-						    receiver.setSave(request.getPostingTo().isSave());		
+						    //receiver.setSave(request.getPostingTo().isSave());		
 						    
 						    // send Email receipt saved, isSave = true?
 						    if(request.getPostingTo().isSave() == true && oldSave!=true) {
