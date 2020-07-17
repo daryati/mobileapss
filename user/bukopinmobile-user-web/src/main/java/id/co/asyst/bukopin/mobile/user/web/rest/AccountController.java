@@ -10,6 +10,7 @@
 package id.co.asyst.bukopin.mobile.user.web.rest;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -624,35 +625,74 @@ public class AccountController {
      * @return Response success or failed and result data from SOAP get Inquiry CIF.
      * @throws DatatypeConfigurationException
      */
-    public CommonResponse gettingInquiryCIF(String cif) throws DatatypeConfigurationException {
+//    @GetMapping("/cif/{cif}")
+    public CommonResponse gettingInquiryCIF(@PathVariable String cif) throws DatatypeConfigurationException {
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));
 	HeaderRQ headerRQ = new HeaderRQ();
 	GetInquiryCIFReqType CIFReqType = new GetInquiryCIFReqType();
 	Holder<HeaderRS> holderHeaderRS = new Holder<>();
-	Holder<GetInquiryCIFResType> holderInquiryCIFRS = new Holder<>();
+	Holder<GetInquiryCIFResType> holderInquiryCIFRSTotal = new Holder<>(); // sum of result holder
 
 	headerRQ = AccountUtil.generateHeaderRQInquiryCIF();
-	CIFReqType = AccountUtil.generateBodyInquiryCIF(cif);
+	
+	int totalData = 1; // initial total accinfo from tibco
+	int itemPerPage = 10; // item per page always 10 returns by tibco
+	int totalPage = 1; // initial total page of cif service return
+	int currentPage = 1; // initial current page
+	
+	do {
+	    // result holder for each request
+	    Holder<GetInquiryCIFResType> holderInquiryCIFRS = new Holder<>();
+	    
+	    CIFReqType = AccountUtil.generateBodyInquiryCIF(cif, currentPage);
+	    try {
+		cifService.getInquiryCIF(headerRQ, CIFReqType, holderHeaderRS, holderInquiryCIFRS);
+	    } catch (Exception e) {
+		// TODO ask to analys, how if first request success, but second page request failed?
+		log.error(e.getMessage());
+		response.setCode(ResponseMessage.ERROR.getCode());
+		response.setMessage("Get CIF to Soap Failed!");
+		return response;
+	    }
 
-	try {
-	    cifService.getInquiryCIF(headerRQ, CIFReqType, holderHeaderRS, holderInquiryCIFRS);
-	} catch (Exception e) {
-	    log.error(e.getMessage());
-	    response.setCode(ResponseMessage.ERROR.getCode());
-	    response.setMessage("Get CIF to Soap Failed!");
-	    return response;
-	}
+	    if (!BkpmConstants.CODE_SOAP_SUCCESS.equals(holderInquiryCIFRS.value.getResponse().getRescode())) {
+		response.setCode(ResponseMessage.ERROR.getCode());
+		response.setMessage("Get CIF Succes, Status is Failed!");
+		return response;
+	    }
 
-	if (!BkpmConstants.CODE_SOAP_SUCCESS.equals(holderInquiryCIFRS.value.getResponse().getRescode())) {
-	    response.setCode(ResponseMessage.ERROR.getCode());
-	    response.setMessage("Get CIF Succes, Status is Failed!");
-	    return response;
-	}
+	    // Counting total page only run once
+	    if (currentPage == 1) {
+		// check pagination, if > 1 pages, get other page
+		totalData = holderInquiryCIFRS.value.getPaginginfo().getTotalresult().intValue();
+		itemPerPage = holderInquiryCIFRS.value.getPaginginfo().getItemsperpage().intValue();
+		
+		if (totalData % itemPerPage == 0) {
+		    // habis dibagi
+		    totalPage = totalData / itemPerPage;
+		} else {
+		    // tidak habis dibagi
+		    totalPage = (totalData / itemPerPage) + 1;
+		}
+		System.out.println("total data: " + totalData);
+		System.out.println("item per page: " + itemPerPage);
+		System.out.println("total page: " + totalPage);
+		
+		// copy first result to all result
+		holderInquiryCIFRSTotal.value = holderInquiryCIFRS.value;
+	    } else {
+		// add accounts to all result
+		holderInquiryCIFRSTotal.value.getAccounts().addAll(holderInquiryCIFRS.value.getAccounts());
+	    }
 
+	    // call next page
+	    currentPage++;
+	} while(currentPage <= totalPage);
+	
 	Map<String, Object> res = new HashMap<>();
 	res.put("rsHeader", holderHeaderRS.value);
-	res.put("rsBody", holderInquiryCIFRS.value);
+	res.put("rsBody", holderInquiryCIFRSTotal.value);
 	response.setData(res);
 
 	return response;
