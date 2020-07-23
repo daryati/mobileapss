@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
 import id.co.asyst.bukopin.mobile.user.model.AccountInfoStatusEnum;
 import id.co.asyst.bukopin.mobile.user.model.AccountStatusEnum;
@@ -75,14 +76,17 @@ public class AccountUtil {
 	HeaderRQ.Credentials credentials = new HeaderRQ.Credentials();
 	GregorianCalendar now = new GregorianCalendar();
 	XMLGregorianCalendar xmlDateTime;
+	
+	// get transaction ID
+	String txId = BkpmUtil.generateTrxId();
 
 	now.setTime(new Date());
 	xmlDateTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(now);
 
 	// TO DO : non hard code client ID and client TXN ID
-	credentials.setClientID("1111222233334444");
+	credentials.setClientID(txId);
 	headerRQ.setReqDateTime(xmlDateTime);
-	headerRQ.setClientTxnID("TXN-000-001");
+	headerRQ.setClientTxnID(BkpmConstants.CLIENT_ID);
 	headerRQ.setIsLastTxn(false);
 	headerRQ.setCredentials(credentials);
 
@@ -94,14 +98,17 @@ public class AccountUtil {
      * 
      * @return The Object request.
      */
-    public static GetInquiryCIFReqType generateBodyInquiryCIF(String cif) {
+    public static GetInquiryCIFReqType generateBodyInquiryCIF(String cif, int page) {
 	log.debug("generate body Inqury CIF : {} ");
 	GetInquiryCIFReqType CIFReqType = new GetInquiryCIFReqType();
 	GetInquiryCIFReqType.Paginginfo pageInfo = new GetInquiryCIFReqType.Paginginfo();
-
-	// TO DO : non hard code start index and items per page
-	pageInfo.setStartindex(BigInteger.valueOf(1));
-	pageInfo.setItemsperpage(BigInteger.valueOf(10));
+	
+	// item per page always 10 returns by tibco
+	BigInteger itemPerPage = BigInteger.TEN;
+	BigInteger startPage = page <= 0 ? BigInteger.ONE : BigInteger.valueOf(page);
+	
+	pageInfo.setStartindex(startPage);
+	pageInfo.setItemsperpage(itemPerPage);
 	CIFReqType.setCifnumber(cif);
 	CIFReqType.setPaginginfo(pageInfo);
 

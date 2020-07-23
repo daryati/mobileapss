@@ -72,7 +72,7 @@ public class OverbookController {
     private final static String SEPARATOR_PIPE = "|";
     private static final String TRANSFER_NOT_ENOUGH_BALANCE = "08";
     private static final String TRANSFER_INACTIVE_ACCOUNT = "15";
-    private static final String TRANSFER_INACTIVE_ACCOUNT_DEST = "14";
+    private static final String TRANSFER_ACCOUNT_DEST_NOT_FOUND = "14";
     private static final String TRANSFER_NOT_ENOUGH_BALANCE_FUNDS = "51";
     private static final String SUCCESS_CODE = "000";
 
@@ -232,10 +232,10 @@ public class OverbookController {
 	    log.error("Account inactive: " + request.getData().getPostingFrom().getAccountNumber());
 	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
 	    response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
-	} else if (TRANSFER_INACTIVE_ACCOUNT_DEST.equals(res.getStatusCode())) {
-	    log.error("Account destination inactive: " + request.getData().getPostingFrom().getAccountNumber());
-	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
-	    response.setMessage(messageUtil.get("error.inactive.bank.account.dest", servletRequest.getLocale()));
+	} else if (TRANSFER_ACCOUNT_DEST_NOT_FOUND.equals(res.getStatusCode())) {
+	    log.error("Account destination not found: " + request.getData().getPostingFrom().getAccountNumber());
+	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+	    response.setMessage(messageUtil.get("error.account.dest.not.found", servletRequest.getLocale()));
 	} else {
 	    log.error("error code " + res.getStatusCode() + " message: " + res.getStatusDesc());
 	    // response = new CommonResponse(res.getStatusCode(), res.getStatusDesc());
@@ -264,10 +264,10 @@ public class OverbookController {
     	    log.error("Account inactive: "+request.getData().getPostingFrom().getAccountNumber());
     	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
     	    response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
-    	} else if (TRANSFER_INACTIVE_ACCOUNT_DEST.equals(res.getStatusCode())) {
-	    log.error("Account destination inactive: " + request.getData().getPostingFrom().getAccountNumber());
-	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
-	    response.setMessage(messageUtil.get("error.inactive.bank.account.dest", servletRequest.getLocale()));
+    	} else if (TRANSFER_ACCOUNT_DEST_NOT_FOUND.equals(res.getStatusCode())) {
+	    log.error("Account destination not found: " + request.getData().getPostingFrom().getAccountNumber());
+	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+	    response.setMessage(messageUtil.get("error.account.dest.not.found", servletRequest.getLocale()));
 	} else {
         	log.error("error code "+res.getStatusCode()+" message: "+res.getStatusDesc());
         	//response = new CommonResponse(res.getStatusCode(), res.getStatusDesc());   
