@@ -151,9 +151,9 @@ public class OverbookController {
 
 	try {
 	    // Verify PIN
-	    CommonResponse pinResponse = Services.create(UserModuleService.class).verifyPIN(
-		    servletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE), commonPinRequest)
-		    .execute().body();
+	    CommonResponse pinResponse = Services.create(UserModuleService.class)
+		    .verifyPIN(servletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE), commonPinRequest).execute()
+		    .body();
 	    if (!ResponseMessage.SUCCESS.getCode().equals(pinResponse.getCode())) {
 		// response not success
 		return pinResponse;
@@ -174,118 +174,119 @@ public class OverbookController {
 	    throw new DataNotMatchException();
 	}
 
-	if (isWokeeAccount(request.getData().getPostingTo().getAccountNumber())) {
-	    log.error("Account destination is Wokee: " + request.getData().getPostingTo().getAccountNumber());
-	    response.setCode(ResponseMessage.ERROR_INVALID_WOKEE_ACCOUNT.getCode());
-	    response.setMessage(messageUtil.get("error.account.dest.wokee", servletRequest.getLocale()));
-	} else {
-	    // Posting Process
-	    PostingRes res = overbookService.postTransactionViaAPI(request.getData(), request.getIdentity());
-	    if (null != res.getStatusCode() && !"".equals(res.getStatusCode()) && "200".equals(res.getStatusCode())) {
-		// send email receipt transfer
-		try {
-		    CommonResponse getUser = Services.create(UserModuleService.class)
-			    .getUserByUsername(request.getData().getPostingFrom().getUsername()).execute().body();
+	// Posting Process
+	PostingRes res = overbookService.postTransactionViaAPI(request.getData(), request.getIdentity());
+	if (null != res.getStatusCode() && !"".equals(res.getStatusCode()) && "200".equals(res.getStatusCode())) {
+	    // send email receipt transfer
+	    try {
+		CommonResponse getUser = Services.create(UserModuleService.class)
+			.getUserByUsername(request.getData().getPostingFrom().getUsername()).execute().body();
 
-		    if (null != getUser) {
-			// get account info data by accountNo
-			CommonResponse findAccountInfo = Services.create(UserModuleService.class)
-				.getAccountInfoByAccountNo(
-					CryptoUtil.encryptAESHex(request.getData().getPostingFrom().getAccountNumber()))
-				.execute().body();
+		if (null != getUser) {
+		    // get account info data by accountNo
+		    CommonResponse findAccountInfo = Services.create(UserModuleService.class)
+			    .getAccountInfoByAccountNo(
+				    CryptoUtil.encryptAESHex(request.getData().getPostingFrom().getAccountNumber()))
+			    .execute().body();
 
-			if (!ResponseMessage.SUCCESS.getCode().equals(findAccountInfo.getCode())) {
-			    // response not success
-			    return findAccountInfo;
-			}
-
-			// get account info by account no
-			ObjectMapper mapper = new ObjectMapper();
-			Map<String, Object> resultAccInfo = mapper.convertValue(findAccountInfo.getData(), Map.class);
-			Map<String, Object> resPro = (Map<String, Object>) resultAccInfo.get("accountInfo");
-			ProductMapper productMapper = mapper.convertValue(resPro.get("product"),
-				new TypeReference<ProductMapper>() {
-				});
-			String productName = productMapper.getProductName();
-
-			// convert getuser
-			ObjectMapper oMapper = new ObjectMapper();
-			oMapper = new ObjectMapper();
-			Map<String, Object> result = oMapper.convertValue(getUser.getData(), Map.class);
-			Map<String, String> resUser = oMapper.convertValue(result.get("user"), Map.class);
-			transferService.sendEmailReceiptTransfer(res, resUser, servletRequest.getLocale(), productName);
-			response.setData(res);
-		    } else {
-			log.error("SUbscriber not found/invalid");
-			response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
-			response.setMessage(messageUtil.get("error.id.emoney.not.found", servletRequest.getLocale()));
+		    if (!ResponseMessage.SUCCESS.getCode().equals(findAccountInfo.getCode())) {
+			// response not success
+			return findAccountInfo;
 		    }
-		} catch (IOException e) {
-		    // TODO Auto-generated catch block
-		    e.printStackTrace();
-		}
 
-		// response.setData(res);
-	    } else if (TRANSFER_NOT_ENOUGH_BALANCE.equalsIgnoreCase(res.getStatusCode())) {
-		log.debug("not enough balance");
-		response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
-		response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
-	    } else if (TRANSFER_NOT_ENOUGH_BALANCE_FUNDS.equalsIgnoreCase(res.getStatusCode())) {
-		log.debug("not enough balance");
-		response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
-		response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
-	    } else if (TRANSFER_INACTIVE_ACCOUNT.equals(res.getStatusCode())) {
-		log.error("Account inactive: " + request.getData().getPostingFrom().getAccountNumber());
-		response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
-		response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
-	    } else if (TRANSFER_ACCOUNT_DEST_NOT_FOUND.equals(res.getStatusCode())) {
+		    // get account info by account no
+		    ObjectMapper mapper = new ObjectMapper();
+		    Map<String, Object> resultAccInfo = mapper.convertValue(findAccountInfo.getData(), Map.class);
+		    Map<String, Object> resPro = (Map<String, Object>) resultAccInfo.get("accountInfo");
+		    ProductMapper productMapper = mapper.convertValue(resPro.get("product"),
+			    new TypeReference<ProductMapper>() {
+			    });
+		    String productName = productMapper.getProductName();
+
+		    // convert getuser
+		    ObjectMapper oMapper = new ObjectMapper();
+		    oMapper = new ObjectMapper();
+		    Map<String, Object> result = oMapper.convertValue(getUser.getData(), Map.class);
+		    Map<String, String> resUser = oMapper.convertValue(result.get("user"), Map.class);
+		    transferService.sendEmailReceiptTransfer(res, resUser, servletRequest.getLocale(), productName);
+		    response.setData(res);
+		} else {
+		    log.error("SUbscriber not found/invalid");
+		    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+		    response.setMessage(messageUtil.get("error.id.emoney.not.found", servletRequest.getLocale()));
+		}
+	    } catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
+	    // response.setData(res);
+	} else if (TRANSFER_NOT_ENOUGH_BALANCE.equalsIgnoreCase(res.getStatusCode())) {
+	    log.debug("not enough balance");
+	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
+	    response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
+	} else if (TRANSFER_NOT_ENOUGH_BALANCE_FUNDS.equalsIgnoreCase(res.getStatusCode())) {
+	    log.debug("not enough balance");
+	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
+	    response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
+	} else if (TRANSFER_INACTIVE_ACCOUNT.equals(res.getStatusCode())) {
+	    log.error("Account inactive: " + request.getData().getPostingFrom().getAccountNumber());
+	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
+	    response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
+	} else if (TRANSFER_ACCOUNT_DEST_NOT_FOUND.equals(res.getStatusCode())) {
+	    if (isWokeeAccount(request.getData().getPostingTo().getAccountNumber())) {
+		log.error("Account destination is Wokee: " + request.getData().getPostingTo().getAccountNumber());
+		response.setCode(ResponseMessage.ERROR_INVALID_WOKEE_ACCOUNT.getCode());
+		response.setMessage(messageUtil.get("error.account.dest.wokee", servletRequest.getLocale()));
+	    } else {
 		log.error("Account destination not found: " + request.getData().getPostingTo().getAccountNumber());
 		response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 		response.setMessage(messageUtil.get("error.account.dest.not.found", servletRequest.getLocale()));
-	    } else {
-		log.error("error code " + res.getStatusCode() + " message: " + res.getStatusDesc());
-		// response = new CommonResponse(res.getStatusCode(), res.getStatusDesc());
-		throw new MiddlewareException(res.getStatusCode());
 	    }
+	} else {
+	    log.error("error code " + res.getStatusCode() + " message: " + res.getStatusDesc());
+	    // response = new CommonResponse(res.getStatusCode(), res.getStatusDesc());
+	    throw new MiddlewareException(res.getStatusCode());
 	}
-	
+
 	return response;
     }
     
     @PostMapping("/inquiryAccount/preHandle")
-    public CommonResponse inquiryAccount (@Valid @RequestBody CommonRequest<InquiryAccountReq> request) throws URISyntaxException {
-        log.debug("REST request to postTransaction: {}", BkpmUtil.convertToJson(request));
-        CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(), messageUtil.get("success", servletRequest.getLocale()));       
-        
-        if (isWokeeAccount(request.getData().getPostingTo().getAccountNumber())) {
-	    log.error("Account destination is Wokee: " + request.getData().getPostingTo().getAccountNumber());
-	    response.setCode(ResponseMessage.ERROR_INVALID_WOKEE_ACCOUNT.getCode());
-	    response.setMessage(messageUtil.get("error.account.dest.wokee", servletRequest.getLocale()));
-	} else {
-	    InquiryAccountRes res = overbookService.inquiryAmountViaAPI(request.getData());
-	    if (null != res.getConfirmationCode() && !"".equals(res.getConfirmationCode())) {
-		response.setData(res);
-	    } else if (TRANSFER_NOT_ENOUGH_BALANCE.equalsIgnoreCase(res.getStatusCode())) {
-		log.debug("not enough balance");
-		response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
-		response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
-	    } else if (TRANSFER_NOT_ENOUGH_BALANCE_FUNDS.equalsIgnoreCase(res.getStatusCode())) {
-		log.debug("not enough balance");
-		response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
-		response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
-	    } else if (TRANSFER_INACTIVE_ACCOUNT.equals(res.getStatusCode())) {
-		log.error("Account inactive: " + request.getData().getPostingFrom().getAccountNumber());
-		response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
-		response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
-	    } else if (TRANSFER_ACCOUNT_DEST_NOT_FOUND.equals(res.getStatusCode())) {
+    public CommonResponse inquiryAccount(@Valid @RequestBody CommonRequest<InquiryAccountReq> request)
+	    throws URISyntaxException {
+	log.debug("REST request to postTransaction: {}", BkpmUtil.convertToJson(request));
+	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
+		messageUtil.get("success", servletRequest.getLocale()));
+
+	InquiryAccountRes res = overbookService.inquiryAmountViaAPI(request.getData());
+	if (null != res.getConfirmationCode() && !"".equals(res.getConfirmationCode())) {
+	    response.setData(res);
+	} else if (TRANSFER_NOT_ENOUGH_BALANCE.equalsIgnoreCase(res.getStatusCode())) {
+	    log.debug("not enough balance");
+	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
+	    response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
+	} else if (TRANSFER_NOT_ENOUGH_BALANCE_FUNDS.equalsIgnoreCase(res.getStatusCode())) {
+	    log.debug("not enough balance");
+	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
+	    response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
+	} else if (TRANSFER_INACTIVE_ACCOUNT.equals(res.getStatusCode())) {
+	    log.error("Account inactive: " + request.getData().getPostingFrom().getAccountNumber());
+	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
+	    response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
+	} else if (TRANSFER_ACCOUNT_DEST_NOT_FOUND.equals(res.getStatusCode())) {
+	    if (isWokeeAccount(request.getData().getPostingTo().getAccountNumber())) {
+		log.error("Account destination is Wokee: " + request.getData().getPostingTo().getAccountNumber());
+		response.setCode(ResponseMessage.ERROR_INVALID_WOKEE_ACCOUNT.getCode());
+		response.setMessage(messageUtil.get("error.account.dest.wokee", servletRequest.getLocale()));
+	    } else {
 		log.error("Account destination not found: " + request.getData().getPostingTo().getAccountNumber());
 		response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 		response.setMessage(messageUtil.get("error.account.dest.not.found", servletRequest.getLocale()));
-	    } else {
-		log.error("error code " + res.getStatusCode() + " message: " + res.getStatusDesc());
-		// response = new CommonResponse(res.getStatusCode(), res.getStatusDesc());
-		throw new MiddlewareException(res.getStatusCode());
 	    }
+	} else {
+	    log.error("error code " + res.getStatusCode() + " message: " + res.getStatusDesc());
+	    // response = new CommonResponse(res.getStatusCode(), res.getStatusDesc());
+	    throw new MiddlewareException(res.getStatusCode());
 	}
         
         return response;
