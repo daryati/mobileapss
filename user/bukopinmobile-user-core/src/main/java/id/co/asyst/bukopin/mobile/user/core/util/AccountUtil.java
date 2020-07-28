@@ -25,9 +25,13 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
+import id.co.asyst.bukopin.mobile.user.core.service.AccountBalanceService;
+import id.co.asyst.bukopin.mobile.user.model.AccountBalanceReq;
+import id.co.asyst.bukopin.mobile.user.model.AccountBalanceRes;
 import id.co.asyst.bukopin.mobile.user.model.AccountInfoStatusEnum;
 import id.co.asyst.bukopin.mobile.user.model.AccountStatusEnum;
 import id.co.asyst.bukopin.mobile.user.model.AccountTypeEnum;
@@ -54,6 +58,8 @@ public class AccountUtil {
     private static Logger log = LoggerFactory.getLogger(AccountUtil.class);
 
     /* Attributes: */
+//    @Autowired
+//    private AccountBalanceService accountBalanceService;
 
     /* Transient Attributes: */
 
@@ -198,6 +204,13 @@ public class AccountUtil {
 		    Optional<Product> ps = listProduct.stream().filter(
 			    p -> p.getPdId()==accounts.getProductid()).findFirst();
 		    if(ps.isPresent()) { // if product can be activated, insert into Account Info
+			// TODO if 10, get accbalance to cek cif status
+			if(BkpmConstants.CODE_TYPE_SAVING.equals(String.valueOf(accounts.getAcctype()))) {
+			    AccountBalanceService accBalanceService = new AccountBalanceService();
+			    
+			    AccountBalanceReq accountBalanceReq = new AccountBalanceReq();
+			    AccountBalanceRes accbalanceRes = accBalanceService.getAccountBalance(accountBalanceReq);
+			}
 			Product product = ps.get();
 			AccountInfo accInfo = new AccountInfo();
 			accInfo.setAccountName(accounts.getAccname());

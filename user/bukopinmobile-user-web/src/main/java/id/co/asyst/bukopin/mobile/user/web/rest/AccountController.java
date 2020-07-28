@@ -275,6 +275,7 @@ public class AccountController {
 	
 	List<Product> products = productService.findAll(); // all Products in DB
 	List<Product> listProduct = new ArrayList<>(); // products (saving and gyro) can be activated
+	// Filter Saving and Giro only & Filter Product
 	CIFResType.getAccounts().forEach(accounts -> {
 	    if(BkpmConstants.CODE_TYPE_SAVING.equals(String.valueOf(accounts.getAcctype()))
 			|| BkpmConstants.CODE_TYPE_GIRO.equals(String.valueOf(accounts.getAcctype()))) {
@@ -298,6 +299,7 @@ public class AccountController {
 	    log.debug("Account Info with Regist Card " + registCard + " is Not Exist");
 	    accCard = AccountUtil.setDataAccountCard(debitCard, CIFResType, user);
 	    accCard = accountCardService.save(accCard);
+	    // Filter AccNo from DB Xlink & tibco
 	    listSaveAccInfo = AccountUtil.setDataAccountInfo(CIFResType, accCard, cards, listProduct);
 	    if(listSaveAccInfo==null) {
 		log.error("Account Number not match between db Xlink and Tibco");
@@ -315,6 +317,7 @@ public class AccountController {
 	} else {
 	    log.debug("Account Info with Regist Card " + registCard + " is Exist");
 	    accInfoUserService.deleteByAccountCardId(accCard.getId());
+	    // Filter AccNo from DB Xlink & tibco
 	    listSaveAccInfo = AccountUtil.setDataAccountInfo(CIFResType, accCard, cards, listProduct);
 	    if(listSaveAccInfo==null) {
 		log.error("Account Number not match between db Xlink and Tibco");
