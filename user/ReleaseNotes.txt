@@ -9,7 +9,9 @@ Release Notes - Bukopin-Mobile-User - Version 1.3.GA1
 	* 
 	
 ** Bug Fixed
-	* 
+	* [BKPM-366] - Error Download PDF (Account Statement)
+	* [BKPM-373] - Rekening dengan awalan 0 pada menu info akun terpotong
+	* [BKPM-380] - Nomor rekening tidak dapat diaktivasi - Verification Flow
 	
 ** Deprecated Service
 	* 

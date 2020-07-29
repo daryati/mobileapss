@@ -9,7 +9,7 @@ Release Notes - Bukopin-Mobile-Telco - Version 1.3.GA1
 	* 
 	
 ** Bug Fixed
-	* Fix bug no admin fee (element28) in PSTN payment.
+	* [BKPM-364] - [Backend] Telkom PSTN & Speedy - Add element28
 	* [BKPM-365] Internationalization Doesn't Work in Verify PIN
 	
 ** Deprecated Service
