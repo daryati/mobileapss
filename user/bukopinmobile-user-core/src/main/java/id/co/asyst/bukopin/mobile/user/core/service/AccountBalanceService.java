@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import id.co.asyst.bukopin.mobile.common.core.exception.MiddlewareException;
 import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
 import id.co.asyst.bukopin.mobile.user.core.service.soap.PortType;
@@ -296,13 +297,11 @@ public class AccountBalanceService {
 	return accBalanceResult;
     }
     
-    public AccountBalanceRes getAccountBalanceByAccNo(List<String> listAccNo, BigInteger accType) {
+    public List<GetAccountBalanceResType.Transaction> callAccBalanceTibco(List<String> listAccNo, BigInteger accType) {
+	List<GetAccountBalanceResType.Transaction> transaction = new ArrayList<>();
+	
 	// get transaction ID
 	String txId = BkpmUtil.generateTrxId();
-
-	log.debug("get account balance " + txId);
-	AccountBalanceRes accBalanceResult = new AccountBalanceRes();
-
 	// set request
 	HeaderRQ headerRQ = new HeaderRQ();
 	headerRQ.setClientTxnID(txId);
@@ -337,172 +336,28 @@ public class AccountBalanceService {
 	});
 	getAccountBalanceRQ.setAccount(acc);
 	
-	if(acc.getAccNo().size()>0) {
-		
-		Holder<HeaderRS> headerRS = new Holder<HeaderRS>();
-		Holder<GetAccountBalanceResType> getAccountBalanceRS = new Holder<GetAccountBalanceResType>();
+	if (acc.getAccNo().size() > 0) {
 
-		try {
-		    portType.getAccountBalance(headerRQ, getAccountBalanceRQ, headerRS, getAccountBalanceRS);
+	    Holder<HeaderRS> headerRS = new Holder<HeaderRS>();
+	    Holder<GetAccountBalanceResType> getAccountBalanceRS = new Holder<GetAccountBalanceResType>();
 
-		    if ("Sukses".equalsIgnoreCase(getAccountBalanceRS.value.getResponse().getDesc())
-			    || "success".equalsIgnoreCase(getAccountBalanceRS.value.getResponse().getDesc())) {
-			List<AccountBalanceTransactionDetailRes> accountList = new ArrayList<>();
-			for (Transaction tx : getAccountBalanceRS.value.getTransaction()) {
-			    AccountBalanceTransactionDetailRes detail = new AccountBalanceTransactionDetailRes();
-			    
-			    //set account no
-			    String accountNo = tx.getAccNo();
-			    if(accountNo.length() < BkpmConstants.BUKOPIN_ACCNO_LENGTH) {
-				    // padding to 10 with 0, because account number in db is 10 digit in length and left padded with 0.
-				    accountNo = StringUtils.leftPad(accountNo, BkpmConstants.BUKOPIN_ACCNO_LENGTH, 
-					    BkpmConstants.BUKOPIN_ACCNO_PADDING);
-				}
-			    detail.setAccountNumber(accountNo);
-
-			    //set status
-			    if (null != tx.getAccStatus()) {
-				detail.setAccountStatus(CIFStatusEnum.getEnum(Integer.valueOf(tx.getAccStatus())));
-			    }
-
-			    detail.setAccountType(tx.getAccType());
-			    detail.setAvailableBalance(tx.getAvailableBalance());
-			    detail.setBranch(tx.getBranch());
-
-			    detail.setCifNumber(tx.getCifNumber());
-
-			    if (null != tx.getCifStatus()) {
-				detail.setCifStatus(CIFStatusEnum.getEnum(Integer.valueOf(tx.getCifStatus())));
-			    }
-
-			    detail.setCurrency(tx.getCurrency());
-			    detail.setEffectiveBalance(tx.getEffectiveBalance());
-			    detail.setHoldAmount(tx.getHoldAmt());
-			    detail.setLocation(tx.getLokasi());
-
-			    // use this if want name in camel case
-			    /*
-			     * String name[] = tx.getName().split("\\s+"); String nameStr=""; for(int a=0;
-			     * a<name.length;a++) { nameStr =
-			     * nameStr+name[a].substring(0,1)+name[a].substring(1,name[a].length()).
-			     * toLowerCase()+" "; }
-			     */
-
-			    detail.setName(tx.getName());
-			    detail.setPlafon(tx.getPlafon());
-
-			    // get product desc
-			    Product prod = productService.findByPdId(Integer.valueOf(tx.getProductID()));
-			    detail.setProductID(prod.getProductName());
-
-			    // get last 3 transaction
-			    List<InquiryTransactionDetailRes> txDetail = getLast3Transaction(accType,
-				    tx.getAccNo());
-			    if (null == txDetail) {
-				txDetail = new ArrayList<>();
-			    }
-
-			    detail.setTransactionDetails(txDetail);
-			    accountList.add(detail);
-			}
-			// order by cif status ascending (active - passive)
-			accountList.sort(Comparator.comparing(AccountBalanceTransactionDetailRes::getCifStatus));
-
-			TotalBalanceRes totalBalance = new TotalBalanceRes();
-			totalBalance.setTotalAvailableBalance(
-				getAccountBalanceRS.value.getTotalBalance().getTotalAvailableBalance());
-			totalBalance.setTotalEffectiveBalance(
-				getAccountBalanceRS.value.getTotalBalance().getTotalEffectiveBalance());
-
-			// ini knp hasilny 0?
-			// getAccountBalanceRS.value.getResponse().getResCode()
-			accBalanceResult.setTotalBalance(totalBalance);
-			accBalanceResult.setTransactionDetails(accountList);
-			accBalanceResult.setResponseCode("000");
-			accBalanceResult.setResponseMessage(getAccountBalanceRS.value.getResponse().getDesc());
-
-		    } else {
-			/*
-			 * accBalanceResult.setResponseCode(getAccountBalanceRS.value.getResponse().
-			 * getResCode());
-			 * accBalanceResult.setResponseMessage(getAccountBalanceRS.value.getResponse().
-			 * getDesc()); log.error( "error get response in account balance :" +
-			 * getAccountBalanceRS.value.getResponse().getDesc());
-			 */
-		    	log.debug("HASIL "+getAccountBalanceRS.value.getResponse().getResCode());
-			if ("221".equalsIgnoreCase(getAccountBalanceRS.value.getResponse().getResCode())
-				|| "224".equalsIgnoreCase(getAccountBalanceRS.value.getResponse().getResCode())) {
-			    List<AccountBalanceTransactionDetailRes> accountList = new ArrayList<>();
-			    for (AccountInfo info : accInfoFilter) {			    	
-				AccountBalanceTransactionDetailRes detail = new AccountBalanceTransactionDetailRes();
-				log.debug("acc number " + info.getAccountNo());
-				detail.setAccountNumber(info.getAccountNo());
-				detail.setName(info.getAccountName());
-
-				if (null != info.getAccountStatus()) {
-				    detail.setAccountStatus(CIFStatusEnum.getEnum(info.getAccountStatus().getValue()));
-				}
-
-				detail.setAccountType(BigInteger.valueOf(info.getAccountType().getValue()));
-				detail.setAvailableBalance(new BigDecimal(0.0));
-				detail.setEffectiveBalance(new BigDecimal(0.0));
-				detail.setProductID(info.getProduct().getProductName());
-
-				if ("221".equalsIgnoreCase(getAccountBalanceRS.value.getResponse().getResCode())) {
-				    // if account number is passive (2)
-				    detail.setCifStatus(CIFStatusEnum.getEnum(2));
-				} else if ("224".equalsIgnoreCase(getAccountBalanceRS.value.getResponse().getResCode())) {
-				    // if account number is closed (9)
-				    detail.setCifStatus(CIFStatusEnum.getEnum(9));
-				} else {
-				    detail.setCifStatus(CIFStatusEnum.getEnum(1));
-				}
-
-				List<InquiryTransactionDetailRes> txDetail = new ArrayList<>();
-				detail.setTransactionDetails(txDetail);
-				accountList.add(detail);
-			    }
-			    // order by cif status ascending (active - passive)
-			    accountList.sort(Comparator.comparing(AccountBalanceTransactionDetailRes::getCifStatus));
-			    
-			    TotalBalanceRes totalBalance = new TotalBalanceRes();
-			    totalBalance.setTotalAvailableBalance(new BigDecimal("0.0"));
-			    totalBalance.setTotalEffectiveBalance(new BigDecimal("0.0"));
-			    accBalanceResult.setTotalBalance(totalBalance);
-
-			    accBalanceResult.setTransactionDetails(accountList);
-			} else {
-				log.debug("Response Code "+getAccountBalanceRS.value.getResponse().getResCode());
-			    accBalanceResult.setTransactionDetails(new ArrayList<>());
-
-			    TotalBalanceRes totalBalance = new TotalBalanceRes();
-			    totalBalance.setTotalAvailableBalance(new BigDecimal("0.0"));
-			    totalBalance.setTotalEffectiveBalance(new BigDecimal("0.0"));
-			    accBalanceResult.setTotalBalance(totalBalance);
-			}
-
-			accBalanceResult.setResponseCode(getAccountBalanceRS.value.getResponse().getResCode());
-			accBalanceResult.setResponseMessage(getAccountBalanceRS.value.getResponse().getDesc());
-
-		    }
-
-		} catch (Fault e) {
-		    // TODO Auto-generated catch block
-		    e.printStackTrace();
+	    try {
+		portType.getAccountBalance(headerRQ, getAccountBalanceRQ, headerRS, getAccountBalanceRS);
+		if ("000".equals(getAccountBalanceRS.value.getResponse().getResCode())) {
+		    transaction = getAccountBalanceRS.value.getTransaction();
+		} else {
+		    log.error("Get account balance failed: {}",getAccountBalanceRS.value.getResponse().getResCode());
+		    throw new MiddlewareException(getAccountBalanceRS.value.getResponse().getResCode());
 		}
-		
-		
-	} else {
-	    accBalanceResult.setTransactionDetails(new ArrayList<>());
+	    } catch (Fault e) {
+		log.error("Get account balance failed, caused by: "+e.getMessage());
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
 
-	    TotalBalanceRes totalBalance = new TotalBalanceRes();
-	    totalBalance.setTotalAvailableBalance(new BigDecimal("0.0"));
-	    totalBalance.setTotalEffectiveBalance(new BigDecimal("0.0"));
-	    accBalanceResult.setTotalBalance(totalBalance);
 	}
 	
-	
-	return accBalanceResult;
+	return transaction;
     }
 
     public List<InquiryTransactionDetailRes> getLast3Transaction(BigInteger accountType, String accountNumber) {

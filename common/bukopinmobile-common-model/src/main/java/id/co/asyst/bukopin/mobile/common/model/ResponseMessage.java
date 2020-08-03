@@ -77,6 +77,7 @@ public enum ResponseMessage {
     ERROR_DIFFERENT_BILL("309"),
     ERROR_VOUCHER_OUT_OF_STOCK("310"),
     ERROR_INVALID_INTERVAL("311"),
+    ERROR_ACCINFO_EXIST("313"),
     
     // External Error
     ERROR_EXTERNAL("600"),

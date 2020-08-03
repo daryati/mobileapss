@@ -9,9 +9,14 @@
  */
 package id.co.asyst.bukopin.mobile.user.core.service;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +24,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import id.co.asyst.bukopin.mobile.common.core.util.CryptoUtil;
+import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
+import id.co.asyst.bukopin.mobile.user.core.config.GetConfiguration;
 import id.co.asyst.bukopin.mobile.user.core.repository.AccountCardRepository;
+import id.co.asyst.bukopin.mobile.user.model.AccountBalanceRes;
+import id.co.asyst.bukopin.mobile.user.model.CIFStatusEnum;
 import id.co.asyst.bukopin.mobile.user.model.entity.AccountCard;
 import id.co.asyst.bukopin.mobile.user.model.entity.AccountInfo;
+import id.co.asyst.bukopin.mobile.user.model.entity.Product;
 import id.co.asyst.bukopin.mobile.user.model.entity.User;
+import id.co.asyst.bukopin.mobile.user.model.soap.account.GetAccountBalanceResType;
+import id.co.asyst.bukopin.mobile.user.model.soap.cif.GetInquiryCIFResType;
+import id.co.asyst.bukopin.mobile.user.model.soap.cif.GetInquiryCIFResType.Accounts;
 
 /**
  * Service Implementation for managing <code>AccountCard</code>.
@@ -45,6 +58,24 @@ public class AccountCardService {
     
     @Autowired
     private UserService userService;
+    
+    /**
+     * Get Configuration Service
+     */
+    @Autowired
+    private GetConfiguration configuration;
+    
+    /**
+    * Product Service
+    */
+   @Autowired
+   private ProductService productService;
+   
+   /**
+    * Account Balance Service
+    */
+   @Autowired
+   private AccountBalanceService accountBalanceService;
     
     /**
      * Constructor
@@ -75,6 +106,12 @@ public class AccountCardService {
 	}
     }
     
+    /**
+     * Find Account Cards By Username
+     * 
+     * @param username The User's username
+     * @return List of User's Account Cards.
+     */
     @Transactional(readOnly=true)
     public List<AccountCard> findListByUsername(String username) {
 	log.debug("Find User by username : {} " + username);
@@ -162,24 +199,6 @@ public class AccountCardService {
     }
     
     /**
-     * Find Account Cards By Username
-     * 
-     * @param username The User's username
-     * @return List of User's Account Cards.
-     */
-    @Transactional(readOnly=true)
-    public List<AccountCard> findCardsByUsername(String username) {
-	log.debug("Find Account Cards by username : {} " + username);
-	List<AccountCard> accountCards = accountCardRepository.findByUsername(username);
-	if(accountCards!=null && !accountCards.isEmpty()) {
-	    accountCards = decryptResponse(accountCards);
-	}
-	
-	return accountCards;
-//	return accountCardRepository.findByUsername(username);
-    }
-    
-    /**
      * Find AccountCard by Registered Card
      * 
      * @param registCard user's Registered Card
@@ -255,6 +274,87 @@ public class AccountCardService {
 	accCard.setValidYear(accountCard.getValidYear());
 
 	return accCard;
+    }
+    
+    /**
+     * Filter Account Verification
+     * <p> 
+     * Filter data account from tibco before save to database. The filters are:
+     * <ol>
+     * <li>Filter saving and giro only</i>
+     * <li>Filter by products in database</i>
+     * <li>Filter by blacklist product</i>
+     * </ol>
+     * </p>
+     * @param tibcoAccountInfo All of account info from tibco.
+     * @param products All of products from db mbanking.
+     * @return filtered account info to save.
+     */
+    public List<GetInquiryCIFResType.Accounts> filterAccountVerification(List<GetInquiryCIFResType.Accounts> tibcoAccountInfo,
+	    List<Product> products) {
+	// Get list pdid that couldn't be activated (e.g. 21|87|63)
+	String blackListPdidConfig = configuration.getConfigValue(BkpmConstants.KEY_ACCOUNT_NOT_ACTIVATED);
+	Pattern separator = Pattern.compile("\\|");
+	// Convert blacklist id to array
+	List<Integer> blackListPdid = separator.splitAsStream(blackListPdidConfig).map(Integer::valueOf)
+		.collect(Collectors.toList());
+
+	List<String> savingAccNo = new ArrayList<>(); // all saving account number to check status
+	
+	// filtered accinfo (can be activated only)
+	List<GetInquiryCIFResType.Accounts> filteredAccInfo = new ArrayList();
+	for(GetInquiryCIFResType.Accounts accounts: tibcoAccountInfo){
+	    // Filter Saving and Giro only
+	    if (BkpmConstants.CODE_TYPE_SAVING.equals(String.valueOf(accounts.getAcctype()))
+		    || BkpmConstants.CODE_TYPE_GIRO.equals(String.valueOf(accounts.getAcctype()))) {
+		
+		// Filter Product
+		for(Product p:products) {
+		    // Make sure account's pdid is exist in table PRODUCT
+		    if (accounts.getProductid() == p.getPdId()
+			    // Exclude accounts from tibco with blackListPdid
+			    && !blackListPdid.contains(accounts.getProductid())
+			    ) {
+			filteredAccInfo.add(accounts);
+		    }
+		}
+		
+		// add saving account number to list, to get account balance
+		if (BkpmConstants.CODE_TYPE_SAVING.equals(String.valueOf(accounts.getAcctype()))) {
+		    String accountNo = String.valueOf(accounts.getAccnumber());
+		    if (accountNo.length() < BkpmConstants.BUKOPIN_ACCNO_LENGTH) {
+			// padding to 10 with 0, because account number in db is 10 digit in length and
+			// left padded with 0.
+			accountNo = StringUtils.leftPad(accountNo, BkpmConstants.BUKOPIN_ACCNO_LENGTH,
+				BkpmConstants.BUKOPIN_ACCNO_PADDING);
+		    }
+		    savingAccNo.add(accountNo);
+		}
+	    }
+	}
+	
+	// Filter by card number
+	
+	// Filter by cif status
+	if(!savingAccNo.isEmpty()) {
+	    List<GetAccountBalanceResType.Transaction> transactions = accountBalanceService.callAccBalanceTibco(savingAccNo, 
+		    new BigInteger(BkpmConstants.CODE_TYPE_SAVING));
+	    for(GetAccountBalanceResType.Transaction trx: transactions) {
+		// remove closed account info
+		if(CIFStatusEnum.CLOSED.getValue()==Integer.valueOf(trx.getCifStatus())) {
+		    filteredAccInfo = filteredAccInfo.stream().filter(acc -> {
+			// padding to 10 with 0, because account number in db is 10 digit in length and
+			// left padded with 0.
+			String accountNo = StringUtils.leftPad(String.valueOf(acc.getAccnumber()), 
+				BkpmConstants.BUKOPIN_ACCNO_LENGTH, BkpmConstants.BUKOPIN_ACCNO_PADDING);
+			// return not closed accno
+			return !accountNo.equals(trx.getAccNo());
+		    }).collect(Collectors.toList());
+		}
+	    }
+	}
+	
+	return filteredAccInfo;
     }
 
     /* Overrides: */
