@@ -33,6 +33,7 @@ import id.co.asyst.bukopin.mobile.user.model.entity.AccountCard;
 import id.co.asyst.bukopin.mobile.user.model.entity.AccountInfo;
 import id.co.asyst.bukopin.mobile.user.model.entity.Product;
 import id.co.asyst.bukopin.mobile.user.model.entity.User;
+import id.co.asyst.bukopin.mobile.user.model.entity.internal.DebitCardInfo;
 import id.co.asyst.bukopin.mobile.user.model.soap.account.GetAccountBalanceResType;
 import id.co.asyst.bukopin.mobile.user.model.soap.cif.GetInquiryCIFResType;
 import id.co.asyst.bukopin.mobile.user.model.soap.cif.GetInquiryCIFResType.Accounts;
@@ -59,18 +60,6 @@ public class AccountCardService {
     @Autowired
     private UserService userService;
     
-    /**
-     * Get Configuration Service
-     */
-    @Autowired
-    private GetConfiguration configuration;
-    
-    /**
-    * Product Service
-    */
-   @Autowired
-   private ProductService productService;
-   
    /**
     * Account Balance Service
     */
@@ -282,8 +271,8 @@ public class AccountCardService {
      * Filter data account from tibco before save to database. The filters are:
      * <ol>
      * <li>Filter saving and giro only</i>
-     * <li>Filter by products in database</i>
-     * <li>Filter by blacklist product</i>
+     * <li>Filter by card number (only include accinfo in xlink db)</i>
+     * <li>Filter by cifStatus !closed</i>
      * </ol>
      * </p>
      * @param tibcoAccountInfo All of account info from tibco.
@@ -291,49 +280,32 @@ public class AccountCardService {
      * @return filtered account info to save.
      */
     public List<GetInquiryCIFResType.Accounts> filterAccountVerification(List<GetInquiryCIFResType.Accounts> tibcoAccountInfo,
-	    List<Product> products) {
-	// Get list pdid that couldn't be activated (e.g. 21|87|63)
-	String blackListPdidConfig = configuration.getConfigValue(BkpmConstants.KEY_ACCOUNT_NOT_ACTIVATED);
-	Pattern separator = Pattern.compile("\\|");
-	// Convert blacklist id to array
-	List<Integer> blackListPdid = separator.splitAsStream(blackListPdidConfig).map(Integer::valueOf)
-		.collect(Collectors.toList());
-
+	    List<DebitCardInfo> xlinkData) {
 	List<String> savingAccNo = new ArrayList<>(); // all saving account number to check status
+	List<String> xlinkAccNo = xlinkData.stream().map(DebitCardInfo::getAccountNumber)
+		.collect(Collectors.toList());
 	
 	// filtered accinfo (can be activated only)
 	List<GetInquiryCIFResType.Accounts> filteredAccInfo = new ArrayList();
-	for(GetInquiryCIFResType.Accounts accounts: tibcoAccountInfo){
+	for (GetInquiryCIFResType.Accounts accounts : tibcoAccountInfo) {
 	    // Filter Saving and Giro only
 	    if (BkpmConstants.CODE_TYPE_SAVING.equals(String.valueOf(accounts.getAcctype()))
 		    || BkpmConstants.CODE_TYPE_GIRO.equals(String.valueOf(accounts.getAcctype()))) {
-		
-		// Filter Product
-		for(Product p:products) {
-		    // Make sure account's pdid is exist in table PRODUCT
-		    if (accounts.getProductid() == p.getPdId()
-			    // Exclude accounts from tibco with blackListPdid
-			    && !blackListPdid.contains(accounts.getProductid())
-			    ) {
-			filteredAccInfo.add(accounts);
+		String tibcoAccountNo = String.valueOf(accounts.getAccnumber());
+		// padding to 10 with 0, because account number in db is 10 digit in length and
+		// left padded with 0.
+		tibcoAccountNo = StringUtils.leftPad(tibcoAccountNo, BkpmConstants.BUKOPIN_ACCNO_LENGTH,
+			BkpmConstants.BUKOPIN_ACCNO_PADDING);
+		// Filter by Card Number. Check is tibcoAccno exist in current card
+		if (xlinkAccNo.contains(tibcoAccountNo)) {
+		    // add saving account number to list, to get account balance
+		    if (BkpmConstants.CODE_TYPE_SAVING.equals(String.valueOf(accounts.getAcctype()))) {
+			savingAccNo.add(tibcoAccountNo);
 		    }
-		}
-		
-		// add saving account number to list, to get account balance
-		if (BkpmConstants.CODE_TYPE_SAVING.equals(String.valueOf(accounts.getAcctype()))) {
-		    String accountNo = String.valueOf(accounts.getAccnumber());
-		    if (accountNo.length() < BkpmConstants.BUKOPIN_ACCNO_LENGTH) {
-			// padding to 10 with 0, because account number in db is 10 digit in length and
-			// left padded with 0.
-			accountNo = StringUtils.leftPad(accountNo, BkpmConstants.BUKOPIN_ACCNO_LENGTH,
-				BkpmConstants.BUKOPIN_ACCNO_PADDING);
-		    }
-		    savingAccNo.add(accountNo);
+		    filteredAccInfo.add(accounts);
 		}
 	    }
 	}
-	
-	// Filter by card number
 	
 	// Filter by cif status
 	if(!savingAccNo.isEmpty()) {

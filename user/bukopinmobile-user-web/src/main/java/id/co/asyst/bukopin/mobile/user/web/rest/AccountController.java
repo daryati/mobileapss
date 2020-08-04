@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -80,6 +81,7 @@ import id.co.asyst.bukopin.mobile.user.model.payload.VerifyAccountOwnerRequest;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyAccountOwnerResponse;
 import id.co.asyst.bukopin.mobile.user.model.soap.cif.GetInquiryCIFReqType;
 import id.co.asyst.bukopin.mobile.user.model.soap.cif.GetInquiryCIFResType;
+import id.co.asyst.bukopin.mobile.user.model.soap.cif.GetInquiryCIFResType.Accounts;
 import id.co.asyst.bukopin.mobile.user.model.soap.cif.HeaderRQ;
 import id.co.asyst.bukopin.mobile.user.model.soap.cif.HeaderRS;
 import id.co.asyst.bukopin.mobile.user.web.rest.errors.ResourceNotFoundException;
@@ -146,6 +148,12 @@ public class AccountController {
      */
     @Autowired
     private ProductService productService;
+    
+    /**
+     * Get Configuration Service
+     */
+    @Autowired
+    private GetConfiguration configuration;
 
     /**
      * Get Message Util
@@ -261,86 +269,106 @@ public class AccountController {
 	GetInquiryCIFResType.AccInfo tibcoAccountCard = CIFResType.getAccInfo();
 	List<GetInquiryCIFResType.Accounts> tibcoAccountInfo = CIFResType.getAccounts();
 	
-	List<Product> productsDb = productService.findAll(); // all Products in DB
-
+	// all Products in DB
+	List<Product> productsDb = productService.findAll();
+	// all Pdid of Products in DB
+	List<Integer> pdidsDb = productsDb.stream().map(Product::getPdId).collect(Collectors.toList()); 
+	
 	// Filter Accounts
-	tibcoAccountInfo = accountCardService.filterAccountVerification(tibcoAccountInfo, productsDb);
+	tibcoAccountInfo = accountCardService.filterAccountVerification(tibcoAccountInfo, cards);
+	
+	// Get list pdid that couldn't be activated (e.g. 21|87|63)
+	String blackListPdidConfig = configuration.getConfigValue(BkpmConstants.KEY_ACCOUNT_NOT_ACTIVATED);
+	Pattern separator = Pattern.compile("\\|");
+	// Convert blacklist id to array
+	List<Integer> blackListPdid = separator.splitAsStream(blackListPdidConfig).map(Integer::valueOf)
+		.collect(Collectors.toList());
 
+	 /**
+	  * Preparation to save accountCard and accountInfos:
+	  * check acc cards by username
+	  * exist? get acc card by cardnumber
+	  * 	exist? delete all accinfo in this card
+	  * 	filter accno & product
+	  * save acc card and accinfo
+	  */
+	boolean isNewAccount = true;
 	// Get account info by username
 	List<AccountCard> existingCards = accountCardService.findListByUsername(username);
-	List<AccountInfo> existingAccInfo = existingCards.stream().flatMap(ac -> ac.getAccounts().stream())
-		.collect(Collectors.toList());
-	List<String> existingAccno = existingCards.stream().flatMap(ac -> ac.getAccounts().stream())
-		.map(AccountInfo::getAccountNo).collect(Collectors.toList());
-
-	// new tibco account info to save
-	List<GetInquiryCIFResType.Accounts> tibcoAccountInfoNew = new ArrayList<>();
-	// Check existing account info, to prevent duplicate
-	tibcoAccountInfo.forEach(tibco -> {
-	    // padding to 10 with 0, because account number in db is 10 digit in length and
-	    // left padded with 0.
-	    String tibcoAccno = StringUtils.leftPad(String.valueOf(tibco.getAccnumber()),
-		    BkpmConstants.BUKOPIN_ACCNO_LENGTH, BkpmConstants.BUKOPIN_ACCNO_PADDING);
-	    if (!existingAccno.contains(tibcoAccno)) {
-		tibcoAccountInfoNew.add(tibco);
+	AccountCard currentExistingCard = null;
+	// if username already activated, has acc cards
+	if (existingCards != null && !existingCards.isEmpty()) {
+	    isNewAccount = false;
+	    // get acc card by cardnumber
+	    currentExistingCard = existingCards.stream()
+		    .filter(ac -> cardNumber.equals(ac.getRegisteredCard())).findFirst().orElse(null);
+	    if (currentExistingCard != null) {
+		// delete existing accinfo in this card
+		accInfoUserService.deleteByAccountCardId(currentExistingCard.getId());
+		// re-get current existing card
+		existingCards = accountCardService.findListByUsername(username);
 	    }
-	});
 
-	if (tibcoAccountInfoNew.isEmpty()) {
-	    // return all account info data already exist in db
-	    response.setCode(ResponseMessage.ERROR_ACCINFO_EXIST.getCode());
-	    response.setMessage(messageUtil.get("verification.accno.exist", servletRequest.getLocale()));
-	} else {
-	    // continue verification
-	    String registCard = cards.get(0).getCardNumber();
-	    AccountCard accCard = accountCardService.findByRegisteredCard(registCard);
-	    if (accCard == null) {
-		// set account card
-		accCard = AccountUtil.setDataAccountCard(debitCard, tibcoAccountCard, user);
-		accCard = accountCardService.save(accCard);
+	    // get existing accnos
+	    List<String> existingAccno = existingCards.stream().flatMap(ac -> ac.getAccounts().stream())
+		    .map(AccountInfo::getAccountNo).collect(Collectors.toList());
+	    
+	    // Check existing account info, to prevent duplicate
+	    tibcoAccountInfo = tibcoAccountInfo.stream().filter(tibco -> {
+		// padding to 10 with 0, because account number in db is 10 digit in length and
+		// left padded with 0.
+		String tibcoAccno = StringUtils.leftPad(String.valueOf(tibco.getAccnumber()),
+			BkpmConstants.BUKOPIN_ACCNO_LENGTH, BkpmConstants.BUKOPIN_ACCNO_PADDING);
+		return existingAccno.contains(tibcoAccno) ? false : true;
+	    }).collect(Collectors.toList());
+	}
+	
+	// final filtered account info to save, filter product
+	List<GetInquiryCIFResType.Accounts> filteredAccountInfo = tibcoAccountInfo.stream()
+		.filter(tibco -> 
+			// Make sure account's pdid is exist in table PRODUCT
+			pdidsDb.contains(tibco.getProductid())
+			// Exclude accounts from tibco with blackListPdid
+			&& !blackListPdid.contains(tibco.getProductid()) 
+	).collect(Collectors.toList());
+	
+	if (filteredAccountInfo.isEmpty()) {
+	    if(isNewAccount) {
+		log.error("filtered account empty: no qualified acc info to save");
+		// return data not found
+		response.setData(null);
+		response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+		response.setMessage(messageUtil.get("account.not.found", 
+			new Object[] {cards.get(0).getAccountNumber()}, servletRequest.getLocale()));
+
 	    } else {
-		// TODO delete existing accinfo ?
-//		accInfoUserService.deleteByAccountCardId(accCard.getId());
-		// TODO overwrite cards info?
+		log.error("filtered account empty: all acc info already in db");
+		// return all account info data already exist in db
+		response.setData(null);
+		response.setCode(ResponseMessage.ERROR_ACCINFO_EXIST.getCode());
+		response.setMessage(messageUtil.get("verification.accno.exist", servletRequest.getLocale()));
 	    }
-
+	} else {
+	    // set & save account card
+	    if(currentExistingCard == null) {
+		currentExistingCard = AccountUtil.setDataAccountCard(debitCard, tibcoAccountCard, user);
+		currentExistingCard = accountCardService.save(currentExistingCard);
+	    }
+	    
 	    // set & save account info
 	    List<AccountInfo> listSaveAccInfo = AccountUtil.setDataAccountInfo(
-		    accCard, tibcoAccountInfoNew, productsDb);
+		    currentExistingCard, filteredAccountInfo, productsDb);
 	    listSaveAccInfo = accInfoUserService.saveAll(listSaveAccInfo);
 	    
-	    // TODO set response. 
-	    // ask to anayst: 
-	    // - delete filter blacklist product? 
-	    // - productid not exist in db? save but cannot be set as main account? 
-//	    listSaveAccInfo = 
-
-	    response.setData(listSaveAccInfo);
+	    // set response
+	    List<AccountInfo> accInfoResponse = AccountUtil.generateResponseVerification(
+		    currentExistingCard, tibcoAccountInfo, productsDb, blackListPdid);
+	    response.setData(accInfoResponse);
 	}
 
 	return response;
     }
     
-    @GetMapping("/test/{username}")
-    public CommonResponse testExistingAccinfo(@PathVariable String username) {
-	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
-		messageUtil.get("success", servletRequest.getLocale()));
-
-	// Get account info by username
-	List<AccountCard> existingCards = accountCardService.findListByUsername(username);
-	List<Object> existingAccInfo = existingCards.stream().flatMap(ac -> ac.getAccounts().stream())
-		.collect(Collectors.toList());
-	List<Object> existingAccno = existingCards.stream().flatMap(ac -> ac.getAccounts().stream())
-		.map(AccountInfo::getAccountNo)
-		.collect(Collectors.toList());
-	Map<String, List<Object>> res = new HashMap<>();
-	res.put("ACCNO", existingAccno);
-	res.put("ACCINFO", existingAccInfo);
-	response.setData(res);
-
-	return response;
-    }
-
     /**
      * User Activation
      * <ol>
