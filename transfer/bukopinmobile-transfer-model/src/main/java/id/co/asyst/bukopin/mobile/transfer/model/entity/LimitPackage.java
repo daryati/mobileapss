@@ -49,16 +49,28 @@ public class LimitPackage  extends IdBasedObject implements Serializable {
     private String profileName;
     
     /**
-     * Limit Saving Value
+     * Limit Saving Value for overbook
      */
-    @Column(name="LIMIT_SAVING")
-    private BigDecimal limitSaving;
+    @Column(name="LIMIT_OB_SAVING")
+    private BigDecimal limitObSaving;
     
     /**
-     * Limit Giro value
+     * Limit Giro value for overbook
      */
-    @Column(name="LIMIT_GIRO")
-    private BigDecimal limitGiro;
+    @Column(name="LIMIT_OB_GIRO")
+    private BigDecimal limitObGiro;
+    
+    /**
+     * Limit Saving Value for fund transfer
+     */
+    @Column(name="LIMIT_FT_SAVING")
+    private BigDecimal limitFtSaving;
+    
+    /**
+     * Limit Giro value for fund transfer
+     */
+    @Column(name="LIMIT_FT_GIRO")
+    private BigDecimal limitFtGiro;
     
     /**
      * is default limit package
@@ -89,38 +101,6 @@ public class LimitPackage  extends IdBasedObject implements Serializable {
     }
 
     /**
-     * Gets <code>limitSaving</code>.
-     * @return The <code>limitSaving</code>.
-     */
-    public BigDecimal getLimitSaving() {
-        return limitSaving;
-    }
-
-    /**
-     * Sets <code>limitSaving</code>.
-     * @param limitSaving The <code>limitSaving</code> to set.
-     */
-    public void setLimitSaving(BigDecimal limitSaving) {
-        this.limitSaving = limitSaving;
-    }
-
-    /**
-     * Gets <code>limitGiro</code>.
-     * @return The <code>limitGiro</code>.
-     */
-    public BigDecimal getLimitGiro() {
-        return limitGiro;
-    }
-
-    /**
-     * Sets <code>limitGiro</code>.
-     * @param limitGiro The <code>limitGiro</code> to set.
-     */
-    public void setLimitGiro(BigDecimal limitGiro) {
-        this.limitGiro = limitGiro;
-    }
-
-    /**
      * Gets <code>isDefault</code>.
      * @return The <code>isDefault</code>.
      */
@@ -136,6 +116,78 @@ public class LimitPackage  extends IdBasedObject implements Serializable {
         this.isDefault = isDefault;
     }
 
+    /**
+     * Gets <code>limitObSaving</code>.
+     * @return The <code>limitObSaving</code>.
+     */
+    public BigDecimal getLimitObSaving() {
+        return limitObSaving;
+    }
+
+    /**
+     * Sets <code>limitObSaving</code>.
+     * @param limitObSaving The <code>limitObSaving</code> to set.
+     */
+    public void setLimitObSaving(BigDecimal limitObSaving) {
+        this.limitObSaving = limitObSaving;
+    }
+
+    /**
+     * Gets <code>limitObGiro</code>.
+     * @return The <code>limitObGiro</code>.
+     */
+    public BigDecimal getLimitObGiro() {
+        return limitObGiro;
+    }
+
+    /**
+     * Sets <code>limitObGiro</code>.
+     * @param limitObGiro The <code>limitObGiro</code> to set.
+     */
+    public void setLimitObGiro(BigDecimal limitObGiro) {
+        this.limitObGiro = limitObGiro;
+    }
+
+    /**
+     * Gets <code>limitFtSaving</code>.
+     * @return The <code>limitFtSaving</code>.
+     */
+    public BigDecimal getLimitFtSaving() {
+        return limitFtSaving;
+    }
+
+    /**
+     * Sets <code>limitFtSaving</code>.
+     * @param limitFtSaving The <code>limitFtSaving</code> to set.
+     */
+    public void setLimitFtSaving(BigDecimal limitFtSaving) {
+        this.limitFtSaving = limitFtSaving;
+    }
+
+    /**
+     * Gets <code>limitFtGiro</code>.
+     * @return The <code>limitFtGiro</code>.
+     */
+    public BigDecimal getLimitFtGiro() {
+        return limitFtGiro;
+    }
+
+    /**
+     * Sets <code>limitFtGiro</code>.
+     * @param limitFtGiro The <code>limitFtGiro</code> to set.
+     */
+    public void setLimitFtGiro(BigDecimal limitFtGiro) {
+        this.limitFtGiro = limitFtGiro;
+    }
+
+    /**
+     * Gets <code>serialversionuid</code>.
+     * @return The <code>serialversionuid</code>.
+     */
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+    
     /* Getters & setters for transient attributes: */
 
     /* Functionalities: */
@@ -146,8 +198,9 @@ public class LimitPackage  extends IdBasedObject implements Serializable {
      */
     @Override
     public String toString() {
-	return "LimitPackage [profileName=" + profileName + ", limitSaving=" + limitSaving + ", limitGiro=" + limitGiro
-		+ ", isDefault=" + isDefault + "]";
+	return "LimitPackage [profileName=" + profileName + ", limitObSaving=" + limitObSaving + ", limitObGiro="
+		+ limitObGiro + ", limitFtSaving=" + limitFtSaving + ", limitFtGiro=" + limitFtGiro + ", isDefault="
+		+ isDefault + "]";
     }
 
 }

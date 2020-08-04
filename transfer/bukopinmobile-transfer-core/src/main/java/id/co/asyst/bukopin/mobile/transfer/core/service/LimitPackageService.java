@@ -20,7 +20,9 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.transfer.core.repository.LimitPackageRepository;
+import id.co.asyst.bukopin.mobile.transfer.core.util.TransferUtil;
 import id.co.asyst.bukopin.mobile.transfer.model.entity.LimitPackage;
 import id.co.asyst.bukopin.mobile.user.model.AccountTypeEnum;
 
@@ -61,22 +63,47 @@ public class LimitPackageService {
 	}
     }
     
-    public boolean checkLimit(Long limitId, int accountType, BigDecimal transferValue) {
+    /**
+     * Check Limit of daily transfer & overbook
+     *  
+     * @param limitId The User's limit id
+     * @param accountType Source account type (giro or saving) 
+     * @param transferValue The value to transfer
+     * @param destBankCode The destination bank id
+     * @return true if transferValue <= limit transfer, else false
+     */
+    public boolean checkLimit(Long limitId, int accountType, BigDecimal transferValue, String destBankCode) {
 	boolean valid = false;
 	
 	LimitPackage limit = limitReposirtory.findById(limitId).orElse(null);
 	if(limit!=null) { // if limit exist
-	    if(AccountTypeEnum.SAVING.getValue()==accountType) {
-		// saving
-		if(transferValue.compareTo(limit.getLimitSaving())!=1) {
-		    // transfer not exceed limit
-		    valid = true;
+	    if (TransferUtil.isOverbook(destBankCode)) {
+		if (AccountTypeEnum.SAVING.getValue() == accountType) {
+		    // saving
+		    if (transferValue.compareTo(limit.getLimitObSaving()) != 1) {
+			// transfer not exceed limit
+			valid = true;
+		    }
+		} else if (AccountTypeEnum.GIRO.getValue() == accountType) {
+		    // giro
+		    if (transferValue.compareTo(limit.getLimitObGiro()) != 1) {
+			// transfer not exceed limit
+			valid = true;
+		    }
 		}
-	    } else if(AccountTypeEnum.GIRO.getValue()==accountType) {
-		// giro
-		if(transferValue.compareTo(limit.getLimitGiro())!=1) {
-		    // transfer not exceed limit
-		    valid = true;
+	    } else {
+		if (AccountTypeEnum.SAVING.getValue() == accountType) {
+		    // saving
+		    if (transferValue.compareTo(limit.getLimitFtSaving()) != 1) {
+			// transfer not exceed limit
+			valid = true;
+		    }
+		} else if (AccountTypeEnum.GIRO.getValue() == accountType) {
+		    // giro
+		    if (transferValue.compareTo(limit.getLimitFtGiro()) != 1) {
+			// transfer not exceed limit
+			valid = true;
+		    }
 		}
 	    }
 	}

@@ -294,7 +294,8 @@ public class OverbookController {
         
         // Add limit transfer validation
         int accountType = Integer.valueOf(request.getData().getPostingFrom().getAccountType());
-        boolean isValid = limitService.checkLimit(limitId, accountType, request.getData().getAmount());
+        boolean isValid = limitService.checkLimit(limitId, accountType, 
+        	request.getData().getAmount(), request.getData().getPostingTo().getBankCode());
         if(!isValid) {
             response.setCode(ResponseMessage.LIMIT_TRANSFER_DAY.getCode());
             response.setMessage(messageUtil.get("error.limit.day.exceed", servletRequest.getLocale()));
