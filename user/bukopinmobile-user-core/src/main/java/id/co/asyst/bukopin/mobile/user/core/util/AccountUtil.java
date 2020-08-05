@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -168,6 +169,7 @@ public class AccountUtil {
      *            information from Account Card
      * @param listProduct
      * 		  Products list (Gyro and Saving only) that could be activated
+     * @param accCifStatus Map account number and cif status.
      * 
      * @return 
      * <ul>
@@ -177,7 +179,8 @@ public class AccountUtil {
      * </ul>
      */
     public static List<AccountInfo> setDataAccountInfo(AccountCard accCard,
-	    List<GetInquiryCIFResType.Accounts> tibcoAccountInfoNew, List<Product> listProduct) {
+	    List<GetInquiryCIFResType.Accounts> tibcoAccountInfoNew, List<Product> listProduct, 
+	    Map<String,Integer> accCifStatus) {
 	log.debug("Set List Data Account Info : {} ");
 	List<AccountInfo> listAccountInfo = new ArrayList<>();
 	
@@ -195,7 +198,8 @@ public class AccountUtil {
 	    AccountInfo accInfo = new AccountInfo();
 	    accInfo.setAccountName(accounts.getAccname());
 	    accInfo.setAccountNo(tibcoAccNo);
-	    accInfo.setAccountStatus(AccountStatusEnum.getEnum(accounts.getStatus()));
+	    accInfo.setAccountStatus(AccountStatusEnum.getEnum(
+		    accCifStatus.get(tibcoAccNo)));
 	    accInfo.setAccountType(AccountTypeEnum.getEnum((accounts.getAcctype())));
 	    accInfo.setCreateDate(new Date());
 	    accInfo.setCif(accCard.getCif());

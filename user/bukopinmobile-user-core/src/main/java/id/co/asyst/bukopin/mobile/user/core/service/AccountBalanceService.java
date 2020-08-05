@@ -346,8 +346,12 @@ public class AccountBalanceService {
 		if ("000".equals(getAccountBalanceRS.value.getResponse().getResCode())) {
 		    transaction = getAccountBalanceRS.value.getTransaction();
 		} else {
-		    log.error("Get account balance failed: {}",getAccountBalanceRS.value.getResponse().getResCode());
-		    throw new MiddlewareException(getAccountBalanceRS.value.getResponse().getResCode());
+		    String error = getAccountBalanceRS.value.getResponse().getResCode();
+		    if(StringUtils.isNotBlank(getAccountBalanceRS.value.getResponse().getDesc())) {
+			error = error + " ("+getAccountBalanceRS.value.getResponse().getDesc()+")";
+		    }
+		    log.error("Get account balance failed: {}", error);
+		    throw new MiddlewareException(error);
 		}
 	    } catch (Fault e) {
 		log.error("Get account balance failed, caused by: "+e.getMessage());

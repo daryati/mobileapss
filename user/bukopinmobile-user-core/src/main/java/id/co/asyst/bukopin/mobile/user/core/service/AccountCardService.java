@@ -11,7 +11,9 @@ package id.co.asyst.bukopin.mobile.user.core.service;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -277,13 +279,15 @@ public class AccountCardService {
      * </p>
      * @param tibcoAccountInfo All of account info from tibco.
      * @param products All of products from db mbanking.
-     * @return filtered account info to save.
+     * @return Map filtered account info to save and cif status.
      */
-    public List<GetInquiryCIFResType.Accounts> filterAccountVerification(List<GetInquiryCIFResType.Accounts> tibcoAccountInfo,
+    public Map<String, Object> filterAccountVerification(List<GetInquiryCIFResType.Accounts> tibcoAccountInfo,
 	    List<DebitCardInfo> xlinkData) {
 	List<String> savingAccNo = new ArrayList<>(); // all saving account number to check status
 	List<String> xlinkAccNo = xlinkData.stream().map(DebitCardInfo::getAccountNumber)
 		.collect(Collectors.toList());
+	System.out.println("XLINK ACCNO: ");
+	System.out.println(xlinkAccNo);
 	
 	// filtered accinfo (can be activated only)
 	List<GetInquiryCIFResType.Accounts> filteredAccInfo = new ArrayList();
@@ -292,6 +296,7 @@ public class AccountCardService {
 	    if (BkpmConstants.CODE_TYPE_SAVING.equals(String.valueOf(accounts.getAcctype()))
 		    || BkpmConstants.CODE_TYPE_GIRO.equals(String.valueOf(accounts.getAcctype()))) {
 		String tibcoAccountNo = String.valueOf(accounts.getAccnumber());
+		System.out.println(tibcoAccountNo);
 		// padding to 10 with 0, because account number in db is 10 digit in length and
 		// left padded with 0.
 		tibcoAccountNo = StringUtils.leftPad(tibcoAccountNo, BkpmConstants.BUKOPIN_ACCNO_LENGTH,
@@ -300,33 +305,62 @@ public class AccountCardService {
 		if (xlinkAccNo.contains(tibcoAccountNo)) {
 		    // add saving account number to list, to get account balance
 		    if (BkpmConstants.CODE_TYPE_SAVING.equals(String.valueOf(accounts.getAcctype()))) {
-			savingAccNo.add(tibcoAccountNo);
+			if(!"4202014851".equals(tibcoAccountNo)) { // only for dev
+			    savingAccNo.add(tibcoAccountNo);
+			}
 		    }
 		    filteredAccInfo.add(accounts);
 		}
 	    }
 	}
 	
+	// holder accno & cif status
+	Map<String,Integer> accCifStatus = new HashMap<>();
+	
 	// Filter by cif status
+	List<GetInquiryCIFResType.Accounts> filteredAccInfo2 = new ArrayList();
 	if(!savingAccNo.isEmpty()) {
 	    List<GetAccountBalanceResType.Transaction> transactions = accountBalanceService.callAccBalanceTibco(savingAccNo, 
 		    new BigInteger(BkpmConstants.CODE_TYPE_SAVING));
 	    for(GetAccountBalanceResType.Transaction trx: transactions) {
-		// remove closed account info
-		if(CIFStatusEnum.CLOSED.getValue()==Integer.valueOf(trx.getCifStatus())) {
-		    filteredAccInfo = filteredAccInfo.stream().filter(acc -> {
+		String accountNoTrx = StringUtils.leftPad(String.valueOf(trx.getAccNo()),
+			BkpmConstants.BUKOPIN_ACCNO_LENGTH, BkpmConstants.BUKOPIN_ACCNO_PADDING);
+		// account status to save in accinfo table
+		accCifStatus.put(accountNoTrx, Integer.valueOf(trx.getCifStatus()));
+		
+		// only add active and passive account info
+		if (CIFStatusEnum.ACTIVE.getValue() == Integer.valueOf(trx.getCifStatus())
+			|| CIFStatusEnum.PASSIVE.getValue() == Integer.valueOf(trx.getCifStatus())) {
+		    filteredAccInfo2.addAll(filteredAccInfo.stream().filter(acc -> {
 			// padding to 10 with 0, because account number in db is 10 digit in length and
 			// left padded with 0.
-			String accountNo = StringUtils.leftPad(String.valueOf(acc.getAccnumber()), 
+			String accountNo = StringUtils.leftPad(String.valueOf(acc.getAccnumber()),
 				BkpmConstants.BUKOPIN_ACCNO_LENGTH, BkpmConstants.BUKOPIN_ACCNO_PADDING);
-			// return not closed accno
-			return !accountNo.equals(trx.getAccNo());
-		    }).collect(Collectors.toList());
+			
+			return accountNo.equals(accountNoTrx);
+		    }).collect(Collectors.toList()) );
 		}
+		
+//		// or remove closed account info
+//		if(CIFStatusEnum.CLOSED.getValue()==Integer.valueOf(trx.getCifStatus())) {
+//		    filteredAccInfo = filteredAccInfo.stream().filter(acc -> {
+//			// padding to 10 with 0, because account number in db is 10 digit in length and
+//			// left padded with 0.
+//			String accountNo = StringUtils.leftPad(String.valueOf(acc.getAccnumber()), 
+//				BkpmConstants.BUKOPIN_ACCNO_LENGTH, BkpmConstants.BUKOPIN_ACCNO_PADDING);
+//			// return not closed accno
+//			return !accountNo.equals(trx.getAccNo());
+//		    }).collect(Collectors.toList());
+//		}
 	    }
 	}
+	System.out.println("ACCINFO 2");
+	System.out.println(filteredAccInfo2);
+	Map<String, Object> mapResult = new HashMap<>();
+	mapResult.put("ACC_INFO", filteredAccInfo2);
+	mapResult.put("CIF_STATUS", accCifStatus);
 	
-	return filteredAccInfo;
+	return mapResult;
     }
 
     /* Overrides: */

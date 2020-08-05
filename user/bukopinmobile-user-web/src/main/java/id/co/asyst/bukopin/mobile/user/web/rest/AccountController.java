@@ -275,7 +275,11 @@ public class AccountController {
 	List<Integer> pdidsDb = productsDb.stream().map(Product::getPdId).collect(Collectors.toList()); 
 	
 	// Filter Accounts
-	tibcoAccountInfo = accountCardService.filterAccountVerification(tibcoAccountInfo, cards);
+	Map<String, Object> mapResultFilter = accountCardService.filterAccountVerification(tibcoAccountInfo, cards);
+	// filtered accounts
+	tibcoAccountInfo = (List<Accounts>) mapResultFilter.get("ACC_INFO");
+	// holder accno & cif status
+	Map<String,Integer> accCifStatus = (Map<String, Integer>) mapResultFilter.get("CIF_STATUS");
 	
 	// Get list pdid that couldn't be activated (e.g. 21|87|63)
 	String blackListPdidConfig = configuration.getConfigValue(BkpmConstants.KEY_ACCOUNT_NOT_ACTIVATED);
@@ -357,7 +361,7 @@ public class AccountController {
 	    
 	    // set & save account info
 	    List<AccountInfo> listSaveAccInfo = AccountUtil.setDataAccountInfo(
-		    currentExistingCard, filteredAccountInfo, productsDb);
+		    currentExistingCard, filteredAccountInfo, productsDb, accCifStatus);
 	    listSaveAccInfo = accInfoUserService.saveAll(listSaveAccInfo);
 	    
 	    // set response
