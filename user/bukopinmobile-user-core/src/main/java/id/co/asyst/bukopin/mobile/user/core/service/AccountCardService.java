@@ -30,6 +30,7 @@ import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
 import id.co.asyst.bukopin.mobile.user.core.config.GetConfiguration;
 import id.co.asyst.bukopin.mobile.user.core.repository.AccountCardRepository;
 import id.co.asyst.bukopin.mobile.user.model.AccountBalanceRes;
+import id.co.asyst.bukopin.mobile.user.model.AccountStatusEnum;
 import id.co.asyst.bukopin.mobile.user.model.CIFStatusEnum;
 import id.co.asyst.bukopin.mobile.user.model.entity.AccountCard;
 import id.co.asyst.bukopin.mobile.user.model.entity.AccountInfo;
@@ -282,13 +283,16 @@ public class AccountCardService {
      * @return Map filtered account info to save and cif status.
      */
     public Map<String, Object> filterAccountVerification(List<GetInquiryCIFResType.Accounts> tibcoAccountInfo,
-	    List<DebitCardInfo> xlinkData) {
+	    List<DebitCardInfo> xlinkData, List<Integer> pdidsDb, List<Integer> blackListPdid) {
 	List<String> savingAccNo = new ArrayList<>(); // all saving account number to check status
 	List<String> xlinkAccNo = xlinkData.stream().map(DebitCardInfo::getAccountNumber)
 		.collect(Collectors.toList());
-	System.out.println("XLINK ACCNO: ");
-	System.out.println(xlinkAccNo);
 	
+	// holder accno & cif status
+	Map<String,Integer> accCifStatus = new HashMap<>();
+	
+	// list accountInfo to be response
+	List<GetInquiryCIFResType.Accounts> accInfoResp = new ArrayList();
 	// filtered accinfo (can be activated only)
 	List<GetInquiryCIFResType.Accounts> filteredAccInfo = new ArrayList();
 	for (GetInquiryCIFResType.Accounts accounts : tibcoAccountInfo) {
@@ -296,7 +300,6 @@ public class AccountCardService {
 	    if (BkpmConstants.CODE_TYPE_SAVING.equals(String.valueOf(accounts.getAcctype()))
 		    || BkpmConstants.CODE_TYPE_GIRO.equals(String.valueOf(accounts.getAcctype()))) {
 		String tibcoAccountNo = String.valueOf(accounts.getAccnumber());
-		System.out.println(tibcoAccountNo);
 		// padding to 10 with 0, because account number in db is 10 digit in length and
 		// left padded with 0.
 		tibcoAccountNo = StringUtils.leftPad(tibcoAccountNo, BkpmConstants.BUKOPIN_ACCNO_LENGTH,
@@ -305,23 +308,37 @@ public class AccountCardService {
 		if (xlinkAccNo.contains(tibcoAccountNo)) {
 		    // add saving account number to list, to get account balance
 		    if (BkpmConstants.CODE_TYPE_SAVING.equals(String.valueOf(accounts.getAcctype()))) {
-			if(!"4202014851".equals(tibcoAccountNo)) { // only for dev
-			    savingAccNo.add(tibcoAccountNo);
+			savingAccNo.add(tibcoAccountNo);
+		    } else if (BkpmConstants.CODE_TYPE_GIRO.equals(String.valueOf(accounts.getAcctype()))) {
+			// Check status giro
+			if(accounts.getStatus()==AccountStatusEnum.ACTIVE.getValue() ||
+				accounts.getStatus() == AccountStatusEnum.PASSIVE.getValue()) {
+			    // account status to save in accinfo table
+			    accCifStatus.put(tibcoAccountNo, Integer.valueOf(accounts.getStatus()));
+
+			    // Make sure account's pdid is exist in table PRODUCT
+			    if (pdidsDb.contains(accounts.getProductid())
+				    // Exclude accounts from tibco with blackListPdid
+				    && !blackListPdid.contains(accounts.getProductid())) {
+
+				// filtered accs info
+				filteredAccInfo.add(accounts);
+			    }
+			    
+			    // add response list
+			    accInfoResp.add(accounts);
 			}
 		    }
-		    filteredAccInfo.add(accounts);
+		    
 		}
 	    }
 	}
 	
-	// holder accno & cif status
-	Map<String,Integer> accCifStatus = new HashMap<>();
-	
 	// Filter by cif status
-	List<GetInquiryCIFResType.Accounts> filteredAccInfo2 = new ArrayList();
 	if(!savingAccNo.isEmpty()) {
 	    List<GetAccountBalanceResType.Transaction> transactions = accountBalanceService.callAccBalanceTibco(savingAccNo, 
 		    new BigInteger(BkpmConstants.CODE_TYPE_SAVING));
+	    
 	    for(GetAccountBalanceResType.Transaction trx: transactions) {
 		String accountNoTrx = StringUtils.leftPad(String.valueOf(trx.getAccNo()),
 			BkpmConstants.BUKOPIN_ACCNO_LENGTH, BkpmConstants.BUKOPIN_ACCNO_PADDING);
@@ -331,33 +348,32 @@ public class AccountCardService {
 		// only add active and passive account info
 		if (CIFStatusEnum.ACTIVE.getValue() == Integer.valueOf(trx.getCifStatus())
 			|| CIFStatusEnum.PASSIVE.getValue() == Integer.valueOf(trx.getCifStatus())) {
-		    filteredAccInfo2.addAll(filteredAccInfo.stream().filter(acc -> {
-			// padding to 10 with 0, because account number in db is 10 digit in length and
-			// left padded with 0.
-			String accountNo = StringUtils.leftPad(String.valueOf(acc.getAccnumber()),
+		    
+		    // get account by account no
+		    GetInquiryCIFResType.Accounts accounts = tibcoAccountInfo.stream().filter(acc -> {
+			String accountNoTibco = StringUtils.leftPad(String.valueOf(acc.getAccnumber()),
 				BkpmConstants.BUKOPIN_ACCNO_LENGTH, BkpmConstants.BUKOPIN_ACCNO_PADDING);
-			
-			return accountNo.equals(accountNoTrx);
-		    }).collect(Collectors.toList()) );
+			return accountNoTrx.equals(accountNoTibco);
+		    }).findFirst().orElse(null);
+		    
+		    if(accounts!=null) {
+			// Make sure account's pdid is exist in table PRODUCT
+			if (pdidsDb.contains(accounts.getProductid())
+				// Exclude accounts from tibco with blackListPdid
+				&& !blackListPdid.contains(accounts.getProductid())) {
+
+			    // filtered accs info
+			    filteredAccInfo.add(accounts);
+			}
+			accInfoResp.add(accounts);
+		    }
 		}
-		
-//		// or remove closed account info
-//		if(CIFStatusEnum.CLOSED.getValue()==Integer.valueOf(trx.getCifStatus())) {
-//		    filteredAccInfo = filteredAccInfo.stream().filter(acc -> {
-//			// padding to 10 with 0, because account number in db is 10 digit in length and
-//			// left padded with 0.
-//			String accountNo = StringUtils.leftPad(String.valueOf(acc.getAccnumber()), 
-//				BkpmConstants.BUKOPIN_ACCNO_LENGTH, BkpmConstants.BUKOPIN_ACCNO_PADDING);
-//			// return not closed accno
-//			return !accountNo.equals(trx.getAccNo());
-//		    }).collect(Collectors.toList());
-//		}
 	    }
 	}
-	System.out.println("ACCINFO 2");
-	System.out.println(filteredAccInfo2);
+	
 	Map<String, Object> mapResult = new HashMap<>();
-	mapResult.put("ACC_INFO", filteredAccInfo2);
+	mapResult.put("ACC_INFO", filteredAccInfo);
+	mapResult.put("ACC_INFO_RESP", accInfoResp);
 	mapResult.put("CIF_STATUS", accCifStatus);
 	
 	return mapResult;
