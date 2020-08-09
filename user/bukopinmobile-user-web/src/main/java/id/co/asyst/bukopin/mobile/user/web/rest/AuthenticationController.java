@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,6 +52,7 @@ import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonRequest;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
 import id.co.asyst.bukopin.mobile.service.core.CentagateService;
+import id.co.asyst.bukopin.mobile.service.core.TransferModuleService;
 import id.co.asyst.bukopin.mobile.service.model.payload.CentagateCommonResponse;
 import id.co.asyst.bukopin.mobile.service.model.payload.CtgDeleteUser;
 import id.co.asyst.bukopin.mobile.service.model.payload.LoginCentagateRequest;
@@ -373,6 +375,21 @@ public class AuthenticationController {
 		    // Save Data User into DB
 		    if (ResponseMessage.SUCCESS.getCode().equals(resetPassword.getCode())) {
 			log.debug("Password successfully generated");
+			
+			// Get default limit Id
+			Long limitId = 0L;
+			CommonResponse limitResponse = Services.create(TransferModuleService.class).getDefaultLimit().execute().body();
+			if (ResponseMessage.SUCCESS.getCode().equals(limitResponse.getCode())) {
+			    mapper = new ObjectMapper();
+			    Map<String, Object> resultLimitObj = mapper.convertValue(limitResponse.getData(), Map.class);
+			    log.debug("resultLimitObj: {}", resultLimitObj);
+
+			    String limitStr = String.valueOf(resultLimitObj.get("id"));
+			    if (StringUtils.isBlank(limitStr) || "null".equalsIgnoreCase(limitStr)) {
+				limitId = Long.valueOf(limitStr);
+			    }
+			    log.debug("limitId: {}", limitId);
+			}
 
 			User usr = new User();
 			usr.setUsername(request.getUsername());
@@ -383,6 +400,7 @@ public class AuthenticationController {
 			usr.setCreatedBy(ctgObj.getUsername());
 			usr.setCreatedDate(new Date());
 			usr.setPhoneIdentity(phoneId);
+			usr.setLimitId(limitId);
 
 			userService.save(usr);
 
