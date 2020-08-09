@@ -1,4 +1,21 @@
 ===============================================================================
+   Bukopin-Mobile-Telco 1.3.GA2 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Telco - Version 1.3.GA2
+** Notes
+	* Relase for Limit Transfer implementation.
+
+** Story
+	* 
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
    Bukopin-Mobile-Telco 1.3.GA1 Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Telco - Version 1.3.GA1
