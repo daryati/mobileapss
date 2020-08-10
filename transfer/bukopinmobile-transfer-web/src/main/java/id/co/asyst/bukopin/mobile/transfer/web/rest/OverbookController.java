@@ -291,7 +291,7 @@ public class OverbookController {
 	log.debug("user: {}"+user);
 	String limitStr = String.valueOf(user.get("limitId"));
 	long limitId = 0L;
-	if(StringUtils.isBlank(limitStr) || "null".equalsIgnoreCase(limitStr)) {
+	if(!StringUtils.isBlank(limitStr) && !"null".equalsIgnoreCase(limitStr)) {
 	    limitId = Long.valueOf(limitStr);
 	}
 	log.debug("limitId: {}",limitId);

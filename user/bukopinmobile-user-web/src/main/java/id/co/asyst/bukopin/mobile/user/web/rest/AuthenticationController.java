@@ -385,7 +385,7 @@ public class AuthenticationController {
 			    log.debug("resultLimitObj: {}", resultLimitObj);
 
 			    String limitStr = String.valueOf(resultLimitObj.get("id"));
-			    if (StringUtils.isBlank(limitStr) || "null".equalsIgnoreCase(limitStr)) {
+			    if (!StringUtils.isBlank(limitStr) && !"null".equalsIgnoreCase(limitStr)) {
 				limitId = Long.valueOf(limitStr);
 			    }
 			    log.debug("limitId: {}", limitId);
