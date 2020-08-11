@@ -84,9 +84,9 @@ public class AccountUtil {
 	xmlDateTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(now);
 
 	// TO DO : non hard code client ID and client TXN ID
-	credentials.setClientID(txId);
+	credentials.setClientID(BkpmConstants.CLIENT_ID);
 	headerRQ.setReqDateTime(xmlDateTime);
-	headerRQ.setClientTxnID(BkpmConstants.CLIENT_ID);
+	headerRQ.setClientTxnID(txId);
 	headerRQ.setIsLastTxn(false);
 	headerRQ.setCredentials(credentials);
 

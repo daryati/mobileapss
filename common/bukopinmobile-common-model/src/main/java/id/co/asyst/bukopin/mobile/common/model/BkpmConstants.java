@@ -64,6 +64,7 @@ public class BkpmConstants {
     public static final String OVERBOOK = "OVERBOOK";
     public static final String FUND_TRANSFER = "FUND_TRANSFER";
     public static final String TRANSFER_CHANNEL_ID = "MOBILEBKP";
+    public static final String PRODUCT_ID = "BKPM";
 
     // REGEX
     public static final String NUMERIC_REGEX = "[0-9]+";

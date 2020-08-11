@@ -193,6 +193,12 @@ public class OTPService {
 		// Send OTP to registered mobile phone number
 		// - generate request
 		SMSGatewayRequest smsRequest = new SMSGatewayRequest();
+		// get transaction ID
+		String txnId = BkpmUtil.generateTrxId();
+		smsRequest.setClientTxnID(txnId);
+		smsRequest.setMerchantTrx(BkpmConstants.MERCHANT_ID);
+		smsRequest.setProductID(BkpmConstants.PRODUCT_ID);
+
 		smsRequest.setDateTimeTrx(BkpmConstants.sdfDateTime.format(new Date()));
 		smsRequest.setNoPonsel(receiver);
 		smsRequest.setSmsMessage(AuthUtil.generateOTPMessage(otpString, locale, appSignature));
