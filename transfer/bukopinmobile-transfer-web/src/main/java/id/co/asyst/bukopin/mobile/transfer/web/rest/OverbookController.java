@@ -286,10 +286,11 @@ public class OverbookController {
 	// Get User's limit package Id
 	ObjectMapper mapper = new ObjectMapper();
 	Map<String, Object> resultUserObj = mapper.convertValue(userResponse.getData(), Map.class);
-	log.debug("resultUserObj: {}"+resultUserObj);
+	log.debug("resultUserObj: {}", resultUserObj);
 	Map<String, Object> user = (Map<String, Object>) resultUserObj.get("user");
-	log.debug("user: {}"+user);
+	log.debug("user: {}", user);
 	String limitStr = String.valueOf(user.get("limitId"));
+	log.debug("limitStr: {}", limitStr);
 	long limitId = 0L;
 	if(!StringUtils.isBlank(limitStr) && !"null".equalsIgnoreCase(limitStr)) {
 	    limitId = Long.valueOf(limitStr);
