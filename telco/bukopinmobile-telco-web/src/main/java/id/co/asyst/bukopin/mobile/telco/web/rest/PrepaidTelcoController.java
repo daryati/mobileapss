@@ -598,7 +598,7 @@ public class PrepaidTelcoController {
 			dataReq.setDestinationType(DestinationTypeEnum.PRESMARTFREN.name());
 		    }else if (DestinationTypeEnum.PRETRI.name().equalsIgnoreCase(provider)) {
 			dataReq.setDestinationType(DestinationTypeEnum.PRETRI.name());
-		    }else if ("XL".equalsIgnoreCase(provider)) {
+		    }else if ("PREXL".equalsIgnoreCase(provider)) {
 			dataReq.setDestinationType(DestinationTypeEnum.PREXLAXIS.name());
 		    }
 			

@@ -131,6 +131,7 @@ public class TelcoUtils {
     private static final String HALO = "HALO";
     private static final String MATRIX = "MATRIX";
     private static final String XPLOR = "XPLOR";
+    private static final String XL = "XL";
     private static final String TRI = "TRI";
     private static final String SMARTFREN = "SMARTFREN";
 
@@ -383,6 +384,8 @@ public class TelcoUtils {
 	    destReq.setDestinationType(DestinationTypeEnum.POSTMATRIX.name());
 	} else if (XPLOR.equalsIgnoreCase(reqPay.getType())) {
 	    destReq.setDestinationType(DestinationTypeEnum.POSTXPLOR.name());
+	} else if (XL.equalsIgnoreCase(reqPay.getType())) {
+	    destReq.setDestinationType(DestinationTypeEnum.POSTXL.name());
 	} else if (TRI.equalsIgnoreCase(reqPay.getType())) {
 	    destReq.setDestinationType(DestinationTypeEnum.POSTTRI.name());
 	} else if (SMARTFREN.equalsIgnoreCase(reqPay.getType())) {

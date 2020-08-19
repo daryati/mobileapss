@@ -24,6 +24,7 @@ public enum DestinationTypeEnum {
     POSTHALO,
     POSTMATRIX,
     POSTXPLOR,
+    POSTXL,
     PRELINKAJA,
     PREIM3, 
     PREMENTARI, 
