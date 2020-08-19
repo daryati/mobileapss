@@ -30,7 +30,7 @@ public enum DestinationTypeEnum {
     PREMENTARI, 
     PREAS, 
     PRESIMPATI, 
-    PREXLAXIS, 
+    PREXL, 
     PRETRI, 
     PRESMARTFREN,
     POSTSPEEDY,
