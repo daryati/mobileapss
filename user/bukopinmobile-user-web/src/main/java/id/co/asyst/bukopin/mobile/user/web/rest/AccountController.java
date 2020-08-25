@@ -298,7 +298,6 @@ public class AccountController {
 	  * 	filter accno & product
 	  * save acc card and accinfo
 	  */
-	boolean isNewAccount = true;
 	// Get account info by username
 	List<AccountCard> existingCards = accountCardService.findListByUsername(username);
 	AccountCard currentCard = null;
@@ -308,7 +307,6 @@ public class AccountController {
 	    currentCard = existingCards.stream()
 		    .filter(ac -> cardNumber.equals(ac.getRegisteredCard())).findFirst().orElse(null);
 	    if (currentCard != null) {
-		isNewAccount = false;
 		int i=0;
 		for(AccountCard card: existingCards) {
 		    if(card.getId()==currentCard.getId()) {
@@ -341,6 +339,8 @@ public class AccountController {
 	}
 	
 	if (tibcoAccountInfo.isEmpty()) {
+	    // new account is not activated user 
+	    boolean isNewAccount = !user.isActivation(); 
 	    if(isNewAccount) {
 		log.error("filtered account empty: no qualified acc info to save: {}",cardNumber);
 		// return data not found
@@ -357,7 +357,8 @@ public class AccountController {
 		response.setMessage(messageUtil.get("verification.accno.exist", servletRequest.getLocale()));
 	    }
 	} else {
-	    if(!isNewAccount) {
+	    // if same card, delete old account info
+	    if(currentCard!=null) {
 		// delete existing accinfo in this card
 		accInfoUserService.deleteByAccountCardId(currentCard.getId());
 	    }
