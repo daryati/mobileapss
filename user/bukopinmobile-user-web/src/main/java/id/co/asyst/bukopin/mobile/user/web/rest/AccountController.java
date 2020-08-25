@@ -357,16 +357,13 @@ public class AccountController {
 		response.setMessage(messageUtil.get("verification.accno.exist", servletRequest.getLocale()));
 	    }
 	} else {
-	    // if same card, delete old account info
-	    if(currentCard!=null) {
-		// delete existing accinfo in this card
-		accInfoUserService.deleteByAccountCardId(currentCard.getId());
-	    }
-	    
 	    // set & save account card
 	    if(currentCard == null) {
 		currentCard = AccountUtil.setDataAccountCard(debitCard, tibcoAccountCard, user);
 		currentCard = accountCardService.save(currentCard);
+	    } else {
+		// if same card, delete existing accinfo in this card
+		accInfoUserService.deleteByAccountCardId(currentCard.getId());
 	    }
 	    
 	    // set & save account info
