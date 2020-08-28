@@ -187,6 +187,9 @@ public class PrepaidTelcoController {
 	PrefixTelcoRequest req = request.getData();
 
 	if (!(req.getPhoneNumber().length() < 4)) {
+	    String prefix = req.getPhoneNumber().substring(0, 4);
+
+	    req.setPhoneNumber(prefix);
 	    req.setType(PREPAID_TYPE);
 	    request.setData(req);
 
