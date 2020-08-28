@@ -37,8 +37,8 @@ import retrofit2.http.Path;
  * @version $Revision$, Oct 28, 2019
  * @since 1.0.Alpha1-SNAPSHOT
  */
-@ServiceUrl("https://10.0.138.30:443/") // dev
-//@ServiceUrl("https://10.0.16.33:443/") // prod
+//@ServiceUrl("https://10.0.138.30:443/") // dev
+@ServiceUrl("https://10.0.16.33:443/") // prod
 public interface CentagateService {
 
     @POST("/CentagateWS/webresources/auth/authBasic")
