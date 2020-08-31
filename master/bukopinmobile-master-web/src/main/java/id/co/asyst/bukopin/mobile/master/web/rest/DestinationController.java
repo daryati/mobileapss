@@ -296,7 +296,7 @@ public class DestinationController {
 			List<Destination> favs = destinationService.getFavoriteByUserAndCategory(
 					destination.getUser().getUsername(), destination.getCategory().getIdCategory());
 			log.debug("Already have Favorite List : " + favs.size());
-			if (favs != null && favs.size() > FAVORITE_MAX) {
+			if (favs != null && favs.size() >= FAVORITE_MAX) {
 				// max favs
 				log.error("MAXIMUM LIMIT EXCEEDED....");
 				response.setCode(ResponseMessage.DATA_OVER_LIMIT.getCode());
