@@ -601,8 +601,8 @@ public class PrepaidTelcoController {
 			dataReq.setDestinationType(DestinationTypeEnum.PRESMARTFREN.name());
 		    }else if (DestinationTypeEnum.PRETRI.name().equalsIgnoreCase(provider)) {
 			dataReq.setDestinationType(DestinationTypeEnum.PRETRI.name());
-		    }else if ("XL".equalsIgnoreCase(provider)) {
-			dataReq.setDestinationType(DestinationTypeEnum.PREXLAXIS.name());
+		    }else if (DestinationTypeEnum.PREXL.name().equalsIgnoreCase(provider)) {
+			dataReq.setDestinationType(DestinationTypeEnum.PREXL.name());
 		    }
 			
 			// Call service to save Destination/ Favorite
