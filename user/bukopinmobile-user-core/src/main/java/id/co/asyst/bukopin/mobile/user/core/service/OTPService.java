@@ -202,9 +202,12 @@ public class OTPService {
 		smsRequest.setDateTimeTrx(BkpmConstants.sdfDateTime.format(new Date()));
 		smsRequest.setNoPonsel(receiver);
 		smsRequest.setSmsMessage(AuthUtil.generateOTPMessage(otpString, locale, appSignature));
+		log.debug("SMS Gateway -- http://10.0.14.115:80/E-MobileSMSMTPushBKP/EMobileSMSMTPushBKP");
+		log.debug("Request: {}",BkpmUtil.convertToJson(smsRequest));
 
 		// - sending sms
 		Response<Object> resSms = Services.create(SMSService.class).sendSMS(smsRequest).execute();
+		log.debug("Response: {}",BkpmUtil.convertToJson(resSms));
 		// - error handling
 		if (resSms.code() != HttpStatus.OK.value()) {
 		    log.error("Failed sending sms to: " + receiver);

@@ -29,5 +29,5 @@ public interface CurrencyRepository extends JpaRepository<Currency, Long>{
 	 Currency findCurrencyByCode(@Param("code") String code);
 	 
 	 @Query("SELECT a FROM Currency a WHERE a.currencyNo= :currencyNo")
-	 Currency findCurrencyByCurrencyNo(@Param("currencyNo") String currencyNo);
+	 Currency findCurrencyByCurrencyNo(@Param("currencyNo") Integer currencyNo);
 }

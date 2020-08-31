@@ -4,6 +4,7 @@
 Release Notes - Bukopin-Mobile-Telco - Version 1.3.GA2
 ** Notes
 	* Relase for Limit Transfer implementation.
+	* Get prefix (4 digit) of phoneNumber param in service telco/prepaid/listMobileDataPulsa
 
 ** Story
 	* 

@@ -1,4 +1,21 @@
 ===============================================================================
+   Bukopin-Mobile-Master 1.3.GA2 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Master - Version 1.3.GA2
+** Notes
+	* Relase for Limit Transfer.
+
+** Story
+	* 
+	
+** Bug Fixed
+	* Fix service /rate/exchangeRate error jedis connection.
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
    Bukopin-Mobile-Master 1.3.GA1 Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Master - Version 1.3.GA1

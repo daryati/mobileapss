@@ -1,4 +1,21 @@
 ===============================================================================
+   Bukopin-Mobile-Service 1.3.GA2 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Service - Version 1.3.GA2
+** Notes
+	* Relase for Limit Transfer.
+
+** Story
+	* 
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
    Bukopin-Mobile-Service 1.3.GA1 Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Service - Version 1.3.GA1
