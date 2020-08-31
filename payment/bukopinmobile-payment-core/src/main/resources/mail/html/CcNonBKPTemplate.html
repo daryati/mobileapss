@@ -9,11 +9,16 @@
 			border-radius: 15px
 		}
 		
+		#table1, #table2 {
+			width: 100%;
+		}
+		
 		#table1 td{
 			font-family: Arial;
 			font-size: 10px;
 			text-align: left;
 			border-bottom: 1px solid black;
+			width: 50%;
 		}
 		
 		#table2 td{
@@ -21,11 +26,16 @@
 			font-family: Arial;
 			font-size: 11px;
 			text-align: left;
+			width: 50%;
+		}
+		
+		#table1, #table2{
+			width: 100%;
 		}
 		
 		#innerbox {
-		   	width:250px; /* or whatever width you want. */
-		   	max-width:250px; /* or whatever width you want. */
+		   	width:250px;
+		   	max-width:250px;
 		   	display: inline-block;
 		}
 		
@@ -58,12 +68,12 @@
 	    	</td>
 	    </tr>
 	    <tr>
-	    	<td align="center" bgcolor="white" style="padding: 40px 30px 10px 30px;">
-	    		<div class="outset" style="padding: 10px 10px">
-                	<p align="right" style="font-family:Arial; font-size:10px">Pembayaran Kartu Kredit</p>
+			<td align="center" bgcolor="white" style="padding: 40px 30px 10px 30px;">
+				<div class="outset" style="padding: 10px 10px">
+                	<p align="right" style="font-family:Arial; font-size:10px"> <span th:text ="${desc}"></span></p>
 					<p align="left" style="font-family:Arial; font-size:12px">Hai <span style="font-weight:bold" th:text ="${fullname}"></span>,</p>
 					<br>
-					<table id="table1" style="width:100%">
+					<table id="table1">
                     <tr>
                     <td>Tanggal & Waktu</td>
                     <td><span style="font-weight:bold" th:text ="${date}"></span>, <span style="font-weight:bold" th:text ="${time}"></span></td>
@@ -87,7 +97,7 @@
                     </table>
                     <br>                    
                     
-                    <table id="table2" style="width:100%">
+                    <table id="table2">
                     <tr>
                     <td><b>Nominal Bayar</b></td>
                     <td><span style="font-weight:bold" th:text ="${amount}"></span></td>
