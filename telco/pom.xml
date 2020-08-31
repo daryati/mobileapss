@@ -13,7 +13,7 @@
 
 	<groupId>id.co.asyst.bukopin.mobile</groupId>
 	<artifactId>bukopinmobile-telco</artifactId>
-	<version>1.3.GA2</version>
+	<version>1.4.GA</version>
 	<packaging>pom</packaging>
 
 	<name>Bukopin Mobile - Telco</name>
@@ -123,10 +123,10 @@
 		<!-- Framework dependency versions: -->
 		<foundation.groupId>id.co.asyst.foundation</foundation.groupId>
 		<foundation.version>3.0.Beta1-SNAPSHOT</foundation.version>
-		<bukopin.common.version>1.3.GA2</bukopin.common.version>
-		<bukopin.service.version>1.3.GA2</bukopin.service.version>
-		<bukopin.user.version>1.3.GA2</bukopin.user.version>
-		<bukopin.master.version>1.3.GA2</bukopin.master.version>
+		<bukopin.common.version>1.4.GA</bukopin.common.version>
+		<bukopin.service.version>1.4.GA</bukopin.service.version>
+		<bukopin.user.version>1.4.GA</bukopin.user.version>
+		<bukopin.master.version>1.4.GA</bukopin.master.version>
 		<java.version>1.8</java.version>
 		<liquibase.version>3.6.3</liquibase.version>
 		<spring-boot.version>2.1.3.RELEASE</spring-boot.version>

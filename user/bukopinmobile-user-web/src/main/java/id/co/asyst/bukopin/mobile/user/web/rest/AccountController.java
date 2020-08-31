@@ -353,7 +353,7 @@ public class AccountController {
 		log.error("filtered account empty: all acc info already in db");
 		// return all account info data already exist in db
 		response.setData(null);
-		response.setCode(ResponseMessage.ERROR_ACCINFO_EXIST.getCode());
+		response.setCode(ResponseMessage.ERROR_ACCOUNT_ALREADY_SAVED.getCode());
 		response.setMessage(messageUtil.get("verification.accno.exist", servletRequest.getLocale()));
 	    }
 	} else {
