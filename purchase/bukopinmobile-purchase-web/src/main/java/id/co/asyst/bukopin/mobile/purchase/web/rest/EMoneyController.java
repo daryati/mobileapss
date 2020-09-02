@@ -36,6 +36,7 @@ import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
+import id.co.asyst.bukopin.mobile.common.model.SystemCutOffEnum;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonRequest;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
 import id.co.asyst.bukopin.mobile.common.model.payload.Identity;
@@ -147,6 +148,15 @@ public class EMoneyController {
 	    throws IOException {
 	log.debug("REST request to inquiry EMoney : {}", req.getData());
 	CommonResponse response = new CommonResponse();
+
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.GOPAY.getId();
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
+	}
 
 	String forwardInsCode = env.getProperty("config.emoney.forwarding-institution-code");
 	EMoneyInquiryRequest reqInquiryEMoneyAranet = EMoneyUtils.generateInquiryEMoneyReq(
@@ -268,6 +278,15 @@ public class EMoneyController {
 		log.error("Validate Token and Phone owner error..");
 		return resPhone;
 	    }
+	}
+	
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.GOPAY.getId();
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
 	}
 	
 	ObjectMapper oMapper = new ObjectMapper();
@@ -504,6 +523,15 @@ public class EMoneyController {
 	String custNo = req.getData().getCustomerNumber();
 	String type = req.getData().getType();
 	
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.OVO.getId();
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
+	}
+	
 	//handle minimum and maximum topup
 	if(req.getData().getAmount().compareTo(MINIMUM_OVO_AMOUNT) == -1) {
 	    log.error("Amount less than minimum");
@@ -593,6 +621,15 @@ public class EMoneyController {
 		log.error("Validate Token and Phone owner error..");
 		return resPhone;
 	    }
+	}
+	
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.OVO.getId();
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
 	}
 	
 	// verify PIN

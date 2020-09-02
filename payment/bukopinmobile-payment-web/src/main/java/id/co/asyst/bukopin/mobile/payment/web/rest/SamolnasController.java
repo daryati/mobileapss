@@ -34,6 +34,7 @@ import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
+import id.co.asyst.bukopin.mobile.common.model.SystemCutOffEnum;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonRequest;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
 import id.co.asyst.bukopin.mobile.master.model.entity.Transaction;
@@ -147,6 +148,15 @@ public class SamolnasController {
 	    response.setMessage(messageUtil.get("error.invalid.token.phone.owner", servletRequest.getLocale()));
 	    return response;
 	}
+	
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.SAMOLNAS.getId();
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
+	}
 
 	String payCode = req.getData().getPayCode();
 	String nik = req.getData().getNik();
@@ -239,6 +249,15 @@ public class SamolnasController {
 	    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
 	    response.setMessage(messageUtil.get("error.invalid.token.phone.owner", servletRequest.getLocale()));
 	    return response;
+	}
+	
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.SAMOLNAS.getId();
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
 	}
 
 	// verify PIN

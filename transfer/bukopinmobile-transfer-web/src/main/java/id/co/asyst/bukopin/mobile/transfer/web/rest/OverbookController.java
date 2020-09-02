@@ -35,8 +35,10 @@ import id.co.asyst.bukopin.mobile.common.core.util.CryptoUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
+import id.co.asyst.bukopin.mobile.common.model.SystemCutOffEnum;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonRequest;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
+import id.co.asyst.bukopin.mobile.service.core.MasterModuleService;
 import id.co.asyst.bukopin.mobile.service.core.UserModuleService;
 import id.co.asyst.bukopin.mobile.service.model.payload.pln.GetVerifyPINRequest;
 import id.co.asyst.bukopin.mobile.transfer.core.service.OverbookService;
@@ -138,6 +140,18 @@ public class OverbookController {
 	if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
 	    log.error("Validate Token and Phone owner error..");
 	    return resPhone;
+	}
+	
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.FUND_TRANSFER.getId();
+	if (BkpmConstants.BUKOPIN_BANK_CODE.equals(request.getData().getPostingTo().getBankCode())) {
+	    cutoffId = SystemCutOffEnum.OVERBOOK.getId();
+	}
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
 	}
 
 	// Prepare verify PIN
@@ -249,10 +263,22 @@ public class OverbookController {
     }
     
     @PostMapping("/inquiryAccount/preHandle")
-    public CommonResponse inquiryAccount (@Valid @RequestBody CommonRequest<InquiryAccountReq> request) throws URISyntaxException {
+    public CommonResponse inquiryAccount (@Valid @RequestBody CommonRequest<InquiryAccountReq> request) throws URISyntaxException, IOException {
         log.debug("REST request to postTransaction: {}", BkpmUtil.convertToJson(request));
         CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(), messageUtil.get("success", servletRequest.getLocale()));       
         
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.FUND_TRANSFER.getId();
+	if (BkpmConstants.BUKOPIN_BANK_CODE.equals(request.getData().getPostingTo().getBankCode())) {
+	    cutoffId = SystemCutOffEnum.OVERBOOK.getId();
+	}
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
+	}
+
         InquiryAccountRes res = overbookService.inquiryAmountViaAPI(request.getData());
         if(null != res.getConfirmationCode() && !"".equals(res.getConfirmationCode())) {
         	 response.setData(res);

@@ -35,6 +35,7 @@ import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
+import id.co.asyst.bukopin.mobile.common.model.SystemCutOffEnum;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonRequest;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
 import id.co.asyst.bukopin.mobile.common.model.payload.Identity;
@@ -156,6 +157,15 @@ public class LinkAjaController {
 	if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
 	    log.error("Validate Token and Phone owner error..");
 	    return resPhone;
+	}
+	
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.LINKAJA.getId();
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
 	}
 	
 	// verify PIN
@@ -289,6 +299,15 @@ public class LinkAjaController {
     private CommonResponse inquiryLinkAja(@RequestBody CommonRequest<InquiryLinkAjaRequest> req) throws IOException {
 	log.debug("REST request to Purchasing Link Aja : {}", BkpmUtil.convertToJson(req.getData()));
 	CommonResponse response = new CommonResponse();
+	
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.LINKAJA.getId();
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
+	}
 
 	String custNo = req.getData().getCustNo();
 	String amount = String.valueOf(req.getData().getAmount());

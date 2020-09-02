@@ -17,6 +17,7 @@ import id.co.asyst.foundation.service.connector.annotations.ServiceUrl;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -55,6 +56,7 @@ public interface MasterModuleService {
     @GET("listInsurance/allInsurance")
     Call<CommonResponse> getListInsurance();
     
-    @GET("cutOff/{id}")
-    Call<CommonResponse> checkCutOffStatus(@Path(value = "id") Long id);
+    @GET("cutOff/checkStatus/{id}")
+    Call<CommonResponse> checkCutOffStatus(@Header("Accept-Language") String language, @Path(value = "id") Long id);
+
 }

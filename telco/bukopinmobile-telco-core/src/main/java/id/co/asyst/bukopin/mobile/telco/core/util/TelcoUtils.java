@@ -18,6 +18,7 @@ import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 
 import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
+import id.co.asyst.bukopin.mobile.common.model.SystemCutOffEnum;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonRequest;
 import id.co.asyst.bukopin.mobile.common.model.payload.Identity;
 import id.co.asyst.bukopin.mobile.master.model.CategoryEnum;
@@ -127,6 +128,9 @@ public class TelcoUtils {
     private static final String PGROUP_XL = "XL";
     private static final String PGROUP_TRI = "TRI";
     private static final String PGROUP_SMARTFREN = "SMARTFREN";
+    private static final String PROVIDER_TELKOM = "TELKOM"; // pstn
+    private static final String PROVIDER_SPEEDY = "SPEEDY"; // indihome
+
     
     private static final String HALO = "HALO";
     private static final String MATRIX = "MATRIX";
@@ -676,4 +680,34 @@ public class TelcoUtils {
 
 	return response;
     }
-    /* Overrides: */}
+    
+    /**
+     * Get CutOffId
+     * 
+     * @param pgroup Provider Group
+     * @return Cut Off Id
+     */
+    public static long getCutOffId(String pgroup) {
+	long cutoffId = SystemCutOffEnum.TELKOMSEL.getId();
+	
+	if(TelcoUtils.PGROUP_INDOSAT.equals(pgroup)) {
+	    cutoffId = SystemCutOffEnum.INDOSAT.getId();
+	} else if (TelcoUtils.PGROUP_XL.equals(pgroup)) {
+	    cutoffId = SystemCutOffEnum.XL.getId();
+	} else if (TelcoUtils.PGROUP_TRI.equals(pgroup)) {
+	    cutoffId = SystemCutOffEnum.TRI.getId();
+	} else if (TelcoUtils.PGROUP_SMARTFREN.equals(pgroup)) {
+	    cutoffId = SystemCutOffEnum.SMARTFREN.getId();
+	} else if (TelcoUtils.PROVIDER_TELKOM.equals(pgroup)) {
+	    cutoffId = SystemCutOffEnum.TELKOM.getId();
+	} else if (TelcoUtils.PROVIDER_SPEEDY.equals(pgroup)) {
+	    cutoffId = SystemCutOffEnum.TELKOM_INTERNET.getId();
+	} else {
+	    cutoffId = SystemCutOffEnum.TELKOMSEL.getId();
+	}
+	
+	return cutoffId;
+    }
+
+    /* Overrides: */    
+}
