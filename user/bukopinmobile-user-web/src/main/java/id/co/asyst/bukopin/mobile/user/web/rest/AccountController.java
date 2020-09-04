@@ -285,8 +285,9 @@ public class AccountController {
 		pdidsDb, blackListPdid);
 	// filtered accounts
 	tibcoAccountInfo = (List<Accounts>) mapResultFilter.get("ACC_INFO");
-	// filtered accounts
-	List<GetInquiryCIFResType.Accounts> accountInfoResp = (List<Accounts>) mapResultFilter.get("ACC_INFO_RESP");
+	// account info cannot be activated
+	List<GetInquiryCIFResType.Accounts> notActivatedAccInfo = (List<Accounts>) 
+		mapResultFilter.get("ACC_INFO_NOT_ACTIVATED");
 	// holder accno & cif status
 	Map<String,Integer> accCifStatus = (Map<String, Integer>) mapResultFilter.get("CIF_STATUS");
 	
@@ -328,14 +329,6 @@ public class AccountController {
 			BkpmConstants.BUKOPIN_ACCNO_LENGTH, BkpmConstants.BUKOPIN_ACCNO_PADDING);
 		return existingAccno.contains(tibcoAccno) ? false : true;
 	    }).collect(Collectors.toList());
-	    
-	    accountInfoResp = accountInfoResp.stream().filter(tibco -> {
-		// padding to 10 with 0, because account number in db is 10 digit in length and
-		// left padded with 0.
-		String tibcoAccno = StringUtils.leftPad(String.valueOf(tibco.getAccnumber()),
-			BkpmConstants.BUKOPIN_ACCNO_LENGTH, BkpmConstants.BUKOPIN_ACCNO_PADDING);
-		return existingAccno.contains(tibcoAccno) ? false : true;
-	    }).collect(Collectors.toList());
 	}
 	
 	if (tibcoAccountInfo.isEmpty()) {
@@ -348,7 +341,6 @@ public class AccountController {
 		response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 		response.setMessage(messageUtil.get("card.no.accinfo", 
 			new Object[] {cardNumber}, servletRequest.getLocale()));
-
 	    } else {
 		log.error("filtered account empty: all acc info already in db");
 		// return all account info data already exist in db
@@ -371,9 +363,19 @@ public class AccountController {
 		    currentCard, tibcoAccountInfo, productsDb, accCifStatus);
 	    listSaveAccInfo = accInfoUserService.saveAll(listSaveAccInfo);
 	    
+	    // Get all saved account number
+	    List<AccountInfo> allAccInfo = accInfoUserService.getAllByUsername(username);
+	    
+	    // Get Non Transactional list pdid (e.g. 21|87|63)
+	    String nonTrxPdidConfig = configuration.getConfigValue(BkpmConstants.KEY_NON_TRX_ACCOUNT);
+	    // Convert nonTrxPdid to array
+	    List<Integer> nonTrxPdid = separator.splitAsStream(nonTrxPdidConfig).map(Integer::valueOf)
+		    .collect(Collectors.toList());
+	    
 	    // set response
 	    List<AccountInfo> accInfoResponse = AccountUtil.generateResponseVerification(
-		    currentCard, accountInfoResp, productsDb, blackListPdid);
+		    allAccInfo, notActivatedAccInfo, nonTrxPdid);
+	    
 	    response.setData(accInfoResponse);
 	}
 

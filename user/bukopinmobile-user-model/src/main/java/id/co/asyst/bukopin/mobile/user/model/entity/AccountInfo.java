@@ -134,6 +134,12 @@ public class AccountInfo extends IdBasedObject implements Serializable {
      */
     @Transient
     private boolean notActivated;
+    
+    /**
+     * Flag for "Non Transactional" account. Non transactional list from db.
+     */
+    @Transient
+    private boolean nonTransactional;
 
     /* Constructors: */
 
@@ -374,6 +380,22 @@ public class AccountInfo extends IdBasedObject implements Serializable {
     public void setNotActivated(boolean notActivated) {
 	this.notActivated = notActivated;
     }
+    
+    /**
+     * Gets <code>nonTransactional</code>.
+     * @return The <code>nonTransactional</code>.
+     */
+    public boolean isNonTransactional() {
+        return nonTransactional;
+    }
+
+    /**
+     * Sets <code>nonTransactional</code>.
+     * @param nonTransactional The <code>nonTransactional</code> to set.
+     */
+    public void setNonTransactional(boolean nonTransactional) {
+        this.nonTransactional = nonTransactional;
+    }
 	
     /* Functionalities: */
 
@@ -388,7 +410,7 @@ public class AccountInfo extends IdBasedObject implements Serializable {
 		+ accountStatus + ", status=" + status + ", accountType=" + accountType + ", cif=" + cif
 		+ ", isMainAccount=" + isMainAccount + ", createDate=" + createDate 
 		+  ", accountBalance=" + accountBalance
-		+ ", notActivated=" + notActivated
+		+ ", notActivated=" + notActivated + ", nonTransactional=" + nonTransactional
 		+ "]";
     }
 }

@@ -10,16 +10,23 @@
 package id.co.asyst.bukopin.mobile.user.core.service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import id.co.asyst.bukopin.mobile.common.core.util.CryptoUtil;
 import id.co.asyst.bukopin.mobile.user.core.repository.AccountInfoUserRepository;
 import id.co.asyst.bukopin.mobile.user.model.AccountStatusEnum;
+import id.co.asyst.bukopin.mobile.user.model.entity.AccountCard;
 import id.co.asyst.bukopin.mobile.user.model.entity.AccountInfo;
 
 /**
@@ -144,6 +151,21 @@ public class AccountInfoUserService {
 	accountInfoUserRepository.flush();
 	
 	List<AccountInfo> decrypted = decryptResponse(listAccInfo);
+	return decrypted;
+    }
+    
+    /**
+     * Get All Account Info By Username
+     * 
+     * @param username to find account info
+     * @return list of User's account info
+     */
+    @Transactional(readOnly=true)
+    public List<AccountInfo> getAllByUsername(String username) {
+	// get existing accnos
+	List<AccountInfo> existingAccno = accountInfoUserRepository.findByUsername(username); 
+	
+	List<AccountInfo> decrypted = decryptResponse(existingAccno);
 	return decrypted;
     }
     

@@ -224,13 +224,33 @@ public class AccountUtil {
      * 
      * @return List of Account Info ordered by notActivated ASC
      */
-    public static List<AccountInfo> generateResponseVerification(AccountCard accCard,
-	    List<GetInquiryCIFResType.Accounts> tibcoAccountInfo, List<Product> productsDb, 
-	    List<Integer> blackListPdid) {
-	log.debug("Set response Verification...");
-	List<AccountInfo> listResponse = new ArrayList<>();
+    public static List<AccountInfo> generateResponseVerification(List<AccountInfo> allAccInfo,
+	    List<GetInquiryCIFResType.Accounts> notActivatedAccInfo, List<Integer> nonTrxPdid) {
+	List<AccountInfo> listResponse = new ArrayList<>(); // response to FE
+	List<AccountInfo> accInfoTrxl = new ArrayList<>(); // Transactional Account
+	List<AccountInfo> accInfoNonTrxl = new ArrayList<>(); // Non Transactional Account
+	List<AccountInfo> accInfoNotActvd = new ArrayList<>(); // Account cannot be activated
+	String cif = allAccInfo.get(0).getCif();
 	
-	for (GetInquiryCIFResType.Accounts accounts : tibcoAccountInfo) {
+	// split accinfo between non transactional and transactional
+	for (AccountInfo accInfo : allAccInfo) {
+	    if (nonTrxPdid.contains(accInfo.getProduct().getPdId())) {
+		// if non trxl
+		accInfo.setNonTransactional(true);
+		accInfoNonTrxl.add(accInfo);
+	    } else {
+		// transactional
+		accInfoTrxl.add(accInfo);
+	    }
+	}
+	
+	// sort transactinal accounts by createDate ascending
+	accInfoTrxl = accInfoTrxl.stream()
+		.sorted(Comparator.comparing(AccountInfo::getCreateDate))
+		.collect(Collectors.toList());
+	
+	// Process not activated accounts
+	for (GetInquiryCIFResType.Accounts accounts : notActivatedAccInfo) {
 	    // padding to 10 with 0
 	    String tibcoAccNo = StringUtils.leftPad(String.valueOf(accounts.getAccnumber()), 
 		    BkpmConstants.BUKOPIN_ACCNO_LENGTH, 
@@ -242,33 +262,23 @@ public class AccountUtil {
 	    accInfo.setAccountStatus(AccountStatusEnum.getEnum(accounts.getStatus()));
 	    accInfo.setAccountType(AccountTypeEnum.getEnum((accounts.getAcctype())));
 	    accInfo.setCreateDate(new Date());
-	    accInfo.setCif(accCard.getCif());
+	    accInfo.setCif(cif);
 	    accInfo.setMainAccount(false);
 	    accInfo.setStatus(AccountInfoStatusEnum.getEnum(1));
-	    accInfo.setAccountCard(accCard);
+	    accInfo.setNotActivated(true);
 	    
-	    // set product
-	    List<Product> products = productsDb.stream().distinct().filter(
-			// Make sure account's pdid is exist in table PRODUCT
-			p -> accounts.getProductid()==p.getPdId()
-			// Exclude accounts from tibco with blackListPdid
-			&& !blackListPdid.contains(accounts.getProductid()) )
-			.collect(Collectors.toList());
-		Product product = new Product();
-		if(products==null || products.isEmpty()) {
-		    // if product not exist in PRODUCT table or blacklisted, acc cannot be activated
-		    product.setPdId(accounts.getProductid());
-		    accInfo.setNotActivated(true);
-		} else {
-		    product = products.get(0);
-		}
+	    int tibcoPdid = accounts.getProductid();
+	    Product product = new Product();
+	    product.setPdId(tibcoPdid);
 	    accInfo.setProduct(product);
-
-	    listResponse.add(accInfo);
+	    
+	    accInfoNotActvd.add(accInfo);
 	}
 	
-	// List of Account Info ordered by notActivated ASC
-	listResponse.sort(Comparator.comparing(AccountInfo::isNotActivated));
+	// set response, need sort?
+	listResponse.addAll(accInfoTrxl);
+	listResponse.addAll(accInfoNonTrxl);
+	listResponse.addAll(accInfoNotActvd);
 	
 	return listResponse;
     }
