@@ -89,23 +89,23 @@ public class SystemCutOffService {
 	    // set start & end date
 	    start = copyDate(now, start);
 	    end = copyDate(now, end);
-
-	    int nowHour = now.get(Calendar.HOUR_OF_DAY);
-	    int startHour = start.get(Calendar.HOUR_OF_DAY);
-	    int endHour = end.get(Calendar.HOUR_OF_DAY);
-
-	    if (startHour < endHour) {
-		log.debug("Same Day");
+	    
+//	    log.debug("is start before end (sameday)? "+ start.getTime().before(end.getTime()));
+	    
+	    // if same time between start and end, cutoff disabled
+	    if (start.getTime().equals(end.getTime())) {
+		log.debug("Cut Off for {} was disabled",cutOff.getSystemName());
+	    } else if (start.getTime().before(end.getTime())) {
+//		log.debug("Same Day");
 	    } else {
-		log.debug("Different Day");
-
+//		log.debug("Different Day");
 		// Check is time access before or after day change?
-		if (nowHour < endHour) { // after day change
-		    System.out.println("after day change");
+		if (now.getTime().before(end.getTime())) {
+//		    log.debug("after day change");
 		    // set start date with yesterday
 		    start.add(Calendar.DATE, -1);
 		} else { // before day change
-		    System.out.println("before day change");
+//		    log.debug("before day change");
 		    // set end date with tomorrow
 		    end.add(Calendar.DATE, 1);
 		}
@@ -113,10 +113,10 @@ public class SystemCutOffService {
 
 	    // Check Cut Off Status
 	    if (now.getTime().after(start.getTime()) && now.getTime().before(end.getTime())) {
-		log.debug("Cut Off");
+//		log.debug("Cut Off");
 		isCutOff = true;
 	    } else {
-		log.debug("No Cut Off");
+//		log.debug("No Cut Off");
 	    }
 	}
 	
