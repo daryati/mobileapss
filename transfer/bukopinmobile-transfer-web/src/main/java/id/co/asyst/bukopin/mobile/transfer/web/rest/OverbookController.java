@@ -35,8 +35,10 @@ import id.co.asyst.bukopin.mobile.common.core.util.CryptoUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
+import id.co.asyst.bukopin.mobile.common.model.SystemCutOffEnum;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonRequest;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
+import id.co.asyst.bukopin.mobile.service.core.MasterModuleService;
 import id.co.asyst.bukopin.mobile.service.core.UserModuleService;
 import id.co.asyst.bukopin.mobile.service.model.payload.pln.GetVerifyPINRequest;
 import id.co.asyst.bukopin.mobile.transfer.core.service.LimitPackageService;
@@ -149,6 +151,18 @@ public class OverbookController {
 	if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
 	    log.error("Validate Token and Phone owner error..");
 	    return resPhone;
+	}
+	
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.FUND_TRANSFER.getId();
+	if (BkpmConstants.BUKOPIN_BANK_CODE.equals(request.getData().getPostingTo().getBankCode())) {
+	    cutoffId = SystemCutOffEnum.OVERBOOK.getId();
+	}
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
 	}
 
 	// Prepare verify PIN
@@ -273,6 +287,18 @@ public class OverbookController {
     public CommonResponse inquiryAccount (@Valid @RequestBody CommonRequest<InquiryAccountReq> request) throws URISyntaxException, IOException {
         CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(), messageUtil.get("success", servletRequest.getLocale()));       
         
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.FUND_TRANSFER.getId();
+	if (BkpmConstants.BUKOPIN_BANK_CODE.equals(request.getData().getPostingTo().getBankCode())) {
+	    cutoffId = SystemCutOffEnum.OVERBOOK.getId();
+	}
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
+	}
+	
         // Get User
         String username = request.getData().getPostingFrom().getUsername();
         CommonResponse userResponse = Services.create(UserModuleService.class).getUserByUsername(username).execute().body();
@@ -297,7 +323,7 @@ public class OverbookController {
 	}
 	log.debug("limitId: {}",limitId);
         
-        // Add limit transfer validation
+        // Limit transfer validation
         int accountType = Integer.valueOf(request.getData().getPostingFrom().getAccountType());
         boolean isValid = limitService.checkLimit(limitId, accountType, 
         	request.getData().getAmount(), request.getData().getPostingTo().getBankCode());

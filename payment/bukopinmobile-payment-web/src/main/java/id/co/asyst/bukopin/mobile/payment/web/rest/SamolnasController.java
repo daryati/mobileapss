@@ -35,6 +35,7 @@ import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
+import id.co.asyst.bukopin.mobile.common.model.SystemCutOffEnum;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonRequest;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
 import id.co.asyst.bukopin.mobile.master.model.entity.Transaction;
@@ -140,7 +141,6 @@ public class SamolnasController {
     @PostMapping("/inquiry")
     private CommonResponse inquirySamolnas(@Valid @RequestBody CommonRequest<SamolnasInquiryRequest> req)
 	    throws IOException {
-	log.debug("REST request to inquiry Samolnas : {}", req.getData());
 	CommonResponse response = new CommonResponse();
 
 	// Validate Token and Phone Owner
@@ -162,6 +162,15 @@ public class SamolnasController {
 	    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
 	    response.setMessage(messageUtil.get("error.invalid.token.phone.owner", servletRequest.getLocale()));
 	    return response;
+	}
+	
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.SAMOLNAS.getId();
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
 	}
 
 	String payCode = req.getData().getPayCode();
@@ -261,7 +270,6 @@ public class SamolnasController {
     @PostMapping("/payment")
     private CommonResponse paymentSamolnas(@Valid @RequestBody CommonRequest<SamolnasPaymentRequest> req)
 	    throws IOException, ParseException {
-	log.debug("REST request to payment Samolnas : {}", req.getData());
 	CommonResponse response = new CommonResponse();
 
 	// Validate Token and Phone Owner
@@ -283,6 +291,15 @@ public class SamolnasController {
 	    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
 	    response.setMessage(messageUtil.get("error.invalid.token.phone.owner", servletRequest.getLocale()));
 	    return response;
+	}
+	
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.SAMOLNAS.getId();
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
 	}
 
 	// verify PIN

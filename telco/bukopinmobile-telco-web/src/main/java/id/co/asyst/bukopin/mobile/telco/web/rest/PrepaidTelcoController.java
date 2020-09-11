@@ -59,6 +59,7 @@ import id.co.asyst.bukopin.mobile.service.model.payload.telco.prepaid.PrepaidTel
 import id.co.asyst.bukopin.mobile.telco.core.service.TelcoPrepaidService;
 import id.co.asyst.bukopin.mobile.telco.core.service.TelcoService;
 import id.co.asyst.bukopin.mobile.telco.core.util.PrepaidTelcoUtils;
+import id.co.asyst.bukopin.mobile.telco.core.util.TelcoUtils;
 import id.co.asyst.bukopin.mobile.master.model.CategoryEnum;
 import id.co.asyst.bukopin.mobile.telco.model.PrepaidTelcoEnum;
 import id.co.asyst.bukopin.mobile.telco.model.TelcoTypeEnum;
@@ -221,14 +222,24 @@ public class PrepaidTelcoController {
      * @param request 
      * 
      * @return Response status and inquiry pulsa's data
+	 * @throws IOException 
      */
 	@PostMapping("/inquiryPulsa")
     @ResponseStatus(HttpStatus.OK)
 	public CommonResponse inquiryPulsa(@Valid @RequestBody CommonRequest<InquiryPulsaPrepaidTelcoRequest> request)
-		    throws DatatypeConfigurationException {		
+		    throws DatatypeConfigurationException, IOException {		
 		CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 			messageUtil.get("success", httpServletRequest.getLocale()));				
 		InquiryPulsaPrepaidTelcolResponse res = new InquiryPulsaPrepaidTelcolResponse();
+		
+		// Check Cut Off
+		long cutoffId = TelcoUtils.getCutOffId(request.getData().getpGroup());
+		CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+			.checkCutOffStatus(httpServletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+		if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+		    log.error("Error Cutoff");
+		    return cutOffResponse;
+		}
 		
 		if(PrepaidTelcoEnum.PREPAID.getName().equalsIgnoreCase(request.getData().getInstitutionType())) {
 			res.setAdminFee(request.getData().getAdminFee());
@@ -258,15 +269,25 @@ public class PrepaidTelcoController {
      * @param request 
      * 
      * @return Response status and inquiry mobile data's data
+	 * @throws IOException 
      */
 	@PostMapping("/inquiryMobileData")
     @ResponseStatus(HttpStatus.OK)
 	public CommonResponse inquiryMobileData(@Valid @RequestBody CommonRequest<InquiryMobileDataPrepaidTelcoRequest> request)
-		    throws DatatypeConfigurationException {		
+		    throws DatatypeConfigurationException, IOException {		
 		CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 			messageUtil.get("success", httpServletRequest.getLocale()));	
 		InquiryMobileDataPrepaidTelcoResponse res = new InquiryMobileDataPrepaidTelcoResponse();
 		
+		// Check Cut Off
+		long cutoffId = TelcoUtils.getCutOffId(request.getData().getpGroup());
+		CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+			.checkCutOffStatus(httpServletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+		if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+		    log.error("Error Cutoff");
+		    return cutOffResponse;
+		}
+
 		if(PrepaidTelcoEnum.PAKET_DATA.getName().equalsIgnoreCase(request.getData().getInstitutionType())) {
 			if("TELKOMSEL".equalsIgnoreCase(request.getData().getpGroup())) {
 				res.setAdminFee(request.getData().getAdminFee());
@@ -309,6 +330,15 @@ public class PrepaidTelcoController {
     private CommonResponse purchasePrepaidTelcoResult(@Valid @RequestBody CommonRequest<PaymentPrepaidTelcoRequest> req) throws IOException, MessagingException {
 	
 	CommonResponse response = new CommonResponse();
+	
+	// Check Cut Off
+	long cutoffId = TelcoUtils.getCutOffId(req.getData().getpGroup());
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(httpServletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
+	}
 	
 	// validate institution type
 	if(!PrepaidTelcoEnum.PAKET_DATA.getName().equalsIgnoreCase(req.getData().getInstitutionType()) && 

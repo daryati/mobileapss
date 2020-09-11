@@ -66,4 +66,8 @@ public interface MasterModuleService {
     
     @GET("listInsurance/allInsurance")
     Call<CommonResponse> getListInsurance();
+    
+    @GET("cutOff/checkStatus/{id}")
+    Call<CommonResponse> checkCutOffStatus(@Header("Accept-Language") String language, @Path(value = "id") Long id);
+
 }

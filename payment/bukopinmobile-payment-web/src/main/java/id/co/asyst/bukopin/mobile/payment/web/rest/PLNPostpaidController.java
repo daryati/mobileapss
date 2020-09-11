@@ -42,6 +42,7 @@ import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
+import id.co.asyst.bukopin.mobile.common.model.SystemCutOffEnum;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonRequest;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
 import id.co.asyst.bukopin.mobile.common.model.payload.Identity;
@@ -163,6 +164,15 @@ public class PLNPostpaidController {
 	CommonResponse response = new CommonResponse();
 	Calendar cal = Calendar.getInstance();
 	String monthName = new DateFormatSymbols().getMonths()[cal.get(Calendar.MONTH)];
+	
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.PLN.getId();
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
+	}
 
 	String forwardInsCode = env.getProperty("config.pln.forwarding-institution-code");
 	PrepaidInquiryRequest reqInquiryPostpaidPLNAranet = PLNUtils
@@ -477,6 +487,15 @@ public class PLNPostpaidController {
 		log.error("Validate Token and Phone owner error..");
 		return resPhone;
 	    }
+	}
+	
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.PLN.getId();
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
 	}
 
 	// Prepare verify PIN

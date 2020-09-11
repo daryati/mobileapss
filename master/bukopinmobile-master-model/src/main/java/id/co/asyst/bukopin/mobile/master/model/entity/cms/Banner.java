@@ -29,6 +29,7 @@ import id.co.asyst.foundation.base.model.IdBasedObject;
 @Entity
 @Table(name = "BANNER")
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Deprecated
 public class Banner extends IdBasedObject {
 
     /**
