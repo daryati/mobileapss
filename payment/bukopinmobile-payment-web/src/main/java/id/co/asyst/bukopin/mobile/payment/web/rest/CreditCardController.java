@@ -84,6 +84,7 @@ import id.co.asyst.foundation.service.connector.Services;
  */
 @RestController
 @RequestMapping("/creditCard")
+@Profile("!prod")
 public class CreditCardController {
     /* Constants: */
     private Logger log = LoggerFactory.getLogger(CreditCardController.class);
