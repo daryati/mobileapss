@@ -17,16 +17,21 @@ import java.util.Date;
 import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
 import id.co.asyst.bukopin.mobile.common.model.payload.Identity;
 import id.co.asyst.bukopin.mobile.service.model.payload.telco.prepaid.PrepaidTelcoCredentialsRequest;
 import id.co.asyst.bukopin.mobile.service.model.payload.telco.prepaid.PrepaidTelcoIdentityRequest;
+import id.co.asyst.bukopin.mobile.service.model.payload.telco.prepaid.PrepaidTelcoInquiryPaketDataRequest;
+import id.co.asyst.bukopin.mobile.service.model.payload.telco.prepaid.PrepaidTelcoInquiryPaketRequest;
+import id.co.asyst.bukopin.mobile.service.model.payload.telco.prepaid.PrepaidTelcoListPaketDataRequest;
+import id.co.asyst.bukopin.mobile.service.model.payload.telco.prepaid.PrepaidTelcoListPaketRequest;
 import id.co.asyst.bukopin.mobile.service.model.payload.telco.prepaid.PrepaidTelcoPurchaseDataRequest;
 import id.co.asyst.bukopin.mobile.service.model.payload.telco.prepaid.PrepaidTelcoPurchaseRequest;
 import id.co.asyst.bukopin.mobile.telco.model.PrepaidTelcoEnum;
-import id.co.asyst.bukopin.mobile.telco.model.TelcoTypeEnum;
 import id.co.asyst.bukopin.mobile.telco.model.payload.InstitutionMapper;
 import id.co.asyst.bukopin.mobile.telco.model.payload.PaymentPrepaidTelcoRequest;
 import id.co.asyst.bukopin.mobile.user.model.AccountTypeEnum;
@@ -43,9 +48,11 @@ public class PrepaidTelcoUtils {
     private static final String NUMBER = "0123456789";
     private static SecureRandom random = new SecureRandom();
     private static final String FORWARD_ID_BUKOPIN = "441";
+    private static final String MTI_PREPAID_INQUIRY = "2100";
     private static final String MTI_PREPAID_PURCHASE = "2200";
    // private static final String PROCCESSING_CODE_PURCHASE_TELKOMSEL = "500000";
-   private static final String PROCCESSING_CODE_PURCHASE_SAVING = "501000";
+    private static final String PROCCESSING_CODE_INQ_LIST = "381000";
+    private static final String PROCCESSING_CODE_PURCHASE_SAVING = "501000";
     private static final String PROCCESSING_CODE_PURCHASE_GIRO = "502000";
     
     private static final String MERCHANT_TYPE_MOBILE = "6017";
@@ -66,14 +73,14 @@ public class PrepaidTelcoUtils {
     private static final String TRDES1_PULSA_TRI = "MB : PULSA TRI ";
     private static final String TRDES1_PULSA_SMARTFREN = "MB : PULSA SMARTFREN ";    
     private static final String TRDES2 = "Dr. ";
-    private static final String TRDES3_PULSA_TELKOMSEL = "-";
-    private static final String TRDES3_MOBILEDATA_TELKOMSEL = "-";
-    private static final String TRDES3_PULSA_INDOSAT = "-ET : PULSA INDOSAT 01";
-    private static final String TRDES3_MOBILEDATA_INDOSAT = "-";
-    private static final String TRDES3_PULSA_XL = "-";
-    private static final String TRDES3_MOBILEDATA_XL = "-";
-    private static final String TRDES3_PULSA_TRI = "-";
-    private static final String TRDES3_PULSA_SMARTFREN = "-";
+    private static final String TRDES3_PULSA_TELKOMSEL = "";
+    private static final String TRDES3_MOBILEDATA_TELKOMSEL = "";
+    private static final String TRDES3_PULSA_INDOSAT = "";
+    private static final String TRDES3_MOBILEDATA_INDOSAT = "";
+    private static final String TRDES3_PULSA_XL = "";
+    private static final String TRDES3_MOBILEDATA_XL = "";
+    private static final String TRDES3_PULSA_TRI = "";
+    private static final String TRDES3_PULSA_SMARTFREN = "";
     
     private static final String CONVENTION_RATE = "0000000000000000000";
     private static final String FEE_CODE = "00";
@@ -115,8 +122,8 @@ public class PrepaidTelcoUtils {
      * @return request for purchase
      */
  
-    public static PrepaidTelcoPurchaseRequest generatePurchasePrepaidTelcoReq(PaymentPrepaidTelcoRequest request, InstitutionMapper institution,
-	    String forwardInsCode, String providerGroup, String accType) {
+    public static PrepaidTelcoPurchaseRequest generatePurchasePrepaidTelcoReq(PaymentPrepaidTelcoRequest request, 
+    		String forwardInsCode, String providerGroup, String accType) {
     	PrepaidTelcoPurchaseRequest purchaseReq = new PrepaidTelcoPurchaseRequest();
 	Date date = new Date();
 
@@ -140,6 +147,13 @@ public class PrepaidTelcoUtils {
 		elm3 = PROCCESSING_CODE_PURCHASE_GIRO;
 	}
 	
+	//-- set request element 28 (admin fee)
+	String adminFee = request.getAdminFee().toString();
+	Integer admFee = Integer.valueOf(adminFee);
+	adminFee = admFee + "00";
+	String paddingAdminFee = new String(new char[20 - adminFee.length()]).replace('\0', '0');
+	paddingAdminFee = paddingAdminFee.concat(adminFee);
+	
 	//-- set request for element 4
 	String amount = request.getAmount().toBigInteger().toString() + "00";
 	String padding = new String(new char[20 - amount.length()]).replace('\0', '0');
@@ -148,31 +162,29 @@ public class PrepaidTelcoUtils {
 	//-- set request element 7
 	String transmissionDateAndTime = element7Format.format(new Date());
 	
-	//-- set request element 11 (random 6 digit)
-	String randomElm11 = generateSTAN(6);
 	
-	//-- set request element 28 (admin fee)
-	String adminFee = request.getAdminFee().toString();
-	Integer admFee = Integer.valueOf(adminFee);
-	adminFee = admFee + "00";
-	String paddingAdminFee = new String(new char[20 - adminFee.length()]).replace('\0', '0');
-	paddingAdminFee = paddingAdminFee.concat(adminFee);
-	// System.out.println("..... admin FEEEE "+paddingAdminFee);
-
-	//-- set request element 37
-	String retrievalRefNumber = generateSTAN(12);
-
-	//-- set element 61
-	String element61 = request.getPhoneNumber();
-	String paddingPhoneNumber = new String(new char[13 - element61.length()]).replace('\0', ' ');
-	paddingPhoneNumber = element61.concat(paddingPhoneNumber);
-	System.out.println("..... PHONE NUMBER 61 "+paddingPhoneNumber);
-
-	//-- set description, element 122 
+	//-- set elmt 11,37,61, description, element 122 	
+	String randomElm11 ="";
+	String retrievalRefNumber="";
+	String elmt61="";
+	
 	String des1="";
 	String des2 ="";
 	String des3="";
 	if(PrepaidTelcoEnum.PREPAID.getName().equalsIgnoreCase(request.getInstitutionType())) {
+		System.out.println("---------------PULSA-----------------");
+		//-- set request element 11 (random 6 digit)
+		randomElm11 = generateSTAN(6);
+		
+		//-- set request element 37
+		retrievalRefNumber = generateSTAN(12);
+
+		//-- set element 61
+		String element61 = request.getPhoneNumber();
+		String paddingPhoneNumber = new String(new char[13 - element61.length()]).replace('\0', ' ');
+		elmt61 = element61.concat(paddingPhoneNumber);
+		
+		
 		if("TELKOMSEL".equalsIgnoreCase(providerGroup)) {
 			des1 = StringUtils.rightPad(TRDES1_PULSA_TELKOMSEL.concat(request.getPhoneNumber()), 40);
 			des2 = StringUtils.rightPad(TRDES2.concat(request.getAccountNumber()), 40);
@@ -196,15 +208,56 @@ public class PrepaidTelcoUtils {
     	}
 		
 	} else if(PrepaidTelcoEnum.PAKET_DATA.getName().equalsIgnoreCase(request.getInstitutionType())) {
+		System.out.println("----------------PAKET DATA--------------------");
 		if("TELKOMSEL".equalsIgnoreCase(providerGroup)) {
+			//-- set request element 11 (random 6 digit)
+			randomElm11 = generateSTAN(6);
+			
+			//-- set request element 37
+			retrievalRefNumber = generateSTAN(12);
+			
+			//-- set element 61
+			String element61= request.getPhoneNumber();
+			String paddingPhoneNumber = new String(new char[13 - element61.length()]).replace('\0', ' ');
+			elmt61 = element61.concat(paddingPhoneNumber);
+			
 			des1 = StringUtils.rightPad(TRDES1_MOBILEDATA_TELKOMSEL.concat(request.getPhoneNumber()), 40);
 			des2 = StringUtils.rightPad(TRDES2.concat(request.getAccountNumber()), 40);
 			des3 = StringUtils.leftPad(TRDES3_MOBILEDATA_TELKOMSEL, 60);
     	} else if("INDOSAT".equalsIgnoreCase(providerGroup)) {
+    		//-- set request element 11 (random 6 digit)
+    		randomElm11 = generateSTAN(6);
+    		
+    		//-- set request element 37
+    		retrievalRefNumber = generateSTAN(12);
+    		
+    		//-- set element 61
+    		String element61= request.getPhoneNumber();
+    		String paddingPhoneNumber = new String(new char[13 - element61.length()]).replace('\0', ' ');    		
+    		String paddingPackagecode = new String(new char[4 - request.getPackageCode().length()]).replace('\0', ' ');    		
+    		String paddingTitle= new String(new char[30 - request.getTitle().length()]).replace('\0', ' ');    		
+    		String leftpaddingamount= new String(new char[12 - amount.length()]).replace('\0', '0');    		
+    		String leftpadAdminFee = new String(new char[8 - adminFee.length()]).replace('\0', '0');
+    		
+    		elmt61 = element61.concat(paddingPhoneNumber).concat(request.getPackageCode()).concat(paddingPackagecode).
+    				concat(request.getTitle()).concat(paddingTitle).concat(leftpaddingamount).concat(amount)
+    				.concat(leftpadAdminFee).concat(adminFee);
+    		
     		des1 = StringUtils.rightPad(TRDES1_MOBILEDATA_INDOSAT.concat(request.getPhoneNumber()), 40);
     		des2 = StringUtils.rightPad(TRDES2.concat(request.getAccountNumber()), 40);
     		des3 = StringUtils.leftPad(TRDES3_MOBILEDATA_INDOSAT, 60);
     	} else if("XL".equalsIgnoreCase(providerGroup)) {
+    		
+    		//-- set request element 11
+    		randomElm11 = request.getElement11();
+    		
+    		//-- set request element 37
+    		retrievalRefNumber= request.getElement37();
+    		
+    		//-- set element 61
+    		elmt61 = request.getElement61();
+    		
+    		
     		des1 = StringUtils.rightPad(TRDES1_MOBILEDATA_XL.concat(request.getPhoneNumber()), 40);
     		des2 = StringUtils.rightPad(TRDES2.concat(request.getAccountNumber()), 40);
     		des3 = StringUtils.leftPad(TRDES3_MOBILEDATA_XL, 60);
@@ -218,7 +271,7 @@ public class PrepaidTelcoUtils {
 	String spasi118_147 = new String(new char[148 - 118]).replace('\0', ' ');
 	String username = StringUtils.rightPad(request.getUsername(), 15);
 
-	String elemt123 = IDR_CURRENCY_CODE + CONVENTION_RATE + FEE_CODE + institution.getCodeCbs() + OPERATION_CODE + MIA_POST
+	String elemt123 = IDR_CURRENCY_CODE + CONVENTION_RATE + FEE_CODE + request.getCodeCbs() + OPERATION_CODE + MIA_POST
 		+ BIT_43_52 + BIT_53_72 + BIT_73_76 + BIT_77_96 + username + NOT_BRANCH + NOT_LOCATION + spasi118_147;
 
 	PrepaidTelcoPurchaseDataRequest param = new PrepaidTelcoPurchaseDataRequest();
@@ -236,12 +289,12 @@ public class PrepaidTelcoUtils {
 	param.setElement37(retrievalRefNumber);
 	param.setElement41(TERMINAL_ID);
 	param.setElement49(IDR_CURRENCY_TRAN);	
-	param.setElement61(request.getPhoneNumber());
-	param.setElement63(institution.getCodeArra());
+	param.setElement61(elmt61);
+	param.setElement63(request.getProductCode());
 	param.setElement100(SETTLEMENT_ID);
 	param.setElement102(request.getAccountNumber());
 	param.setElement103(request.getAccountNumber());
-	param.setElement120(SETTLEMENT_ARANET_ID + institution.getCodeCbs() + MERCHANT_TYPE_MOBILE + FORWARD_ID_BUKOPIN);
+	param.setElement120(SETTLEMENT_ARANET_ID + request.getCodeCbs() + MERCHANT_TYPE_MOBILE + FORWARD_ID_BUKOPIN);
 	param.setElement122(description);
 	param.setElement123(elemt123);
 
@@ -250,12 +303,146 @@ public class PrepaidTelcoUtils {
 
 	return purchaseReq;
     }
+    
+    
+    
+    /**
+     * generate inquiry list paket data
+     * 
+     * @param request information to set inquiry list
+     * 
+     * @return request for inquiry list
+     */
+ 
+    public static PrepaidTelcoListPaketRequest generateInquiryListPaketDataReq(String phoneNumber, InstitutionMapper institution,
+	    String forwardInsCode, String providerGroup) {
+    	PrepaidTelcoListPaketRequest listPaketReq = new PrepaidTelcoListPaketRequest();
+	Date date = new Date();
+
+	//-- setidentity
+	PrepaidTelcoIdentityRequest identity = new PrepaidTelcoIdentityRequest();
+	identity.setReqdatetime(date);
+	//-- get transaction ID
+	String txId = BkpmUtil.generateTrxId(PREPAID_TELCO_LENGTH_TRXID);
+	identity.setClienttxnid(txId);
+
+	//-- set credential
+	PrepaidTelcoCredentialsRequest credentials = new PrepaidTelcoCredentialsRequest();
+	credentials.setClientid("MBUKOPIN");
+	identity.setCredentials(credentials);
+
+	//-- set element 3 
+	String elm3=PROCCESSING_CODE_INQ_LIST;
+	
+
+	//-- set request element 7
+	String transmissionDateAndTime = element7Format.format(new Date());
+	
+	//-- set request element 11 (random 6 digit)
+	String randomElm11 = generateSTAN(6);
+	
+	//-- set element 61
+	String element61 = phoneNumber;
+	String paddingPhoneNumber = new String(new char[13 - element61.length()]).replace('\0', ' ');
+	paddingPhoneNumber = element61.concat(paddingPhoneNumber);
+
+
+	PrepaidTelcoListPaketDataRequest param = new PrepaidTelcoListPaketDataRequest();
+	param.setMti(MTI_PREPAID_INQUIRY);
+	param.setElement3(elm3);
+	param.setElement7(transmissionDateAndTime);
+	param.setElement11(randomElm11);
+	param.setElement12(timeLocal.format(date));
+	param.setElement13(dateLocal.format(date));
+	param.setElement18(MERCHANT_TYPE_MOBILE);
+	param.setElement32(ACQUIRING_INSTITUTION_CODE);
+	param.setElement33(forwardInsCode);
+	param.setElement41(TERMINAL_ID);
+	param.setElement49(IDR_CURRENCY_TRAN);	
+	param.setElement61(paddingPhoneNumber);
+	param.setElement63(institution.getCodeArra());
+	param.setElement120(SETTLEMENT_ARANET_ID + institution.getCodeCbs() + MERCHANT_TYPE_MOBILE + FORWARD_ID_BUKOPIN);
+
+	listPaketReq.setIdentity(identity);
+	listPaketReq.setParameter(param);
+
+	return listPaketReq;
+    }
+    
+    /**
+     * generate inquiry paket data
+     * 
+     * @param request information to set inquiry paket data
+     * 
+     * @return request for inquiry paket data
+     */
+ 
+    public static PrepaidTelcoInquiryPaketRequest generateInquiryPaketDataReq(String phoneNumber, String productCode,
+    		String codeCbs, String packageCode, String forwardInsCode) {
+    	PrepaidTelcoInquiryPaketRequest inqPaketReq = new PrepaidTelcoInquiryPaketRequest();
+	Date date = new Date();
+
+	//-- setidentity
+	PrepaidTelcoIdentityRequest identity = new PrepaidTelcoIdentityRequest();
+	identity.setReqdatetime(date);
+	//-- get transaction ID
+	String txId = BkpmUtil.generateTrxId(PREPAID_TELCO_LENGTH_TRXID);
+	identity.setClienttxnid(txId);
+
+	//-- set credential
+	PrepaidTelcoCredentialsRequest credentials = new PrepaidTelcoCredentialsRequest();
+	credentials.setClientid("MBUKOPIN");
+	identity.setCredentials(credentials);
+
+	//-- set element 3 
+	String elm3=PROCCESSING_CODE_INQ_LIST;
+	
+
+	//-- set request element 7
+	String transmissionDateAndTime = element7Format.format(new Date());
+	
+	//-- set request element 11 (random 6 digit)
+	String randomElm11 = generateSTAN(6);
+	
+	//-- set request element 37 (random 12 digit)
+	String randomElm37 = generateSTAN(12);
+	
+	//-- set element 61
+	String element61 = phoneNumber;
+	String paddingPhoneNumber = new String(new char[13 - element61.length()]).replace('\0', ' ');
+	String paddingPackageCode = new String(new char[6 -packageCode.length()]).replace('\0', ' ');
+	String padding61 = element61.concat(paddingPhoneNumber).concat(packageCode).concat(paddingPackageCode);
+
+
+	PrepaidTelcoInquiryPaketDataRequest param = new PrepaidTelcoInquiryPaketDataRequest();
+	param.setMti(MTI_PREPAID_INQUIRY);
+	param.setElement3(elm3);
+	param.setElement7(transmissionDateAndTime);
+	param.setElement11(randomElm11);
+	param.setElement12(timeLocal.format(date));
+	param.setElement13(dateLocal.format(date));
+	param.setElement18(MERCHANT_TYPE_MOBILE);
+	param.setElement32(ACQUIRING_INSTITUTION_CODE);
+	param.setElement33(forwardInsCode);
+	param.setElement37(randomElm37);
+	param.setElement41(TERMINAL_ID);
+	param.setElement49(IDR_CURRENCY_TRAN);	
+	param.setElement61(padding61);
+	param.setElement63(productCode);
+	param.setElement120(SETTLEMENT_ARANET_ID + codeCbs + MERCHANT_TYPE_MOBILE + FORWARD_ID_BUKOPIN);
+
+	inqPaketReq.setIdentity(identity);
+	inqPaketReq.setParameter(param);
+
+	return inqPaketReq;
+    }
+    
 
     /**
-     * Generator new password
+     * Generator Stan
      * 
-     * @param length of password
-     * @return string, new password
+     * @param length of stan
+     * @return string, stan
      */
     public static String generateSTAN(int length) {
 	if (length < 1)

@@ -34,6 +34,12 @@ public class PrefixTelcoDetailResponse<T> {
     private String productCode;
 	
 	/**
+     * codeCbs
+     */
+	@JsonProperty("codeCbs")
+    private String codeCbs;
+	
+	/**
      * name
      */
 	@JsonProperty("name")
@@ -141,12 +147,28 @@ public class PrefixTelcoDetailResponse<T> {
 	public void setSelection(List<T> selection) {
 		this.selection = selection;
 	}
+	
+	
+	/**
+     * Gets <code>codeCbs</code>.
+     * @return The <code>codeCbs</code>.
+     */
+	public String getCodeCbs() {
+		return codeCbs;
+	}
+
+	/**
+     * Sets <code>codeCbs</code>.
+     * @param codeCbs The <code>codeCbs</code> to set.
+     */
+	public void setCodeCbs(String codeCbs) {
+		this.codeCbs = codeCbs;
+	}
 
 	@Override
 	public String toString() {
-		return "PrefixTelcoDetailResponse [productCode=" + productCode
-				+ ", name=" + name + ", institutionType=" + institutionType
-				+ ", adminFee=" + adminFee + ", selection=" + selection + "]";
+		return "PrefixTelcoDetailResponse [productCode=" + productCode + ", codeCbs=" + codeCbs + ", name=" + name
+				+ ", institutionType=" + institutionType + ", adminFee=" + adminFee + ", selection=" + selection + "]";
 	}
 	
 	

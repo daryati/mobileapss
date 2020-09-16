@@ -35,10 +35,11 @@ import id.co.asyst.foundation.common.model.IdBasedObject;
  * 
  * @author Kartika Dwi H
  * @version $Revision$, Feb 13, 2020
+ * @param <T>
  * @since 1.0.Alpha1
  */
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class PrefixTelcoMapper extends IdBasedObject implements Serializable {
+public class PrefixTelcoMapper<T> extends IdBasedObject implements Serializable {
 
     /* Constants: */
 
@@ -90,13 +91,13 @@ public class PrefixTelcoMapper extends IdBasedObject implements Serializable {
 	 * pulsa
 	 */
     @JsonProperty("pulsa")
-    private PrefixTelcoDetailMapper<?> pulsa;
+    private PrefixTelcoDetailMapper<T> pulsa;
 	
 	/**
 	 * paket Data
 	 */
 	@JsonProperty("paketData")
-    private PrefixTelcoDetailMapper<?> mobileData;
+    private PrefixTelcoDetailMapper<T> mobileData;
 
 	
 	/* Transient Attributes: */
@@ -226,7 +227,7 @@ public class PrefixTelcoMapper extends IdBasedObject implements Serializable {
      * 
      * @return The <code>pulsa</code>.
      */
-	public PrefixTelcoDetailMapper<?> getPulsa() {
+	public PrefixTelcoDetailMapper<T> getPulsa() {
 		return pulsa;
 	}
 
@@ -236,7 +237,7 @@ public class PrefixTelcoMapper extends IdBasedObject implements Serializable {
      * @param pulsa
      *            The <code>pulsa</code> to set.
      */
-	public void setPulsa(PrefixTelcoDetailMapper<?> pulsa) {
+	public void setPulsa(PrefixTelcoDetailMapper<T> pulsa) {
 		this.pulsa = pulsa;
 	}
 
@@ -245,7 +246,7 @@ public class PrefixTelcoMapper extends IdBasedObject implements Serializable {
      * 
      * @return The <code>mobileData</code>.
      */
-	public PrefixTelcoDetailMapper<?> getMobileData() {
+	public PrefixTelcoDetailMapper<T> getMobileData() {
 		return mobileData;
 	}
 
@@ -255,7 +256,7 @@ public class PrefixTelcoMapper extends IdBasedObject implements Serializable {
      * @param mobileData
      *            The <code>mobileData</code> to set.
      */
-	public void setMobileData(PrefixTelcoDetailMapper<?> mobileData) {
+	public void setMobileData(PrefixTelcoDetailMapper<T> mobileData) {
 		this.mobileData = mobileData;
 	}
 

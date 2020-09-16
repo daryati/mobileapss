@@ -43,11 +43,58 @@ public class PaymentPrepaidTelcoRequest {
 	private String pin;
 	
 	/**
+     * accountNumber
+     */
+	@NotBlank(message="account Number is required!")
+	@JsonProperty("accountNumber")
+	private String accountNumber;
+	
+	/**
      * phoneNumber
      */
 	@NotBlank(message="phone Number is required!")
 	@JsonProperty("phoneNumber")
 	private String phoneNumber;
+	
+	/**
+     * productCode
+     */
+	@NotBlank(message="product code is required!")
+	@JsonProperty("productCode")
+	private String productCode;
+	
+	/**
+     * codeCbs
+     */
+	@NotBlank(message="codeCbs is required!")
+	@JsonProperty("codeCbs")
+	private String codeCbs;
+	
+	/**
+     * element11
+     */
+	@JsonProperty("element11")
+	private String element11;
+	
+	/**
+     * element11
+     */
+	@JsonProperty("element37")
+	private String element37;
+	
+	/**
+     * element11
+     */
+	@JsonProperty("element61")
+	private String element61;
+	
+	/**
+     * packageCode
+     */
+	@NotBlank(message="packageCode is required!")
+	@JsonProperty("packageCode")
+	private String packageCode;
+	
 	
 	/**
      * amount
@@ -66,7 +113,7 @@ public class PaymentPrepaidTelcoRequest {
 	/**
      * totalAmount
      */
-	@NotNull(message = "total Amount is required!")
+	//@NotNull(message = "total Amount is required!")
 	@JsonProperty("totalAmount")
     private BigDecimal totalAmount;
 	
@@ -98,18 +145,14 @@ public class PaymentPrepaidTelcoRequest {
 	@JsonProperty("institutionType")
 	private String institutionType;
 	
-	/**
-     * accountNumber
-     */
-	@NotBlank(message="account Number is required!")
-	@JsonProperty("accountNumber")
-	private String accountNumber;
 	
 	/**
      * title
      */
 	@JsonProperty("title")
 	private String title;
+	
+	
 
 	/* Transient Attributes: */
 
@@ -307,6 +350,54 @@ public class PaymentPrepaidTelcoRequest {
      */
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public String getElement11() {
+		return element11;
+	}
+
+	public void setElement11(String element11) {
+		this.element11 = element11;
+	}
+
+	public String getElement37() {
+		return element37;
+	}
+
+	public void setElement37(String element37) {
+		this.element37 = element37;
+	}
+
+	public String getElement61() {
+		return element61;
+	}
+
+	public void setElement61(String element61) {
+		this.element61 = element61;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+
+	public String getCodeCbs() {
+		return codeCbs;
+	}
+
+	public void setCodeCbs(String codeCbs) {
+		this.codeCbs = codeCbs;
+	}
+
+	public String getPackageCode() {
+		return packageCode;
+	}
+
+	public void setPackageCode(String packageCode) {
+		this.packageCode = packageCode;
 	}
 
 	

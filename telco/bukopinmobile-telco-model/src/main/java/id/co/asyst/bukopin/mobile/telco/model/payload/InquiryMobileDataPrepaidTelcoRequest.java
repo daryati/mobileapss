@@ -37,6 +37,20 @@ public class InquiryMobileDataPrepaidTelcoRequest {
 	@NotBlank(message="phone Number is required!")
 	@JsonProperty("phoneNumber")
     private String phoneNumber;
+	
+	/**
+     * productCode
+     */
+	@NotBlank(message="product is required!")
+	@JsonProperty("productCode")
+    private String productCode;
+	
+	/**
+     * codeCbs
+     */
+	@NotBlank(message="codeCbs is required!")
+	@JsonProperty("codeCbs")
+    private String codeCbs;
 
 	/**
      * packageCode
@@ -242,16 +256,45 @@ public class InquiryMobileDataPrepaidTelcoRequest {
      */
 	public void setInstitutionType(String institutionType) {
 		this.institutionType = institutionType;
+	}	
+
+	/**
+	 * @return the productCode
+	 */
+	public String getProductCode() {
+		return productCode;
 	}
 
+	/**
+	 * @param productCode the productCode to set
+	 */
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+
+	/**
+	 * @return the codeCbs
+	 */
+	public String getCodeCbs() {
+		return codeCbs;
+	}
+
+	/**
+	 * @param codeCbs the codeCbs to set
+	 */
+	public void setCodeCbs(String codeCbs) {
+		this.codeCbs = codeCbs;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
-		return "InquiryMobileDataPrepaidTelcoRequest [phoneNumber="
-				+ phoneNumber + ", packageCode=" + packageCode + ", title="
-				+ title + ", amount=" + amount + ", adminFee=" + adminFee
-				+ ", provider=" + provider + ", pGroup=" + pGroup
-				+ ", idPrefix=" + idPrefix + ", institutionType="
-				+ institutionType + "]";
+		return "InquiryMobileDataPrepaidTelcoRequest [phoneNumber=" + phoneNumber + ", productCode=" + productCode
+				+ ", codeCbs=" + codeCbs + ", packageCode=" + packageCode + ", title=" + title + ", amount=" + amount
+				+ ", adminFee=" + adminFee + ", provider=" + provider + ", pGroup=" + pGroup + ", idPrefix=" + idPrefix
+				+ ", institutionType=" + institutionType + "]";
 	}
 
 	

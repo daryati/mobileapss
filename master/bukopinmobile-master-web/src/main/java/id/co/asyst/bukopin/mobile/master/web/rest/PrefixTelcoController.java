@@ -153,7 +153,8 @@ public class PrefixTelcoController {
 						detail.setAdminFee(ins.getAdminFee());
 						detail.setInstitutionType(ins.getInstitutionType());
 						detail.setName(ins.getName());
-						detail.setProductCode(ins.getCodeCbs());
+						detail.setProductCode(ins.getCodeArra());
+						detail.setCodeCbs(ins.getCodeCbs());
 											
 						//set selection
 						String[] sel = ins.getSelection().split("\\|");
@@ -172,7 +173,8 @@ public class PrefixTelcoController {
 						detail.setAdminFee(ins.getAdminFee());
 						detail.setInstitutionType(ins.getInstitutionType());
 						detail.setName(ins.getName());
-						detail.setProductCode(ins.getCodeCbs());
+						detail.setProductCode(ins.getCodeArra());
+						detail.setCodeCbs(ins.getCodeCbs());
 											
 						//set selection
 						String[] sel = ins.getSelection().split("\\|");		

@@ -41,6 +41,7 @@ public enum ResponseMessage {
     INVALID_AMOUNT("111"),
     PHONE_NUMBER_EXPIRED("112"),
     CUST_BLOCKED("113"),
+    INVALID_TRANSACTION("114"),
     
     PERMISSION_NOT_ALLOWED("201"),
     REQUEST_TIME_OUT("202"),

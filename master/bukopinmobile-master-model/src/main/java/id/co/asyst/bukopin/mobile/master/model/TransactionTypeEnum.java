@@ -24,5 +24,6 @@ public enum TransactionTypeEnum {
     TELCOPOST,
     INSURANCE,
     CREDITCARD,
-    SAMOLNAS
+    SAMOLNAS,
+    TELCODATA
 }
