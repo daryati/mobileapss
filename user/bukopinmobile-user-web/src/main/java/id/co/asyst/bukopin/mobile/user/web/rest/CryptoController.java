@@ -36,7 +36,6 @@ import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
  * @version $Revision$, Jan 13, 2020
  * @since 1.0.Alpha1-SNAPSHOT
  */
-@Profile("!prod")
 @RestController
 @RequestMapping("/api/crypto")
 public class CryptoController {
