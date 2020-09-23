@@ -13,7 +13,7 @@
 
     <groupId>id.co.asyst.bukopin.mobile</groupId>
     <artifactId>bukopinmobile-service</artifactId>
-    <version>1.4.GA</version>
+    <version>1.5.GA</version>
 
     <packaging>pom</packaging>
 
