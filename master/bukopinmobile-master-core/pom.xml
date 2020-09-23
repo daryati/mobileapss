@@ -12,7 +12,7 @@
 	<parent>
 		<groupId>id.co.asyst.bukopin.mobile</groupId>
 		<artifactId>bukopinmobile-master</artifactId>
-		<version>1.4.GA</version>
+		<version>1.5.GA</version>
 	</parent>
 
 	<build>
