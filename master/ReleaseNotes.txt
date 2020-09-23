@@ -1,4 +1,24 @@
 ===============================================================================
+   Bukopin-Mobile-Master 1.4.GA Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Master - Version 1.4.GA
+** Notes
+	* Relase for Push Notification & System Cut-Off.
+
+** Story
+	* [BKPM-292] - [Backend] System Cut Off
+	* [BKPM-303] - [Backend] Push Notification Service
+	* [BKPM-442] - [Backend] Enhancement FAQ
+	
+** Bug Fixed
+	* [BKPM-433] - [Backend] System Cut Off
+	* [BKPM-435] - [Backend] Set time in Cut Off system
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
    Bukopin-Mobile-Master 1.3.GA2 Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Master - Version 1.3.GA2

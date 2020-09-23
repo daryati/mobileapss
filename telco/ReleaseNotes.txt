@@ -1,4 +1,21 @@
 ===============================================================================
+   Bukopin-Mobile-Telco 1.4.GA Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Telco - Version 1.4.GA
+** Notes
+	* Relase for Push Notification & System Cut-Off.
+
+** Story
+	* 
+	
+** Bug Fixed
+	* [BKPM-410] - [Backend] Destination Type XL
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
    Bukopin-Mobile-Telco 1.3.GA2 Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Telco - Version 1.3.GA2

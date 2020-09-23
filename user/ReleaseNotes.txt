@@ -1,4 +1,22 @@
 ===============================================================================
+   Bukopin-Mobile-User 1.4.GA Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-User - Version 1.4.GA
+** Notes
+	* Relase for Push Notification & System Cut-Off.
+
+** Story
+	* 
+	
+** Bug Fixed
+	* [BKPM-378] - [Prod Issue][Backend] Rekening terduplikasi di Account Info dan Sumber Dana
+	* [BKPM-395] - [Prod Issue][Backend] Akun tutup dapat diaktivasi
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
    Bukopin-Mobile-User 1.3.GA2 Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-User - Version 1.3.GA2
