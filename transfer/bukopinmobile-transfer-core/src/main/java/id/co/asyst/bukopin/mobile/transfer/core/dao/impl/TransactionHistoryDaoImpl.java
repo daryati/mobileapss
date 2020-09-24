@@ -42,6 +42,7 @@ import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryPLNPo
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryPLNPrepaidResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistorySamolnasResponse;
+import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryTelcoDataResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryTelcoPostpaidResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryTelcoPrepaidResponse;
 
@@ -116,6 +117,7 @@ public class TransactionHistoryDaoImpl implements TransactionHistoryDao {
 		" WHERE" +
 		" ID_USER = "+ id + 
 		" AND CREATED_DATE >= "+ interval3Month +";";
+	System.out.println(slqT);
 	
 	// run query
 	Session session = entityManager.unwrap(Session.class);
@@ -658,6 +660,59 @@ public class TransactionHistoryDaoImpl implements TransactionHistoryDao {
 
 	entityManager.close();
 	
+	return response;
+    }
+    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see id.co.asyst.bukopin.mobile.transfer.core.dao.TransactionHistoryDao#
+     * getDetailTelcoPrepaidHistory(java.lang.Long)
+     */
+    @Override
+    public Optional<TransactionHistoryTelcoDataResponse> getDetailTelcoDataHistory(Long id) {
+	System.out.println("Transaction History Dao - Get Detail Telco Data with id: " + id);
+	Optional<TransactionHistoryTelcoDataResponse> response = Optional.empty();
+	TransactionHistoryTelcoDataResponse result = new TransactionHistoryTelcoDataResponse();
+
+	String sql = "SELECT"
+		+ " A.ID, A.REFERENCE_NUMBER, A.CREATED_DATE, A.ACCOUNT_NUMBER, B.*, C.SUBSCRIBER_NUMBER, C.ALIAS"
+		+ " FROM TRX A" + " JOIN TELCO_DATA B ON B.ID_TRANSACTION = A.ID"
+		+ " JOIN DESTINATION C ON C.ID = A.ID_DESTINATION" + " WHERE A.STATUS = 'SUCCESS' AND A.ID = " + id + ";";
+
+	// run query
+	Session session = entityManager.unwrap(Session.class);
+	Object tht = session.createSQLQuery(sql).uniqueResult();
+
+	// data not found handler
+	if (tht == null) {
+	    return response;
+	}
+	ObjectMapper objMapper = new ObjectMapper();
+	List<String> telcoDataResp = objMapper.convertValue(tht, ArrayList.class);
+	String dateLong = String.valueOf(telcoDataResp.get(2));
+	Date date = new Date(Long.valueOf(dateLong));
+
+	BigDecimal amount = new BigDecimal(String.valueOf(telcoDataResp.get(6)).replace(".00", ""));
+	BigDecimal adminFee = new BigDecimal(String.valueOf(telcoDataResp.get(5)).replace(".00", ""));
+	BigDecimal totalAmount = amount.add(adminFee);
+
+	// Mapping result
+	result.setDateTime(String.valueOf(sdf.format(date)));
+	result.setReferenceNumber(telcoDataResp.get(1));
+	result.setAccountNumber(telcoDataResp.get(3));
+	result.setPhoneNumber(telcoDataResp.get(10));
+	result.setTitle(telcoDataResp.get(7));
+	result.setTypeData(telcoDataResp.get(8).substring(11));
+	result.setAmount(amount);
+	result.setAdminFee(adminFee);
+	result.setTotalAmount(totalAmount);
+	result.setAlias(telcoDataResp.get(11));
+
+	response = Optional.of(result);
+
+	entityManager.close();
+
 	return response;
     }
 }
