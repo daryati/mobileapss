@@ -677,7 +677,7 @@ public class TransactionHistoryDaoImpl implements TransactionHistoryDao {
 	String sql = "SELECT"
 		+ " A.ID, A.REFERENCE_NUMBER, A.CREATED_DATE, A.ACCOUNT_NUMBER, B.*, C.SUBSCRIBER_NUMBER, C.ALIAS"
 		+ " FROM TRX A" + " JOIN TELCO_DATA B ON B.ID_TRANSACTION = A.ID"
-		+ " JOIN DESTINATION C ON C.ID = A.ID_DESTINATION" + " WHERE A.STATUS = 'SUCCESS' AND A.ID = " + id + ";";
+		+ " JOIN DESTINATION C ON C.ID = A.ID_DESTINATION" + " WHERE A.ID = " + id + ";";
 
 	// run query
 	Session session = entityManager.unwrap(Session.class);
