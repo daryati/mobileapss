@@ -232,16 +232,20 @@ public class PrepaidTelcoUtils {
     		retrievalRefNumber = generateSTAN(12);
     		
     		//-- set element 61
+    		amount = amount.substring(0, amount.length()-2);
+    		adminFee = adminFee.substring(0, adminFee.length()-2);
+    		
     		String element61= request.getPhoneNumber();
     		String paddingPhoneNumber = new String(new char[13 - element61.length()]).replace('\0', ' ');    		
     		String paddingPackagecode = new String(new char[4 - request.getPackageCode().length()]).replace('\0', ' ');    		
     		String paddingTitle= new String(new char[30 - request.getTitle().length()]).replace('\0', ' ');    		
     		String leftpaddingamount= new String(new char[12 - amount.length()]).replace('\0', '0');    		
     		String leftpadAdminFee = new String(new char[8 - adminFee.length()]).replace('\0', '0');
+    		String desc61 = "PPOB BANK BUKOPIN     JAKARTA      JKTID";
     		
     		elmt61 = element61.concat(paddingPhoneNumber).concat(request.getPackageCode()).concat(paddingPackagecode).
     				concat(request.getTitle()).concat(paddingTitle).concat(leftpaddingamount).concat(amount)
-    				.concat(leftpadAdminFee).concat(adminFee);
+    				.concat(leftpadAdminFee).concat(adminFee).concat(desc61);
     		
     		des1 = StringUtils.rightPad(TRDES1_MOBILEDATA_INDOSAT.concat(request.getPhoneNumber()), 40);
     		des2 = StringUtils.rightPad(TRDES2.concat(request.getAccountNumber()), 40);
@@ -249,7 +253,8 @@ public class PrepaidTelcoUtils {
     	} else if("XL".equalsIgnoreCase(providerGroup)) {
     		
     		//-- set request element 11
-    		randomElm11 = request.getElement11();
+    		//randomElm11 = request.getElement11();
+    		randomElm11=generateSTAN(6);
     		
     		//-- set request element 37
     		retrievalRefNumber= request.getElement37();
