@@ -67,7 +67,7 @@ public class PrepaidTelcoUtils {
     private static final String TRDES1_PULSA_TELKOMSEL = "MB : PULSA TSEL ";
     private static final String TRDES1_MOBILEDATA_TELKOMSEL = "MB : PAKET DATA TSEL ";
     private static final String TRDES1_PULSA_INDOSAT = "MB : PULSA INDOSAT ";
-    private static final String TRDES1_MOBILEDATA_INDOSAT = "MB : PAKET DATA INDOSAT ";
+    private static final String TRDES1_MOBILEDATA_INDOSAT = "MB : PAKET DATA ISAT ";
     private static final String TRDES1_PULSA_XL = "MB : PULSA XL ";
     private static final String TRDES1_MOBILEDATA_XL = "MB : PAKET DATA XL ";
     private static final String TRDES1_PULSA_TRI = "MB : PULSA TRI ";

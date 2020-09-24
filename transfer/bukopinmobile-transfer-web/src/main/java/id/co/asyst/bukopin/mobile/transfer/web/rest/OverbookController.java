@@ -80,6 +80,7 @@ public class OverbookController {
     private static final String SUCCESS_CODE = "000";
     // Prefix Wokee Account Number
     public static final String WOKEE_ACCNO_PREFIX = "89";
+    public static final String WOKEE_ERROR_CODE = "16";
 
     /* Attributes: */
 
@@ -266,6 +267,17 @@ public class OverbookController {
 		response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 		response.setMessage(messageUtil.get("error.account.dest.not.found", servletRequest.getLocale()));
 	    }
+	} else if (WOKEE_ERROR_CODE.equals(res.getStatusCode())) {
+		if("Rekening tujuan tidak aktif / pasif".equalsIgnoreCase(res.getStatusDesc())) {
+			log.error("Inactive wokee account: " + request.getData().getPostingTo().getAccountNumber());
+			response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
+			response.setMessage(messageUtil.get("error.inactive.wokee.account", servletRequest.getLocale()));
+		} else if("Rekening tujuan harus rekening utama".equalsIgnoreCase(res.getStatusDesc())) {
+			log.error("Beneficiary account must be the main account: " + request.getData().getPostingTo().getAccountNumber());
+			response.setCode(ResponseMessage.ERROR_MUST_BE_MAIN_ACCOUNT.getCode());
+			response.setMessage(messageUtil.get("error.must.be.main.account", servletRequest.getLocale()));
+		}
+		
 	} else {
 	    log.error("error code " + res.getStatusCode() + " message: " + res.getStatusDesc());
 	    // response = new CommonResponse(res.getStatusCode(), res.getStatusDesc());
@@ -332,6 +344,8 @@ public class OverbookController {
             response.setMessage(messageUtil.get("error.limit.day.exceed", servletRequest.getLocale()));
 	} else {
 	    InquiryAccountRes res = overbookService.inquiryAmountViaAPI(request.getData());
+	    log.debug("resssss: "+res);
+	    
 	    if (null != res.getConfirmationCode() && !"".equals(res.getConfirmationCode())) {
 		response.setData(res);
 	    } else if (TRANSFER_NOT_ENOUGH_BALANCE.equalsIgnoreCase(res.getStatusCode())) {
@@ -347,16 +361,27 @@ public class OverbookController {
 		response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
 		response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
 	    } else if (TRANSFER_ACCOUNT_DEST_NOT_FOUND.equals(res.getStatusCode())) {
-		if (isWokeeAccount(request.getData().getPostingTo().getAccountNumber())) {
-		    log.error("Account destination is Wokee: " + request.getData().getPostingTo().getAccountNumber());
-		    response.setCode(ResponseMessage.ERROR_INVALID_WOKEE_ACCOUNT.getCode());
-		    response.setMessage(messageUtil.get("error.account.dest.wokee", servletRequest.getLocale()));
+			if (isWokeeAccount(request.getData().getPostingTo().getAccountNumber())) {
+			    log.error("Account destination is Wokee: " + request.getData().getPostingTo().getAccountNumber());
+			    response.setCode(ResponseMessage.ERROR_INVALID_WOKEE_ACCOUNT.getCode());
+			    response.setMessage(messageUtil.get("error.account.dest.wokee", servletRequest.getLocale()));
+			} else {
+			    log.error("Account destination not found: " + request.getData().getPostingTo().getAccountNumber());
+			    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+			    response.setMessage(messageUtil.get("error.account.dest.not.found", servletRequest.getLocale()));
+			}
+	    } else if (WOKEE_ERROR_CODE.equals(res.getStatusCode())) {
+			if("Rekening tujuan tidak aktif / pasif".equalsIgnoreCase(res.getStatusDesc())) {
+				log.error("Inactive wokee account: " + request.getData().getPostingTo().getAccountNumber());
+				response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
+				response.setMessage(messageUtil.get("error.inactive.wokee.account", servletRequest.getLocale()));
+			} else if("Rekening tujuan harus rekening utama".equalsIgnoreCase(res.getStatusDesc())) {
+				log.error("Beneficiary account must be the main account: " + request.getData().getPostingTo().getAccountNumber());
+				response.setCode(ResponseMessage.ERROR_MUST_BE_MAIN_ACCOUNT.getCode());
+				response.setMessage(messageUtil.get("error.must.be.main.account", servletRequest.getLocale()));
+			}
+			
 		} else {
-		    log.error("Account destination not found: " + request.getData().getPostingTo().getAccountNumber());
-		    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
-		    response.setMessage(messageUtil.get("error.account.dest.not.found", servletRequest.getLocale()));
-		}
-	    } else {
 		log.error("error code " + res.getStatusCode() + " message: " + res.getStatusDesc());
 		// response = new CommonResponse(res.getStatusCode(), res.getStatusDesc());
 		throw new MiddlewareException(res.getStatusCode());

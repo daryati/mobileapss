@@ -81,6 +81,7 @@ public enum ResponseMessage {
     ERROR_BALANCE_LESS_MINIMUM("312"),
     ERROR_ACCOUNT_ALREADY_SAVED("313"),
     ERROR_INVALID_WOKEE_ACCOUNT("314"),
+    ERROR_MUST_BE_MAIN_ACCOUNT("315"),
     
     // External Error
     ERROR_EXTERNAL("600"),
