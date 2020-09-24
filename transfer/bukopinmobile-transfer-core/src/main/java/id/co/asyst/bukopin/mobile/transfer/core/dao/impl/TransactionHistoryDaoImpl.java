@@ -117,7 +117,6 @@ public class TransactionHistoryDaoImpl implements TransactionHistoryDao {
 		" WHERE" +
 		" ID_USER = "+ id + 
 		" AND CREATED_DATE >= "+ interval3Month +";";
-	System.out.println(slqT);
 	
 	// run query
 	Session session = entityManager.unwrap(Session.class);
