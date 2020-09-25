@@ -670,12 +670,18 @@ public class PrepaidTelcoController {
 	    response = new CommonResponse();
 	    response.setCode(ResponseMessage.ERROR_VOUCHER_OUT_OF_STOCK.getCode());
 	    response.setMessage(messageUtil.get("error.voucher.out.of.stock", httpServletRequest.getLocale()));
-	} else if (ACCOUNT_WAS_BLOCKED.equals(codeRes) || GIRO_ACCOUNT_BLOCKED.equals(codeRes)
+	} else if (GIRO_ACCOUNT_BLOCKED.equals(codeRes)
 		|| GIRO_ACCOUNT_WAS_BLOCKED.equals(codeRes)) {
 	    log.error("prepaid telco - blocked account");
 	    response = new CommonResponse();
 	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
 	    response.setMessage(messageUtil.get("error.account.was.blocked", httpServletRequest.getLocale()));
+	    return response;
+	} else if (ACCOUNT_WAS_BLOCKED.equals(codeRes) ) {
+	    log.error("prepaid telco - blocked phone number");
+	    response = new CommonResponse();
+	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
+	    response.setMessage(messageUtil.get("error.phone.number.was.blocked", httpServletRequest.getLocale()));
 	    return response;
 	} else if (PHONE_NUMBER_EXPIRED.equalsIgnoreCase(codeRes)) {
 	    log.error("Prepaid telco - phone number expired");
