@@ -69,15 +69,15 @@ public class PushNotificationController {
 	log.debug("REST request to push notification : {}", req);
 	
 	// get FCM key from db
-	/*CommonResponse fcmKeyRes = Services.create(MasterModuleService.class)
+	CommonResponse fcmKeyRes = Services.create(MasterModuleService.class)
 		.findConfigByName(FCM).execute().body();
 	if (!ResponseMessage.SUCCESS.getCode().equals(fcmKeyRes.getCode())) {
 		return fcmKeyRes;
 	}
 	ObjectMapper oMapper = new ObjectMapper();
-	Configuration configurationValue = oMapper.convertValue(fcmKeyRes.getData(), Configuration.class);*/
-	//String fcmValue = KEY.concat(configurationValue.getValue());
-	String fcmValue = KEY.concat("AAAArAyrsLg:APA91bE2hOK7uRHQEqZzFysDIup6cFKZr6Cj6-kQikiThaGslwzrMIhJdOhuRxwLmNBw8ZWHNrGfT8son0pBJIL5msXQkr_g9ME3svlrdNTJeP6Ff4xcf1l4ohI3JY-aTQAQpSzZoXsj");
+	Configuration configurationValue = oMapper.convertValue(fcmKeyRes.getData(), Configuration.class);
+	String fcmValue = KEY.concat(configurationValue.getValue());
+	//String fcmValue = KEY.concat("AAAArAyrsLg:APA91bE2hOK7uRHQEqZzFysDIup6cFKZr6Cj6-kQikiThaGslwzrMIhJdOhuRxwLmNBw8ZWHNrGfT8son0pBJIL5msXQkr_g9ME3svlrdNTJeP6Ff4xcf1l4ohI3JY-aTQAQpSzZoXsj");
 	
 	Object pushNotifResFirebase = Services.create(PushNotificationService.class)
 		.pushNotif(fcmValue, CONTENT_TYPE, req).execute().body();
