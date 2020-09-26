@@ -1,4 +1,21 @@
 ===============================================================================
+   Bukopin-Mobile-Master 1.5.GA Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Master - Version 1.5.GA
+** Notes
+	* Relase for Paket Data & Trace Push Notification Networking
+
+** Story
+	* 
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
    Bukopin-Mobile-Master 1.4.GA Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Master - Version 1.4.GA

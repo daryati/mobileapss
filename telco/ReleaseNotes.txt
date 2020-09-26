@@ -1,4 +1,22 @@
 ===============================================================================
+   Bukopin-Mobile-Telco 1.5.GA Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Telco - Version 1.5.GA
+** Notes
+	* Relase for Paket Data & Trace Push Notification Networking
+
+** Story
+	* [BKPM-154] - [Backend] Telco Prepaid - Inquiry Mobile Data
+	* [BKPM-147] - [Backend] Telco Prepaid (Mobile Credit & Internet Data)
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
    Bukopin-Mobile-Telco 1.4.GA Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Telco - Version 1.4.GA

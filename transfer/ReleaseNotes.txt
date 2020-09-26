@@ -1,4 +1,21 @@
 ===============================================================================
+   Bukopin-Mobile-Transfer 1.5.GA Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Transfer - Version 1.5.GA
+** Notes
+	* Relase for Paket Data & Trace Push Notification Networking
+
+** Story
+	* [BKPM-403] - [Backend] Transaction History - Detail Transaction : Telco Paket Data
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
    Bukopin-Mobile-Transfer 1.4.GA Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Transfer - Version 1.4.GA
