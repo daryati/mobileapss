@@ -21,11 +21,12 @@ spring:
       initialization-mode: never # always (on) or never (off)
    jpa:
       hibernate:
-         ddl-auto: update # update, create, none
+         ddl-auto: none # update, create, none
          naming.physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl      
          #spring.jpa.hibernate.ddl-auto=none
       properties:
-         hibernate.dialect: org.hibernate.dialect.SQLServerDialect
+         #hibernate.dialect: org.hibernate.dialect.SQLServerDialect # < v2008
+         hibernate.dialect: org.hibernate.dialect.SQLServer2008Dialect # >= v2008
          #hibernate.jdbc.lob.non_contextual_creation: true
    mail:
       #host: smtp.office365.com

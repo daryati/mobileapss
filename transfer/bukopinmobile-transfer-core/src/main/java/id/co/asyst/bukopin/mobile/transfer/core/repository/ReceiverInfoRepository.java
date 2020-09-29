@@ -11,6 +11,7 @@ package id.co.asyst.bukopin.mobile.transfer.core.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -57,7 +58,7 @@ public interface ReceiverInfoRepository extends JpaRepository<ReceiverInfo, Long
     @Query("SELECT a FROM ReceiverInfo a WHERE a.username = :username AND (a.isSave = :isSave)")
     List<ReceiverInfo> findAllByusername(@Param("username") String username, @Param("isSave") boolean isSave);
     
-    @Query("select ri from ReceiverInfo ri where ri.username.username=?1 AND ri.isSave = ?2 order by counter desc")
-    List<ReceiverInfo> findMostFrequent(String username, boolean isSave);
+    @Query("select ri from ReceiverInfo ri where ri.username.username=?1 AND ri.isSave = ?2 order by counter desc ")
+    List<ReceiverInfo> findMostFrequent(String username, boolean isSave, Pageable pageable);
 
 }

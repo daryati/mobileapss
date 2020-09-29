@@ -398,8 +398,10 @@ public class ReceiverInfoController {
 	    return resPhone;
 	}
 	
+	// limit favourite
+	int limitFav = Integer.valueOf(env.getProperty("config.max.most.frequent"));
 	// Query Most Frequent
-	List<ReceiverInfo> most = receiverService.findMostFrequent(decryptedUsername);
+	List<ReceiverInfo> most = receiverService.findMostFrequent(decryptedUsername, limitFav);
 	if(most==null || most.isEmpty()) {
 	    // set empty object
 	    most = new ArrayList<ReceiverInfo>();
@@ -407,9 +409,6 @@ public class ReceiverInfoController {
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 	    response.setMessage(messageUtil.get("data.not.found", servletRequest.getLocale()));
 	} else {
-	    // limit favourite
-	    int limitFav = Integer.valueOf(env.getProperty("config.max.most.frequent"));
-	    most = most.stream().limit(limitFav).collect(Collectors.toList());
 	    // remove unnecessary field
 	    most.forEach(ri -> {
 		ri.setUsername(null);

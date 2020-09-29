@@ -95,7 +95,7 @@ public class FundTransfer extends IdBasedObject implements Serializable {
      */
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "USER_ID")
-    private UserTransfer username;
+    private User username;
     
     /**
      * reference code
@@ -295,7 +295,7 @@ public class FundTransfer extends IdBasedObject implements Serializable {
      * 
      * @return The <code>username</code>.
      */
-   public UserTransfer getUsername() {
+   public User getUsername() {
         return username;
     }
 
@@ -304,7 +304,7 @@ public class FundTransfer extends IdBasedObject implements Serializable {
     * 
     * @param username The <code>username</code> to set.
     */
-    public void setUsername(UserTransfer username) {
+    public void setUsername(User username) {
         this.username = username;
     }
 

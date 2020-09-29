@@ -54,7 +54,6 @@ import id.co.asyst.bukopin.mobile.transfer.model.PostingReq;
 import id.co.asyst.bukopin.mobile.transfer.model.PostingRes;
 import id.co.asyst.bukopin.mobile.transfer.model.PostingToReq;
 import id.co.asyst.bukopin.mobile.transfer.model.entity.ReceiverInfo;
-import id.co.asyst.bukopin.mobile.transfer.model.entity.UserTransfer;
 import id.co.asyst.bukopin.mobile.transfer.model.entity.Bank;
 import id.co.asyst.bukopin.mobile.transfer.model.entity.FundTransfer;
 import id.co.asyst.bukopin.mobile.transfer.model.soap.posting.Fault;
@@ -274,7 +273,7 @@ public class OverbookService {
 					    res = ConnectionUtils.urlAccess(urlUser, dataJson.toString(),
 								header).toString();
 					    parser = new JSONParser();
-					    UserTransfer user = new UserTransfer();
+					    User user = new User();
 						if(res != null){
 							responseJson = (JSONObject) parser.parse(res);
 							//log.debug("response ini yaaa "+responseJson);

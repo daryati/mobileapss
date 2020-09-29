@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import id.co.asyst.bukopin.mobile.user.model.entity.User;
 import id.co.asyst.foundation.common.model.IdBasedObject;
 
 /**
@@ -102,7 +103,7 @@ public class ReceiverInfo extends IdBasedObject implements Serializable {
      */
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "USER_ID")
-    private UserTransfer username;
+    private User username;
 
     /**
      * is save
@@ -239,7 +240,7 @@ public class ReceiverInfo extends IdBasedObject implements Serializable {
      * 
      * @return The <code>username</code>.
      */
-    public UserTransfer getUsername() {
+    public User getUsername() {
 	return username;
     }
 
@@ -249,7 +250,7 @@ public class ReceiverInfo extends IdBasedObject implements Serializable {
      * @param counter
      *            The <code>username</code> to set.
      */
-    public void setUsername(UserTransfer username) {
+    public void setUsername(User username) {
 	this.username = username;
     }
 
