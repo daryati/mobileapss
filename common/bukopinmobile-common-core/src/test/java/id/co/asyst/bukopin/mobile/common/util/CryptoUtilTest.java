@@ -127,7 +127,7 @@ public class CryptoUtilTest {
     @Test
     public void testEncryptAESHex() {
 	System.out.println("Test encrypt AES in Hex...");
-	String encrypted = CryptoUtil.encryptAESHex("andri1");
+	String encrypted = CryptoUtil.encryptAESHex("usereka");
 	System.out.println(encrypted);
 //	assertEquals(AES_HEX_ENCRYPTED, encrypted);
     }

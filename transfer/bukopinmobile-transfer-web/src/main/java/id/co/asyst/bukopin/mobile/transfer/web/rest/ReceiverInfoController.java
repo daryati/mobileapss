@@ -208,9 +208,6 @@ public class ReceiverInfoController {
 	int userId = (int) findUserByUsername.getData();
 	long id = Long.parseLong(String.valueOf(userId));
 
-	List<ReceiverInfo> listBukopinReceiver = favService.findByBukopinAccount(id);
-	List<ReceiverInfo> listNotBukopinReceiver = favService.findNotBukopinAccount(id);
-
 	if(findAccountInfo.getData() == null) {
 	    log.error("Account info null");
 	 // data not found
@@ -267,13 +264,13 @@ public class ReceiverInfoController {
 	
 	// limit "other" result
 	int limitOther = Integer.valueOf(env.getProperty("config.max.receiver.overbook"));
-	listBukopinReceiver = listBukopinReceiver.stream().limit(limitOther).collect(Collectors.toList());
+	List<ReceiverInfo> listBukopinReceiver = favService.findByBukopinAccount(id, limitOther);
 	overbookResponse.setOther(listBukopinReceiver);
 
 	// limit "transfer" result
 	TransferResponse others = new TransferResponse();
 	int limitTransfer = Integer.valueOf(env.getProperty("config.max.receiver.transfer"));
-	listNotBukopinReceiver = listNotBukopinReceiver.stream().limit(limitTransfer).collect(Collectors.toList());
+	List<ReceiverInfo> listNotBukopinReceiver = favService.findNotBukopinAccount(id, limitTransfer);
 	others.setTransfer(listNotBukopinReceiver);
 
 	ReceiverInfoResponse receiverResponse = new ReceiverInfoResponse();

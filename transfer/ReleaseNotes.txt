@@ -6,7 +6,7 @@ Release Notes - Bukopin-Mobile-Transfer - Version 1.6.GA
 	* Relase for Credit Card (Bukopin & Non Bukopin)
 
 ** Story
-	* [BKPM-446] - Performance Issue in Most Frequent & Get all Bank
+	* [BKPM-446] - Performance Issue in Most Frequent, Get all Banks and All Favorites
 	
 ** Bug Fixed
 	* 

@@ -50,10 +50,10 @@ public interface ReceiverInfoRepository extends JpaRepository<ReceiverInfo, Long
      * @return Document Me.
      */
     @Query("SELECT a FROM ReceiverInfo a WHERE a.username.id = :username AND (a.bank.bankCode = :bank) AND (a.isSave = :isSave)")
-    List<ReceiverInfo> findBukopinReceiver(@Param("username") long username, @Param("bank") String bank, @Param("isSave") boolean isSave);
+    List<ReceiverInfo> findBukopinReceiver(@Param("username") long username, @Param("bank") String bank, @Param("isSave") boolean isSave, Pageable pageable);
 
     @Query("SELECT a FROM ReceiverInfo a WHERE a.username.id = :username AND (a.bank.bankCode <> :bank) AND (a.isSave = :isSave)")
-    List<ReceiverInfo> findNotBukopinReceiver(@Param("username") long username, @Param("bank") String bank, @Param("isSave") boolean isSave);
+    List<ReceiverInfo> findNotBukopinReceiver(@Param("username") long username, @Param("bank") String bank, @Param("isSave") boolean isSave, Pageable pageable);
     
     @Query("SELECT a FROM ReceiverInfo a WHERE a.username = :username AND (a.isSave = :isSave)")
     List<ReceiverInfo> findAllByusername(@Param("username") String username, @Param("isSave") boolean isSave);
