@@ -9,7 +9,7 @@
   <parent>
     <groupId>id.co.asyst.bukopin.mobile</groupId>
     <artifactId>bukopinmobile-payment</artifactId>
-    <version>1.5.GA</version>
+    <version>1.6.GA</version>
   </parent>
   
   <properties>

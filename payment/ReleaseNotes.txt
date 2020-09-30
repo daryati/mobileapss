@@ -1,4 +1,24 @@
 ===============================================================================
+   Bukopin-Mobile-Payment 1.6.GA Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Payment - Version 1.6.GA
+** Notes
+	* Relase for Credit Card (Bukopin & Non Bukopin)
+
+** Story
+	* [BKPM-240] - Credit card Inquiry
+	* [BKPM-241] - Bukopin Credit Card Payment
+	* [BKPM-242] - List Credit
+	* [BKPM-260] - Check BIN
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
    Bukopin-Mobile-Payment 1.5.GA Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Payment - Version 1.5.GA
