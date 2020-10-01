@@ -82,6 +82,7 @@ public enum ResponseMessage {
     ERROR_ACCOUNT_ALREADY_SAVED("313"),
     ERROR_INVALID_WOKEE_ACCOUNT("314"),
     ERROR_MUST_BE_MAIN_ACCOUNT("315"),
+    ERROR_WOKEE_ACCOUNT_CLOSED("316"),
     
     // External Error
     ERROR_EXTERNAL("600"),

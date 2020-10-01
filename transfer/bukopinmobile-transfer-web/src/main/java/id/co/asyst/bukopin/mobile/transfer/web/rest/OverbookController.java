@@ -276,6 +276,10 @@ public class OverbookController {
 			log.error("Beneficiary account must be the main account: " + request.getData().getPostingTo().getAccountNumber());
 			response.setCode(ResponseMessage.ERROR_MUST_BE_MAIN_ACCOUNT.getCode());
 			response.setMessage(messageUtil.get("error.must.be.main.account", servletRequest.getLocale()));
+		} else if("Rekening tujuan tidak ada / bukan rekening utama".equalsIgnoreCase(res.getStatusDesc())) {
+			log.error("Wokee Account Not Found / Closed – Rekening Wokee tidak ada / tutup: " + request.getData().getPostingTo().getAccountNumber());
+			response.setCode(ResponseMessage.ERROR_WOKEE_ACCOUNT_CLOSED.getCode());
+			response.setMessage(messageUtil.get("error.must.be.main.account", servletRequest.getLocale()));
 		}
 		
 	} else {
@@ -378,6 +382,10 @@ public class OverbookController {
 			} else if("Rekening tujuan harus rekening utama".equalsIgnoreCase(res.getStatusDesc())) {
 				log.error("Beneficiary account must be the main account: " + request.getData().getPostingTo().getAccountNumber());
 				response.setCode(ResponseMessage.ERROR_MUST_BE_MAIN_ACCOUNT.getCode());
+				response.setMessage(messageUtil.get("error.must.be.main.account", servletRequest.getLocale()));
+			} else if("Rekening tujuan tidak ada / bukan rekening utama".equalsIgnoreCase(res.getStatusDesc())) {
+				log.error("Wokee Account Not Found / Closed – Rekening Wokee tidak ada / tutup: " + request.getData().getPostingTo().getAccountNumber());
+				response.setCode(ResponseMessage.ERROR_WOKEE_ACCOUNT_CLOSED.getCode());
 				response.setMessage(messageUtil.get("error.must.be.main.account", servletRequest.getLocale()));
 			}
 			
