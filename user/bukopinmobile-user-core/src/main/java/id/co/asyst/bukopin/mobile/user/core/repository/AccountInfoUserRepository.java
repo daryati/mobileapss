@@ -50,4 +50,7 @@ public interface AccountInfoUserRepository extends JpaRepository<AccountInfo, Lo
     @Query("SELECT a FROM AccountInfo a WHERE a.accountNo = :accountNo")
     public AccountInfo findAccountInfoByAccountNo(@Param("accountNo") String accountNo);
     
+    @Query("SELECT a FROM AccountInfo a WHERE a.accountCard.user.username = ?1")
+    public List<AccountInfo> findByUsername(String username);
+    
 }

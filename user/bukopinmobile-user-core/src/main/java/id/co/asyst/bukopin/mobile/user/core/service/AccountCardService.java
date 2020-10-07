@@ -280,7 +280,7 @@ public class AccountCardService {
      * </p>
      * @param tibcoAccountInfo All of account info from tibco.
      * @param products All of products from db mbanking.
-     * @return Map filtered account info to save and cif status.
+     * @return Map filtered account info to save, not activated accinfo and cif status.
      */
     public Map<String, Object> filterAccountVerification(List<GetInquiryCIFResType.Accounts> tibcoAccountInfo,
 	    List<DebitCardInfo> xlinkData, List<Integer> pdidsDb, List<Integer> blackListPdid) {
@@ -291,8 +291,10 @@ public class AccountCardService {
 	// holder accno & cif status
 	Map<String,Integer> accCifStatus = new HashMap<>();
 	
-	// list accountInfo to be response
-	List<GetInquiryCIFResType.Accounts> accInfoResp = new ArrayList();
+//	// list accountInfo to be response
+//	List<GetInquiryCIFResType.Accounts> accInfoResp = new ArrayList();
+	// list accountInfo cannot be activated
+	List<GetInquiryCIFResType.Accounts> notActivatedAccInfo = new ArrayList();
 	// filtered accinfo (can be activated only)
 	List<GetInquiryCIFResType.Accounts> filteredAccInfo = new ArrayList();
 	for (GetInquiryCIFResType.Accounts accounts : tibcoAccountInfo) {
@@ -323,10 +325,13 @@ public class AccountCardService {
 
 				// filtered accs info
 				filteredAccInfo.add(accounts);
+			    } else {
+				// not activated accinfo
+				notActivatedAccInfo.add(accounts);
 			    }
 			    
-			    // add response list
-			    accInfoResp.add(accounts);
+//			    // add response list
+//			    accInfoResp.add(accounts);
 			}
 		    }
 		    
@@ -364,8 +369,11 @@ public class AccountCardService {
 
 			    // filtered accs info
 			    filteredAccInfo.add(accounts);
+			} else {
+			    // not activated accinfo
+			    notActivatedAccInfo.add(accounts);
 			}
-			accInfoResp.add(accounts);
+//			accInfoResp.add(accounts);
 		    }
 		}
 	    }
@@ -373,7 +381,8 @@ public class AccountCardService {
 	
 	Map<String, Object> mapResult = new HashMap<>();
 	mapResult.put("ACC_INFO", filteredAccInfo);
-	mapResult.put("ACC_INFO_RESP", accInfoResp);
+	mapResult.put("ACC_INFO_NOT_ACTIVATED", notActivatedAccInfo);
+//	mapResult.put("ACC_INFO_RESP", accInfoResp);
 	mapResult.put("CIF_STATUS", accCifStatus);
 	
 	return mapResult;

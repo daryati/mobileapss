@@ -155,6 +155,10 @@ public class BkpmConstants {
      * Not activated accounts 
      */
     public static final String KEY_ACCOUNT_NOT_ACTIVATED = "NOT_ACTIVATED";
+    /**
+     * Non Transactional Product key 
+     */
+    public static final String KEY_NON_TRX_ACCOUNT = "NOT_FUND_SOURCE";
     
     
     /* OTHERS: */
