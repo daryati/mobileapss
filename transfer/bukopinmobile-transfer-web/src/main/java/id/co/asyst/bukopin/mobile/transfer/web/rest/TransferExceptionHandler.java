@@ -11,6 +11,7 @@ package id.co.asyst.bukopin.mobile.transfer.web.rest;
 
 import java.io.IOException;
 import java.net.NoRouteToHostException;
+import java.util.Date;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +41,8 @@ import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.FieldValidatorEnum;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
+import id.co.asyst.bukopin.mobile.transfer.web.rest.errors.ErrorDetails;
+import id.co.asyst.bukopin.mobile.transfer.web.rest.errors.ResourceNotFoundException;
 
 /**
  * Global Exception Handler for Transfer Module
@@ -147,6 +150,23 @@ public class TransferExceptionHandler extends ResponseEntityExceptionHandler {
 
 	return handleExceptionInternal(ex, response, new HttpHeaders(), HttpStatus.OK, request);
     }
+    
+    //Audit log
+  //---------------------------------------------------------------------------------------------------
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<?> resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+         ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false));
+         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> globleExcpetionHandler(Exception ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    
+    //---------------------------------------------------------------------------------------------------
+    
 
     /* Overrides: */
     // 400 - Message Not Readable.

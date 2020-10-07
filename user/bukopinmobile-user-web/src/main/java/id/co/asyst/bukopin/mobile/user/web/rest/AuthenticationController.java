@@ -1069,7 +1069,7 @@ public class AuthenticationController {
      * @throws Exception
      */
     @PostMapping("/logout")
-    private CommonResponse logout(@RequestBody CommonRequest<HashMap<String, String>> req) throws Exception {
+    public CommonResponse logout(@RequestBody CommonRequest<HashMap<String, String>> req) throws Exception {
 	CommonResponse response = new CommonResponse();
 	String username = req.getData().get("username");
 	// validate parameter

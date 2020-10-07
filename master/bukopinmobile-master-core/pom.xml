@@ -94,6 +94,11 @@
 			<artifactId>bukopinmobile-master-model</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency> 
+	      <groupId>id.co.asyst.bukopin.mobile</groupId> 
+	      <artifactId>bukopinmobile-service-core</artifactId> 
+	      <version>${bukopin.service.version}</version> 
+	    </dependency>
 
 		<!-- <dependency>
 			<groupId>id.co.asyst.bukopin.mobile</groupId>

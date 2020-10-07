@@ -11,6 +11,7 @@ package id.co.asyst.bukopin.mobile.user.web.rest.errors;
 
 import java.io.IOException;
 import java.net.NoRouteToHostException;
+import java.util.Date;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
@@ -148,6 +149,25 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
 	return handleExceptionInternal(ex, response, new HttpHeaders(), HttpStatus.OK, request);
     }
 
+    //audit log
+    //---------------------------------------------------------------------------------------------------
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<?> resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+         ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false));
+         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> globleExcpetionHandler(Exception ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    
+    //---------------------------------------------------------------------------------------------------
+    
+    
+    
+    
     /* Overrides: */
     // 400 - Message Not Readable.
     /*

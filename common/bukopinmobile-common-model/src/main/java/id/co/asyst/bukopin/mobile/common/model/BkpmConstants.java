@@ -90,6 +90,7 @@ public class BkpmConstants {
     public static final String API_KEY_VALUE = "77474043-b7a0-489f-81c5-387ae027f8aa";
     
     public static final String STATUS_SUCCESS = "SUCCESS";
+    public static final String STATUS_FAILED = "FAILED";
     
     //HTTP CONSTANT
     

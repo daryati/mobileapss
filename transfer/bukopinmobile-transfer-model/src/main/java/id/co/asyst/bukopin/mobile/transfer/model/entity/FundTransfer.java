@@ -121,6 +121,12 @@ public class FundTransfer extends IdBasedObject implements Serializable {
     
     @Column(name = "NOTE_EN")
     private String noteEn;
+    
+    @Column(name = "MENU", length = 50)
+    private String menu;
+    
+    @Column(name = "REASON", length = 255)
+    private String reason;
 
     /* Transient Attributes: */
 
@@ -358,10 +364,50 @@ public class FundTransfer extends IdBasedObject implements Serializable {
         this.noteEn = noteEn;
     }
 
-    
+    /**
+     * Gets <code>menu</code>.
+     * @return The <code>menu</code>.
+     */
+    public String getMenu() {
+        return menu;
+    }
+
+    /**
+     * Sets <code>menu</code>.
+     * @param menu The <code>menu</code> to set.
+     */
+    public void setMenu(String menu) {
+        this.menu = menu;
+    }
+
+    /**
+     * Gets <code>reason</code>.
+     * @return The <code>reason</code>.
+     */
+    public String getReason() {
+        return reason;
+    }
+
+    /**
+     * Sets <code>reason</code>.
+     * @param reason The <code>reason</code> to set.
+     */
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
     /* Getters & setters for transient attributes: */
 
     /* Functionalities: */
 
-
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+	return "FundTransfer [accountNumber=" + accountNumber + ", amount=" + amount + ", adminFee=" + adminFee
+		+ ", message=" + message + ", createdOn=" + createdOn + ", method=" + method + ", username=" + username
+		+ ", referenceCode=" + referenceCode + ", receiverInfo=" + receiverInfo + ", status=" + status
+		+ ", noteId=" + noteId + ", noteEn=" + noteEn + ", menu=" + menu + ", reason=" + reason + "]";
+    }
 }
