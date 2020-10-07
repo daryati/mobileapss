@@ -614,14 +614,11 @@ public class TransactionHistoryDaoImpl implements TransactionHistoryDao {
 	Optional<TransactionHistoryCreditCardResponse> response = Optional.empty();
 	TransactionHistoryCreditCardResponse result = new TransactionHistoryCreditCardResponse();
 	
-	String sql = "SELECT" +
-		" A.ID, A.REFERENCE_NUMBER, A.CREATED_DATE, A.ACCOUNT_NUMBER," +
-		" B.TYPE, B.BILLED_AMOUNT, B.MINIMUM_AMOUNT, B.AMOUNT," +
-		" C.SUBSCRIBER_NAME, C.SUBSCRIBER_NUMBER, C.ALIAS" + 
-		" FROM TRX A" +
-		" JOIN CREDIT_CARD B ON B.ID_TRANSACTION = A.ID" +
-		" JOIN DESTINATION C ON C.ID = A.ID_DESTINATION" +
-		" WHERE A.ID = "+id+";";
+	String sql = "SELECT" + " A.ID, A.REFERENCE_NUMBER, A.CREATED_DATE, A.ACCOUNT_NUMBER,"
+		+ " B.TYPE, B.BILLED_AMOUNT, B.MINIMUM_AMOUNT, B.AMOUNT,"
+		+ " C.SUBSCRIBER_NAME, C.SUBSCRIBER_NUMBER, C.ALIAS" + " FROM TRX A"
+		+ " JOIN CREDIT_CARD B ON B.ID_TRANSACTION = A.ID" + " JOIN DESTINATION C ON C.ID = A.ID_DESTINATION"
+		+ " WHERE A.STATUS = 'SUCCESS' AND A.ID = " + id + ";";
 
 	
 	// run query

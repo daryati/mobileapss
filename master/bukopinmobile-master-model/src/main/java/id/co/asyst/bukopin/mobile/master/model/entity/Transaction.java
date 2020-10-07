@@ -75,6 +75,18 @@ public class Transaction extends IdBasedObject {
     
     @Column(name = "NOTE_EN", length = 255)
     private String noteEn;
+    
+    @Column(name = "BILLER_PRODUCT", length = 100)
+    private String billerProduct;
+    
+    @Column(name = "MENU", length = 50)
+    private String menu;
+    
+    @Column(name = "STATUS", length = 50)
+    private String status;
+    
+    @Column(name = "REASON", length = 255)
+    private String reason;
 
     /* Transient Attributes: */
 
@@ -224,6 +236,70 @@ public class Transaction extends IdBasedObject {
     public void setNoteEn(String noteEn) {
         this.noteEn = noteEn;
     }
+    
+    /**
+     * Gets <code>billerProduct</code>.
+     * @return The <code>billerProduct</code>.
+     */
+    public String getBillerProduct() {
+        return billerProduct;
+    }
+
+    /**
+     * Sets <code>billerProduct</code>.
+     * @param billerProduct The <code>billerProduct</code> to set.
+     */
+    public void setBillerProduct(String billerProduct) {
+        this.billerProduct = billerProduct;
+    }
+
+    /**
+     * Gets <code>menu</code>.
+     * @return The <code>menu</code>.
+     */
+    public String getMenu() {
+        return menu;
+    }
+
+    /**
+     * Sets <code>menu</code>.
+     * @param menu The <code>menu</code> to set.
+     */
+    public void setMenu(String menu) {
+        this.menu = menu;
+    }
+
+    /**
+     * Gets <code>status</code>.
+     * @return The <code>status</code>.
+     */
+    public String getStatus() {
+        return status;
+    }
+
+    /**
+     * Sets <code>status</code>.
+     * @param status The <code>status</code> to set.
+     */
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    /**
+     * Gets <code>reason</code>.
+     * @return The <code>reason</code>.
+     */
+    public String getReason() {
+        return reason;
+    }
+
+    /**
+     * Sets <code>reason</code>.
+     * @param reason The <code>reason</code> to set.
+     */
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -232,6 +308,7 @@ public class Transaction extends IdBasedObject {
     public String toString() {
 	return "Transaction [user=" + user + ", destination=" + destination + ", createdDate=" + createdDate
 		+ ", refNumber=" + refNumber + ", type=" + type + ", accountNumber=" + accountNumber + ", totalAmount="
-		+ totalAmount + ", noteId=" + noteId + ", noteEn=" + noteEn + "]";
+		+ totalAmount + ", noteId=" + noteId + ", noteEn=" + noteEn + ", billerProduct=" + billerProduct
+		+ ", menu=" + menu + ", status=" + status + ", reason=" + reason + "]";
     }
 }

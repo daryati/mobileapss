@@ -47,6 +47,7 @@ import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
 import id.co.asyst.bukopin.mobile.master.core.service.DestinationService;
 import id.co.asyst.bukopin.mobile.master.core.service.PurchaseCategoryService;
 import id.co.asyst.bukopin.mobile.master.core.service.TransactionService;
+import id.co.asyst.bukopin.mobile.master.model.DestinationTypeEnum;
 import id.co.asyst.bukopin.mobile.master.model.TransactionTypeEnum;
 import id.co.asyst.bukopin.mobile.master.model.entity.Destination;
 import id.co.asyst.bukopin.mobile.master.model.entity.PurchaseCategory;
@@ -104,6 +105,28 @@ public class DestinationController {
 	private static final String NOTE_EN_CREDITCARDPOST = "PAY CREDIT CARD ";
 	private static final String NOTE_ID_SAMOLNAS = "BAYAR SAMOLNAS ";
 	private static final String NOTE_EN_SAMOLNAS = "PAY SAMOLNAS ";
+
+	private static final String PLN_BILLER_PRODUCT = "PLN";
+	private static final String SAMOLNAS_BILLER_PRODUCT = "Samolnas";
+	private static final String INSURANCE_BILLER_PRODUCT = "BPJS Kesehatan";
+	private static final String EMONEY_TRX_MENU = "E-Money Purchase";
+	private static final String PLN_PREPAID_TRX_MENU = "Electricity Purchase";
+	private static final String PLN_POSTPAID_TRX_MENU = "Electricity Payment";
+	private static final String TELCO_POSTPAID_TRX_MENU = "Mobile & Data Payment";
+	private static final String TELCO_PREPAID_TRX_MENU = "Mobile & Data Purchase";
+	private static final String TELKOM_PSTN_TRX_MENU = "Telephone & Cable TV Payment";
+	private static final String INSURANCE_TRX_MENU = "Insurance Payment";
+	private static final String SAMOLNAS_TRX_MENU = "Samolnas Payment";
+	private static final String CC_BKP_TRX_MENU = "Bukopin CC Payment";
+	private static final String CC_NONBKP_TRX_MENU = "Non Bukopin CC Payment";
+	private static final String SIMPATI = "SIMPATI";
+	private static final String AS = "AS";
+	private static final String TELKOMSEL = "TELKOMSEL";
+	private static final String IM3 = "IM3";
+	private static final String MENTARI = "MENTARI";
+	private static final String INDOSAT = "INDOSAT";
+	private static final String XL = "XL";
+	private static final String AXIS = "AXIS";
 
 
 	/* Attributes: */
@@ -588,34 +611,89 @@ public class DestinationController {
 
 			// set note id and note en
 			if (TransactionTypeEnum.PLNPRE.name().equalsIgnoreCase(transactionType)) {
-				transaction.setNoteId(NOTE_ID_PLNPRE.concat(subNumber));
-				transaction.setNoteEn(NOTE_EN_PLNPRE.concat(subNumber));
+			    transaction.setNoteId(NOTE_ID_PLNPRE.concat(subNumber));
+			    transaction.setNoteEn(NOTE_EN_PLNPRE.concat(subNumber));
+			    transaction.setBillerProduct(PLN_BILLER_PRODUCT);
+			    transaction.setMenu(PLN_PREPAID_TRX_MENU);
 			} else if (TransactionTypeEnum.PLNPOST.name().equalsIgnoreCase(transactionType)) {
-				transaction.setNoteId(NOTE_ID_PLNPOST.concat(subNumber));
-				transaction.setNoteEn(NOTE_EN_PLNPOST.concat(subNumber));
+			    transaction.setNoteId(NOTE_ID_PLNPOST.concat(subNumber));
+			    transaction.setNoteEn(NOTE_EN_PLNPOST.concat(subNumber));
+			    transaction.setBillerProduct(PLN_BILLER_PRODUCT);
+			    transaction.setMenu(PLN_POSTPAID_TRX_MENU);
 			} else if (TransactionTypeEnum.EMONEY.name().equalsIgnoreCase(transactionType)) {
-				transaction.setNoteId(NOTE_ID_EMONEY.concat(subNumber));
-				transaction.setNoteEn(NOTE_EN_EMONEY.concat(subNumber));
-			} else if (TransactionTypeEnum.TELCOPRE.name().equalsIgnoreCase(transactionType)) {
-				transaction.setNoteId(NOTE_ID_TELCOPRE.concat(subNumber));
-				transaction.setNoteEn(NOTE_EN_TELCOPRE.concat(subNumber));
-			} else if (TransactionTypeEnum.TELCOPOST.name().equalsIgnoreCase(transactionType)) {
-				transaction.setNoteId(NOTE_ID_TELCOPOST.concat(subNumber));
-				transaction.setNoteEn(NOTE_EN_TELCOPOST.concat(subNumber));
-			} else if (TransactionTypeEnum.INSURANCE.name().equalsIgnoreCase(transactionType)) {
-				transaction.setNoteId(NOTE_ID_INSURANCEPOST.concat(subNumber));
-				transaction.setNoteEn(NOTE_EN_INSURANCEPOST.concat(subNumber));
-			} else if (TransactionTypeEnum.CREDITCARD.name().equalsIgnoreCase(transactionType)) {
-				transaction.setNoteId(NOTE_ID_CREDITCARDPOST.concat(subNumber));
-				transaction.setNoteEn(NOTE_EN_CREDITCARDPOST.concat(subNumber));
-			} else if (TransactionTypeEnum.SAMOLNAS.name().equalsIgnoreCase(transactionType)) {
-				transaction.setNoteId(NOTE_ID_SAMOLNAS.concat(subNumber));
-				transaction.setNoteEn(NOTE_EN_SAMOLNAS.concat(subNumber));
-			} else if (TransactionTypeEnum.TELCODATA.name().equalsIgnoreCase(transactionType)) {
-				transaction.setNoteId(NOTE_ID_TELCODATA.concat(subNumber));
-				transaction.setNoteEn(NOTE_EN_TELCODATA.concat(subNumber));
-			}
+			    transaction.setNoteId(NOTE_ID_EMONEY.concat(subNumber));
+			    transaction.setNoteEn(NOTE_EN_EMONEY.concat(subNumber));
+			    transaction.setMenu(EMONEY_TRX_MENU);
 
+			    String billerProduct = destinationType.substring(3);
+
+			    transaction.setBillerProduct(billerProduct);
+			} else if (TransactionTypeEnum.TELCOPRE.name().equalsIgnoreCase(transactionType)) {
+			    transaction.setNoteId(NOTE_ID_TELCOPRE.concat(subNumber));
+			    transaction.setNoteEn(NOTE_EN_TELCOPRE.concat(subNumber));
+			    transaction.setMenu(TELCO_PREPAID_TRX_MENU);
+
+			    String type = destinationType.substring(3);
+
+			    String billerProduct = "";
+
+			    if(type.equalsIgnoreCase(SIMPATI) || type.equalsIgnoreCase(AS)) {
+				billerProduct = TELKOMSEL;
+			    } else if(type.equalsIgnoreCase(IM3) || type.equalsIgnoreCase(MENTARI)) {
+				billerProduct = INDOSAT;
+			    } else if(type.equalsIgnoreCase(XL) || type.equalsIgnoreCase(AXIS)) {
+				billerProduct = XL;
+			    } else {
+				billerProduct = type;
+			    }
+
+			    transaction.setBillerProduct(billerProduct);
+			} else if (TransactionTypeEnum.TELCOPOST.name().equalsIgnoreCase(transactionType)) {
+			    transaction.setNoteId(NOTE_ID_TELCOPOST.concat(subNumber));
+			    transaction.setNoteEn(NOTE_EN_TELCOPOST.concat(subNumber));
+			    transaction.setMenu(TELCO_POSTPAID_TRX_MENU);
+
+			    if(DestinationTypeEnum.POSTTELKOM.name().equalsIgnoreCase(destinationType) || DestinationTypeEnum.POSTSPEEDY.name().equalsIgnoreCase(destinationType)) {
+				transaction.setMenu(TELKOM_PSTN_TRX_MENU);
+			    }
+
+			    String billerProduct = destinationType.substring(4);
+			    transaction.setBillerProduct(billerProduct);
+			} else if (TransactionTypeEnum.INSURANCE.name().equalsIgnoreCase(transactionType)) {
+			    transaction.setNoteId(NOTE_ID_INSURANCEPOST.concat(subNumber));
+			    transaction.setNoteEn(NOTE_EN_INSURANCEPOST.concat(subNumber));
+			    transaction.setMenu(INSURANCE_TRX_MENU);
+			    transaction.setBillerProduct(INSURANCE_BILLER_PRODUCT);
+			} else if (TransactionTypeEnum.CREDITCARD.name().equalsIgnoreCase(transactionType)) {
+			    transaction.setNoteId(NOTE_ID_CREDITCARDPOST.concat(subNumber));
+			    transaction.setNoteEn(NOTE_EN_CREDITCARDPOST.concat(subNumber));
+			} else if (TransactionTypeEnum.SAMOLNAS.name().equalsIgnoreCase(transactionType)) {
+			    transaction.setNoteId(NOTE_ID_SAMOLNAS.concat(subNumber));
+			    transaction.setNoteEn(NOTE_EN_SAMOLNAS.concat(subNumber));
+			    transaction.setBillerProduct(SAMOLNAS_BILLER_PRODUCT);
+			    transaction.setMenu(SAMOLNAS_TRX_MENU);
+			} else if (TransactionTypeEnum.TELCODATA.name().equalsIgnoreCase(transactionType)) {
+			    transaction.setNoteId(NOTE_ID_TELCODATA.concat(subNumber));
+			    transaction.setNoteEn(NOTE_EN_TELCODATA.concat(subNumber));
+
+			    transaction.setMenu(TELCO_PREPAID_TRX_MENU);
+
+			    String type = destinationType.substring(3);
+
+			    String billerProduct = "";
+
+			    if(type.equalsIgnoreCase(SIMPATI) || type.equalsIgnoreCase(AS)) {
+				billerProduct = TELKOMSEL;
+			    } else if(type.equalsIgnoreCase(IM3) || type.equalsIgnoreCase(MENTARI)) {
+				billerProduct = INDOSAT;
+			    } else if(type.equalsIgnoreCase(XL) || type.equalsIgnoreCase(AXIS)) {
+				billerProduct = XL;
+			    } else {
+				billerProduct = type;
+			    }
+
+			    transaction.setBillerProduct(billerProduct);
+			}
 
 			log.info("Save to Transaction");
 			transaction = transactionService.save(transaction);

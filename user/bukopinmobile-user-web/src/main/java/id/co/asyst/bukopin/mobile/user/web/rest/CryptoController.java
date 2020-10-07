@@ -38,6 +38,7 @@ import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
  */
 @RestController
 @RequestMapping("/api/crypto")
+@Profile("!prod")
 public class CryptoController {
     /**
      * Logger

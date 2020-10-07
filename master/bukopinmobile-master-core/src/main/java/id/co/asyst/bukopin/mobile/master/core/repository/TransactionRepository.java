@@ -10,6 +10,8 @@
 package id.co.asyst.bukopin.mobile.master.core.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import id.co.asyst.bukopin.mobile.master.model.entity.Transaction;
@@ -24,4 +26,6 @@ import id.co.asyst.bukopin.mobile.master.model.entity.Transaction;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
+    @Query("SELECT a FROM Transaction a WHERE a.refNumber = :refNumber AND a.destination.id = :id")
+    Transaction findByRefandDestinationId(@Param("refNumber") String refNumber, @Param("id") Long id);
 }

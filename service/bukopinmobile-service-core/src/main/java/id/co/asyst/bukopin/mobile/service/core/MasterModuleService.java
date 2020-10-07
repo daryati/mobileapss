@@ -70,4 +70,9 @@ public interface MasterModuleService {
     @GET("cutOff/checkStatus/{id}")
     Call<CommonResponse> checkCutOffStatus(@Header("Accept-Language") String language, @Path(value = "id") Long id);
 
+    @POST("transaction/updateTransaction")
+    Call<CommonResponse> updateTransaction(@Body CommonRequest request);
+    
+    @POST("transaction/saveTransaction")
+    Call<CommonResponse> saveTransaction(@Body CommonRequest request);
 }

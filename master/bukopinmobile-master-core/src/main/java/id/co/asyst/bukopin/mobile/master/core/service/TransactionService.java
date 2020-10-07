@@ -56,5 +56,9 @@ public class TransactionService {
 	return transactionRepository.save(transaction);
     }
 
+    @Transactional
+    public Transaction findByReffNumberAndDestinationId(String refNumber, Long id) {
+    	return transactionRepository.findByRefandDestinationId(refNumber, id);
+    }
     /* Overrides: */
 }
