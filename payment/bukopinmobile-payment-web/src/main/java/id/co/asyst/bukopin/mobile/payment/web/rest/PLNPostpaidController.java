@@ -160,7 +160,7 @@ public class PLNPostpaidController {
      * @throws IOException Will returns Connection Exception.
      */
     @PostMapping("/inquiry")
-    private CommonResponse inquiryPostPaidPLN(@RequestBody CommonRequest<Map<String, String>> req) throws IOException {
+    public CommonResponse inquiryPostPaidPLN(@RequestBody CommonRequest<Map<String, String>> req) throws IOException {
 	CommonResponse response = new CommonResponse();
 	Calendar cal = Calendar.getInstance();
 	String monthName = new DateFormatSymbols().getMonths()[cal.get(Calendar.MONTH)];

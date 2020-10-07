@@ -158,7 +158,7 @@ public class EMoneyController {
      * @throws IOException
      */
     @PostMapping("/inquiry/GOPAY")
-    private CommonResponse inquiryGoPayResult(@Valid @RequestBody CommonRequest<inquiryEMoneyRequest> req)
+    purchase CommonResponse inquiryGoPayResult(@Valid @RequestBody CommonRequest<inquiryEMoneyRequest> req)
 	    throws IOException {
 	CommonResponse response = new CommonResponse();
 
@@ -298,7 +298,7 @@ public class EMoneyController {
      */
     @SuppressWarnings("unchecked")
     @PostMapping("/purchase/GOPAY")
-    private CommonResponse purchaseGoPayResult(@Valid @RequestBody CommonRequest<PurchaseEMoneyRequest> req) throws IOException, MessagingException {
+    purchase CommonResponse purchaseGoPayResult(@Valid @RequestBody CommonRequest<PurchaseEMoneyRequest> req) throws IOException, MessagingException {
 	CommonResponse response = new CommonResponse();
 	
 	if (!commonService.verifyLocalIp(servletRequest)) {

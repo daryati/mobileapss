@@ -79,7 +79,7 @@ public class TransactionController {
 	/* Functionalities: */
 	@PostMapping("/findByRefAndDestinationId")
 	@ResponseStatus(HttpStatus.OK)
-	private CommonResponse findTransactionByRefandDestinationId(@Valid @RequestBody CommonRequest<TransactionCommonRequest> request) {
+	public CommonResponse findTransactionByRefandDestinationId(@Valid @RequestBody CommonRequest<TransactionCommonRequest> request) {
 		CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 				messageUtil.get("success", servletRequest.getLocale()));
 
@@ -100,7 +100,7 @@ public class TransactionController {
 
 	@PostMapping("/updateTransaction")
 	@ResponseStatus(HttpStatus.OK)
-	private CommonResponse updateTransaction(@Valid @RequestBody CommonRequest<TransactionCommonRequest> request) {
+	public CommonResponse updateTransaction(@Valid @RequestBody CommonRequest<TransactionCommonRequest> request) {
 		CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 				messageUtil.get("success", servletRequest.getLocale()));
 
@@ -124,7 +124,7 @@ public class TransactionController {
 	@SuppressWarnings("unchecked")
 	@PostMapping("/saveTransaction")
 	@ResponseStatus(HttpStatus.CREATED)
-	private CommonResponse saveTransaction(@RequestBody CommonRequest<TransactionCommonRequest> request) {
+	public CommonResponse saveTransaction(@RequestBody CommonRequest<TransactionCommonRequest> request) {
 		CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 				messageUtil.get("success", servletRequest.getLocale()));
 		

@@ -65,7 +65,7 @@ public class PushNotificationController {
      * @throws IOException
      */
     @PostMapping("/push")
-    private Object pushNotif(@RequestBody Object req) throws IOException{
+    public Object pushNotif(@RequestBody Object req) throws IOException{
 	log.debug("REST request to push notification : {}", req);
 	
 	// get FCM key from db

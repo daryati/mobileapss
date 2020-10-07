@@ -153,7 +153,7 @@ public class TelcoPostpaidController {
      * @throws IOException
      */
     @PostMapping("/inquiry")
-    private CommonResponse inquiryPostpaidTelco(@RequestBody CommonRequest<TelcoPostpaidInquiryRequest> req)
+    public CommonResponse inquiryPostpaidTelco(@RequestBody CommonRequest<TelcoPostpaidInquiryRequest> req)
 	    throws IOException {
 	log.debug("REST request to inquiry " + req.getData().getType() + " Postpaid : {}", req.getData());
 	CommonResponse response = new CommonResponse();
@@ -267,7 +267,7 @@ public class TelcoPostpaidController {
      * @throws IOException
      */
     @PostMapping("/payment")
-    private CommonResponse paymentPostpaidTelco(@RequestBody CommonRequest<TelcoPostpaidPaymentRequest> req)
+    public CommonResponse paymentPostpaidTelco(@RequestBody CommonRequest<TelcoPostpaidPaymentRequest> req)
 	    throws IOException {
 	log.debug("REST request to payment Postpaid : {}", req.getData());
 	CommonResponse response = new CommonResponse();

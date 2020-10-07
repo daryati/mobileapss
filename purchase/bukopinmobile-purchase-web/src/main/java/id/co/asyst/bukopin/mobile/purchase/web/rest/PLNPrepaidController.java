@@ -163,7 +163,7 @@ public class PLNPrepaidController {
      * @throws IOException
      */
     @PostMapping("/inquiry")
-    private CommonResponse inquiryResult(@Valid @RequestBody CommonRequest<inquiryPrepaidRequestPLN> req)
+    public CommonResponse inquiryResult(@Valid @RequestBody CommonRequest<inquiryPrepaidRequestPLN> req)
 	    throws IOException {
 	CommonResponse response = new CommonResponse();
 
@@ -261,7 +261,7 @@ public class PLNPrepaidController {
      * @throws IOException
      */
     @GetMapping("/inquiry/{id}")
-    private CommonResponse inquirySubscriberName(@PathVariable String id) throws IOException {
+    public CommonResponse inquirySubscriberName(@PathVariable String id) throws IOException {
 	CommonResponse response = new CommonResponse();
 
 	// Check Cut Off
@@ -343,7 +343,7 @@ public class PLNPrepaidController {
      */
     @SuppressWarnings("unchecked")
     @PostMapping("/purchase")
-    private CommonResponse purchaseResult(@Valid @RequestBody CommonRequest<PurchasePrepaidRequestPLN> req) throws IOException, MessagingException {
+    public CommonResponse purchaseResult(@Valid @RequestBody CommonRequest<PurchasePrepaidRequestPLN> req) throws IOException, MessagingException {
 	CommonResponse response = new CommonResponse();
 	
 	
@@ -524,7 +524,7 @@ public class PLNPrepaidController {
      * @return information after advice PLN
      * @throws IOException
      */
-    private CommonResponse callAdvice(PurchasePrepaidRequestPLN req) throws IOException {
+    public CommonResponse callAdvice(PurchasePrepaidRequestPLN req) throws IOException {
 	log.debug("Call Advice...");
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
 		messageUtil.get("success", servletRequest.getLocale()));

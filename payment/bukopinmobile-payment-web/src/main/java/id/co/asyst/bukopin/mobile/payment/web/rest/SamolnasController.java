@@ -139,7 +139,7 @@ public class SamolnasController {
      */
     @SuppressWarnings("unchecked")
     @PostMapping("/inquiry")
-    private CommonResponse inquirySamolnas(@Valid @RequestBody CommonRequest<SamolnasInquiryRequest> req)
+    public CommonResponse inquirySamolnas(@Valid @RequestBody CommonRequest<SamolnasInquiryRequest> req)
 	    throws IOException {
 	CommonResponse response = new CommonResponse();
 
@@ -268,7 +268,7 @@ public class SamolnasController {
      * @throws ParseException
      */
     @PostMapping("/payment")
-    private CommonResponse paymentSamolnas(@Valid @RequestBody CommonRequest<SamolnasPaymentRequest> req)
+    public CommonResponse paymentSamolnas(@Valid @RequestBody CommonRequest<SamolnasPaymentRequest> req)
 	    throws IOException, ParseException {
 	CommonResponse response = new CommonResponse();
 

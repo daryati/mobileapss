@@ -172,7 +172,7 @@ public class InsuranceController {
     /* Functionalities: */
     
     @PostMapping("/inquiry")
-    private CommonResponse inquiryInsurance(@Valid @RequestBody CommonRequest<InquiryInsuranceRequest> req)
+    public CommonResponse inquiryInsurance(@Valid @RequestBody CommonRequest<InquiryInsuranceRequest> req)
 	    throws IOException {
 	CommonResponse response = new CommonResponse();
 	
@@ -335,7 +335,7 @@ public class InsuranceController {
 	
 	@SuppressWarnings("unchecked")
 	@PostMapping("/payment")
-    private CommonResponse purchaseInsurance(@Valid @RequestBody CommonRequest<PaymentInsuranceRequest> req) throws IOException, MessagingException {
+    public CommonResponse purchaseInsurance(@Valid @RequestBody CommonRequest<PaymentInsuranceRequest> req) throws IOException, MessagingException {
 	CommonResponse response = new CommonResponse();
 	
 	// Check Cut Off
