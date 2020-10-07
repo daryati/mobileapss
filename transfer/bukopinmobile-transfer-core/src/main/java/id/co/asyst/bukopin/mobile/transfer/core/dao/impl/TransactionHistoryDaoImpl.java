@@ -156,6 +156,59 @@ public class TransactionHistoryDaoImpl implements TransactionHistoryDao {
 	
 	return result;
     }
+    
+    @Override
+    public List<TransactionHistoryResponse> getAllWithPaging(Long id, Locale loc, String db, int offset, int limit) {
+	String note = "";
+	if (loc.getLanguage().equals(new Locale("in").getLanguage())) {
+	    note = "NOTE_ID";
+	} else if (loc.getLanguage().equals(new Locale("en").getLanguage())) {
+	    note = "NOTE_EN";
+	}
+
+	String interval3Month = "";
+	if (db.equalsIgnoreCase(DB_POSTGRE)) {
+	    interval3Month = "CURRENT_DATE - INTERVAL '3 months'";
+	} else if (db.equalsIgnoreCase(DB_MSSQL)) {
+	    interval3Month = "DATEADD(MONTH, -3, GETDATE())";
+	}
+
+	String sqlUnion = "select * from " + 
+		"(SELECT ID, ACCOUNT_NUMBER, (ADMIN_FEE + AMOUNT) AS TOTAL_AMOUNT," + 
+		" METHOD AS TYPE, REFERENCE_CODE AS REFERENCE_NUMBER, CREATED_ON AS CREATED_DATE, "+ note + 
+		" FROM FUND_TRANSFER " + 
+		" WHERE STATUS = 'SUCCESS' " + 
+		" AND USER_ID = " + id + " AND CREATED_ON >= " + interval3Month + 
+		" UNION ALL " + 
+		"SELECT ID, ACCOUNT_NUMBER, TOTAL_AMOUNT, TYPE, REFERENCE_NUMBER, CREATED_DATE, NOTE_EN" + 
+		" FROM DB_MBANKING.dbo.TRX" + 
+		" WHERE STATUS = 'SUCCESS'" + 
+		" AND ID_USER = " + id + " AND CREATED_DATE >= " + interval3Month + 
+		") A ORDER BY CREATED_DATE DESC"+ 
+		" OFFSET "+offset+" ROWS FETCH NEXT "+limit+" ROWS ONLY";
+
+	// run query
+	Session session = entityManager.unwrap(Session.class);
+	List<Object> union = session.createSQLQuery(sqlUnion).list();
+
+	// Mapping result
+	List<TransactionHistoryResponse> result = new ArrayList<TransactionHistoryResponse>();
+	union.forEach(row -> {
+	    Object[] cols = (Object[]) row;
+	    TransactionHistoryResponse th = new TransactionHistoryResponse();
+	    th.setIdDetail(Long.valueOf(cols[0].toString()));
+	    th.setAccountNumber(String.valueOf(cols[1] == null ? "" : cols[1]));
+	    th.setAmount(String.valueOf(cols[2] == null ? "" : cols[2]));
+	    th.setType(String.valueOf(cols[3] == null ? "" : cols[3]));
+	    th.setReferenceNumber(String.valueOf(cols[4]));
+	    th.setDateTime(String.valueOf(cols[5]));
+	    th.setNote(String.valueOf(cols[6]));
+	    result.add(th);
+	});
+	entityManager.close();
+
+	return result;
+    }
 
     /* (non-Javadoc)
      * @see id.co.asyst.bukopin.mobile.transfer.core.dao.TransactionHistoryDao#getDetailFundTransferOverbookHistory(java.lang.Long)

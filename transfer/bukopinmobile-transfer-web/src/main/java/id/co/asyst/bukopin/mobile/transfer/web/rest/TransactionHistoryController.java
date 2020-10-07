@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,8 @@ import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonRequest;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
+import id.co.asyst.bukopin.mobile.common.model.payload.PagingRequest;
+import id.co.asyst.bukopin.mobile.common.model.payload.PagingResponse;
 import id.co.asyst.bukopin.mobile.master.model.DestinationTypeEnum;
 import id.co.asyst.bukopin.mobile.master.model.TransactionTypeEnum;
 import id.co.asyst.bukopin.mobile.service.core.UserModuleService;
@@ -101,7 +104,8 @@ public class TransactionHistoryController {
      * @return
      * @throws IOException
      */
-    @GetMapping("/getAll/{usernameEnc}")
+//    @GetMapping("/getAll/{usernameEnc}")
+    @Deprecated
     public CommonResponse getAllTransactionHistory(@PathVariable String usernameEnc) throws IOException {
 	log.debug("REST request to get all transaction history: {}");
 	CommonResponse response = new CommonResponse();
@@ -134,6 +138,58 @@ public class TransactionHistoryController {
 	    response.setCode(ResponseMessage.SUCCESS.getCode());
 	    response.setMessage(messageUtil.get("success", servletRequest.getLocale()));
 	    response.setData(respData);
+	}
+	
+	return response;
+	
+    }
+    
+    /**
+     * Get All Transaction History with Pagination
+     * 
+     * @param request
+     * @return
+     * @throws IOException
+     */
+    @PostMapping("/getAll")
+    public PagingResponse getAllTransactionHistoryPaging(@RequestBody PagingRequest<Map<String, String>> request) throws IOException {
+	PagingResponse response = new PagingResponse();
+	
+	String username = request.getData().get("username");
+	if (StringUtils.isBlank(username)) {
+	    log.error("username is required");
+	    response.setCode(ResponseMessage.DATA_REQUIRED.getCode());
+	    response.setMessage(messageUtil.get("error.validation.required",new Object[] {"username"}, servletRequest.getLocale()));
+	    return response;
+	}
+	
+	CommonResponse user = Services.create(UserModuleService.class).getUserByUsername(username).execute().body();
+	if(!ResponseMessage.SUCCESS.getCode().equals(user.getCode())) {
+	    log.error("Error while get user by username");
+	    response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
+	    response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
+	    return response;
+	}
+	
+	ObjectMapper mapper = new ObjectMapper();
+	Map<String, Object> resultUserObj = mapper.convertValue(user.getData(), Map.class);
+	Map<String, Object> resUser = (Map<String, Object>) resultUserObj.get("user");
+	Long userId = Long.valueOf(resUser.get("id").toString());
+	
+	String db = env.getProperty("spring.datasource.driver-class-name");
+	List<TransactionHistoryResponse> trxHistory = transactionHistoryService.getAllTransactionHistory(
+		userId, servletRequest.getLocale(), db);
+	if (null == trxHistory || trxHistory.isEmpty()) {
+	    log.error("transaction history not found");
+	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+	    response.setMessage(messageUtil.get("data.not.found", servletRequest.getLocale()));
+	} else {
+	    log.debug("get all transaction history success");
+	    response = transactionHistoryService
+		    .generateTrxHistoryPagingResponse(trxHistory, request.getPaging().getPage(), request.getPaging().getLimit());
+	    
+	    response.setCode(ResponseMessage.SUCCESS.getCode());
+	    response.setMessage(messageUtil.get("success", servletRequest.getLocale()));
 	}
 	
 	return response;

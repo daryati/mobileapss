@@ -9,13 +9,20 @@
  */
 package id.co.asyst.bukopin.mobile.transfer.core.service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import id.co.asyst.bukopin.mobile.common.model.payload.Paging;
+import id.co.asyst.bukopin.mobile.common.model.payload.PagingResponse;
 import id.co.asyst.bukopin.mobile.transfer.core.dao.TransactionHistoryDao;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryCreditCardResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryEmoneyResponse;
@@ -23,6 +30,7 @@ import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryFTOve
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryInsuranceResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryPLNPostpaidResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryPLNPrepaidResponse;
+import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryPagingResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistorySamolnasResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryTelcoDataResponse;
@@ -60,6 +68,22 @@ public class TransactionHistoryService {
      */
     public List<TransactionHistoryResponse> getAllTransactionHistory(Long id, Locale loc, String db){
 	return transactionHistoryDao.getAllTransactionHistory(id, loc, db);
+    }
+    
+    /**
+     * Get All Transaction History With Paging
+     * 
+     * @param id The User Id
+     * @param loc The Locale request
+     * @param db Database Type
+     * @param page Page to get
+     * @param limit Limit data per page
+     * @return Current page of Transaction History
+     */
+    public List<TransactionHistoryResponse> getAllWithPaging(Long userId, Locale loc, String db, int page, int limit){
+	int offset = 0;
+	offset = (page -1) * limit;
+	return transactionHistoryDao.getAllWithPaging(userId, loc, db, offset, limit);
     }
     
     /**
@@ -151,4 +175,54 @@ public class TransactionHistoryService {
     public Optional<TransactionHistoryTelcoDataResponse> getDetailTelcoData(Long id){
     	return transactionHistoryDao.getDetailTelcoDataHistory(id);
     }
+    
+    /**
+     * Generate Trx History Response with Paging
+     * 
+     * @param trxHistory Transaction History List
+     * @param page Page to get
+     * @param limit Limit data per page
+     * @return Transaction history response order by create date descending
+     */
+    public PagingResponse generateTrxHistoryPagingResponse (
+	    List<TransactionHistoryResponse> trxHistory, int page, int limit) {
+	List<TransactionHistoryPagingResponse> respData = new ArrayList<TransactionHistoryPagingResponse>();
+	int nData = trxHistory.size(); // size of all data
+	
+	if (page > 0) {
+	    // SORTING by create date descending
+	    trxHistory.sort(Comparator.comparing(TransactionHistoryResponse::getDateTime).reversed());
+
+	    // PAGING
+	    int offset = 0;
+	    offset = (page - 1) * limit;
+	    int limitData = (offset + limit) < nData ? (offset + limit) : nData; // data ke n to get
+	    // current page data
+	    List<TransactionHistoryResponse> currentPage = new ArrayList<>();
+	    // Get current page data
+	    for (int i = offset; i < limitData; i++) {
+		currentPage.add(trxHistory.get(i));
+	    }
+
+	    // GROUPING By date (yyyy-mm-dd)
+	    Map<String, List<TransactionHistoryResponse>> grouped = currentPage.stream()
+		    .collect(Collectors.groupingBy(trx -> StringUtils.split(trx.getDateTime())[0]));
+
+	    // RESPONSE data
+	    grouped.forEach((trxDate, trxs) -> {
+		respData.add(new TransactionHistoryPagingResponse(trxDate, trxs));
+	    });
+	    // Sort by create date descending
+	    respData.sort(Comparator.comparing(TransactionHistoryPagingResponse::getDate).reversed());
+	}
+	
+	// RESPONSE paging
+	PagingResponse response = new PagingResponse();
+	Paging paging = new Paging(page, limit, nData);
+	response.setPaging(paging);
+	response.setData(respData);
+	
+	return response;
+    }
+    
     /* Overrides: */}

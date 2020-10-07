@@ -44,6 +44,18 @@ public interface TransactionHistoryDao {
     public List<TransactionHistoryResponse> getAllTransactionHistory(Long id, Locale loc, String db);
     
     /**
+     * Get All Transaction History With Paging
+     * 
+     * @param id The User Id
+     * @param loc The Locale request
+     * @param db Database Type
+     * @param page Page to get
+     * @param limit Limit data per page
+     * @return Current page of Transaction History
+     */
+    public List<TransactionHistoryResponse> getAllWithPaging(Long userId, Locale loc, String db, int offset, int limit);
+    
+    /**
      * Get Detail Fund Transfer or Overbook History
      * @param id
      * @return
