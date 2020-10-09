@@ -13,6 +13,10 @@ import id.co.asyst.bukopin.mobile.service.model.payload.telco.postpaid.TelcoPost
 import id.co.asyst.bukopin.mobile.service.model.payload.telco.postpaid.TelcoPostpaidInquiryTibcoResponse;
 import id.co.asyst.bukopin.mobile.service.model.payload.telco.postpaid.TelcoPostpaidPaymentTibcoRequest;
 import id.co.asyst.bukopin.mobile.service.model.payload.telco.postpaid.TelcoPostpaidPaymentTibcoResponse;
+import id.co.asyst.bukopin.mobile.service.model.payload.telco.prepaid.PrepaidTelcoInquiryPaketRequest;
+import id.co.asyst.bukopin.mobile.service.model.payload.telco.prepaid.PrepaidTelcoInquiryPaketResponse;
+import id.co.asyst.bukopin.mobile.service.model.payload.telco.prepaid.PrepaidTelcoListPaketRequest;
+import id.co.asyst.bukopin.mobile.service.model.payload.telco.prepaid.PrepaidTelcoListPaketResponse;
 import id.co.asyst.bukopin.mobile.service.model.payload.telco.prepaid.PrepaidTelcoPurchaseRequest;
 import id.co.asyst.bukopin.mobile.service.model.payload.telco.prepaid.PrepaidTelcoPurchaseResponse;
 import id.co.asyst.bukopin.mobile.service.model.payload.telco.telkomPSTN.speedy.TelkomPSTNSpeedyInquiryRequest;
@@ -49,4 +53,10 @@ public interface TelcoModuleService {
     
     @POST("/")
     Call<PrepaidTelcoPurchaseResponse> purchasePrepaidTelco(@Body PrepaidTelcoPurchaseRequest req);
+    
+    @POST("/")
+    Call<PrepaidTelcoListPaketResponse> listPaketDataPrepaidTelco(@Body PrepaidTelcoListPaketRequest req);
+    
+    @POST("/")
+    Call<PrepaidTelcoInquiryPaketResponse> inquiryPaketDataPrepaidTelco(@Body PrepaidTelcoInquiryPaketRequest req);
 }

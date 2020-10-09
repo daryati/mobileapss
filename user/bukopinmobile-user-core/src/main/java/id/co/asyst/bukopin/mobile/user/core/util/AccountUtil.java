@@ -15,7 +15,9 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -25,9 +27,15 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
+import id.co.asyst.bukopin.mobile.user.core.config.GetConfiguration;
+import id.co.asyst.bukopin.mobile.user.core.service.AccountBalanceService;
+import id.co.asyst.bukopin.mobile.user.core.service.ProductService;
+import id.co.asyst.bukopin.mobile.user.model.AccountBalanceReq;
+import id.co.asyst.bukopin.mobile.user.model.AccountBalanceRes;
 import id.co.asyst.bukopin.mobile.user.model.AccountInfoStatusEnum;
 import id.co.asyst.bukopin.mobile.user.model.AccountStatusEnum;
 import id.co.asyst.bukopin.mobile.user.model.AccountTypeEnum;
@@ -52,8 +60,10 @@ import id.co.asyst.bukopin.mobile.user.model.soap.cif.HeaderRQ;
 public class AccountUtil {
     /* Constants: */
     private static Logger log = LoggerFactory.getLogger(AccountUtil.class);
-
+    
     /* Attributes: */
+//    @Autowired
+//    private AccountBalanceService accountBalanceService;
 
     /* Transient Attributes: */
 
@@ -120,31 +130,31 @@ public class AccountUtil {
      * 
      * @param debitCard
      *            information debit card
-     * @param inquiryCIFRS
-     *            result from get Inquiry CIF
+     * @param tibcoAccountCard
+     *            Account Card result from get Inquiry CIF
      * @param user
      *            information from user's
      * 
      * @return The Object request.
      */
-    public static AccountCard setDataAccountCard(ActivateDebitCardRequest debitCard, GetInquiryCIFResType inquiryCIFRS,
-	    User user) {
+    public static AccountCard setDataAccountCard(ActivateDebitCardRequest debitCard, 
+	    GetInquiryCIFResType.AccInfo tibcoAccountCard, User user) {
 	log.debug("set Data Account Card : {} ");
 	AccountCard accCard = new AccountCard();
-	accCard.setBirthDate(inquiryCIFRS.getAccInfo().getBirthdate().toGregorianCalendar().getTime());
+	accCard.setBirthDate(tibcoAccountCard.getBirthdate().toGregorianCalendar().getTime());
 	accCard.setCardStatus(CardStatusEnum.getEnum(1));
-	accCard.setCif(inquiryCIFRS.getAccInfo().getCifnumber());
+	accCard.setCif(tibcoAccountCard.getCifnumber());
 	accCard.setRegisteredCard(debitCard.getRegisteredCard());
 	accCard.setRegisteredOn(new Date());
 	accCard.setValidMonth(debitCard.getValidMonth());
 	accCard.setValidYear(debitCard.getValidYear());
 
 	// set user info
-	user.setCifNumber(inquiryCIFRS.getAccInfo().getCifnumber());
-	user.setFirstName(inquiryCIFRS.getAccInfo().getFirstname());
-	user.setMiddleName(inquiryCIFRS.getAccInfo().getMiddlename());
-	user.setLastName(inquiryCIFRS.getAccInfo().getLastname());
-	user.setMobilePhone(inquiryCIFRS.getAccInfo().getMobilephone());
+	user.setCifNumber(tibcoAccountCard.getCifnumber());
+	user.setFirstName(tibcoAccountCard.getFirstname());
+	user.setMiddleName(tibcoAccountCard.getMiddlename());
+	user.setLastName(tibcoAccountCard.getLastname());
+	user.setMobilePhone(tibcoAccountCard.getMobilephone());
 	accCard.setUser(user);
 
 	return accCard;
@@ -153,14 +163,13 @@ public class AccountUtil {
     /**
      * Generate Set Data Account Info to save
      * 
-     * @param inquiryCIFRS
-     *            result from get Inquiry CIF
+     * @param tibcoAccountInfoNew
+     *            Account Card result from get Inquiry CIF
      * @param accCard
      *            information from Account Card
-     * @param cards
-     * 		  Account Cards from XLINK db
      * @param listProduct
      * 		  Products list (Gyro and Saving only) that could be activated
+     * @param accCifStatus Map account number and cif status.
      * 
      * @return 
      * <ul>
@@ -169,52 +178,37 @@ public class AccountUtil {
      * 	<li>else will return The List Object request.</b>
      * </ul>
      */
-    public static List<AccountInfo> setDataAccountInfo(GetInquiryCIFResType inquiryCIFRS, AccountCard accCard,
-	    List<DebitCardInfo> cards, List<Product> listProduct) {
+    public static List<AccountInfo> setDataAccountInfo(AccountCard accCard,
+	    List<GetInquiryCIFResType.Accounts> tibcoAccountInfoNew, List<Product> listProduct, 
+	    Map<String,Integer> accCifStatus) {
 	log.debug("Set List Data Account Info : {} ");
-	List<AccountInfo> listAccountInfo = null;
+	List<AccountInfo> listAccountInfo = new ArrayList<>();
+	
+	for (GetInquiryCIFResType.Accounts accounts : tibcoAccountInfoNew) {
+	    // Find product in Can Activated Products list
+	    Optional<Product> ps = listProduct.stream().filter(
+		    p -> p.getPdId()==accounts.getProductid()).findFirst();
+	    Product product = ps.get();
+	    
+	    // padding to 10 with 0
+	    String tibcoAccNo = StringUtils.leftPad(String.valueOf(accounts.getAccnumber()), 
+		    BkpmConstants.BUKOPIN_ACCNO_LENGTH, 
+		    BkpmConstants.BUKOPIN_ACCNO_PADDING);
+	    
+	    AccountInfo accInfo = new AccountInfo();
+	    accInfo.setAccountName(accounts.getAccname());
+	    accInfo.setAccountNo(tibcoAccNo);
+	    accInfo.setAccountStatus(AccountStatusEnum.getEnum(
+		    accCifStatus.get(tibcoAccNo)));
+	    accInfo.setAccountType(AccountTypeEnum.getEnum((accounts.getAcctype())));
+	    accInfo.setCreateDate(new Date());
+	    accInfo.setCif(accCard.getCif());
+	    accInfo.setMainAccount(false);
+	    accInfo.setStatus(AccountInfoStatusEnum.getEnum(1));
+	    accInfo.setAccountCard(accCard);
+	    accInfo.setProduct(product);
 
-	for (DebitCardInfo card : cards) {
-	    for (GetInquiryCIFResType.Accounts accounts : inquiryCIFRS.getAccounts()) {
-		
-		String tibcoAccNo = String.valueOf(accounts.getAccnumber());
-		if(tibcoAccNo.length() < BkpmConstants.BUKOPIN_ACCNO_LENGTH) {
-		    // padding to 10 with 0
-		    tibcoAccNo = StringUtils.leftPad(tibcoAccNo, BkpmConstants.BUKOPIN_ACCNO_LENGTH, 
-			    BkpmConstants.BUKOPIN_ACCNO_PADDING);
-		}
-		
-		if (!card.getAccountNumber().equals(tibcoAccNo)) {
-		    continue;
-		}
-
-		if(listAccountInfo==null) {
-		    listAccountInfo = new ArrayList<>();
-		}
-		
-		if (BkpmConstants.CODE_TYPE_SAVING.equals(String.valueOf(accounts.getAcctype()))
-			|| BkpmConstants.CODE_TYPE_GIRO.equals(String.valueOf(accounts.getAcctype()))) {
-		    // Find product in Can Activated Products list
-		    Optional<Product> ps = listProduct.stream().filter(
-			    p -> p.getPdId()==accounts.getProductid()).findFirst();
-		    if(ps.isPresent()) { // if product can be activated, insert into Account Info
-			Product product = ps.get();
-			AccountInfo accInfo = new AccountInfo();
-			accInfo.setAccountName(accounts.getAccname());
-			accInfo.setAccountNo(card.getAccountNumber());
-			accInfo.setAccountStatus(AccountStatusEnum.getEnum(accounts.getStatus()));
-			accInfo.setAccountType(AccountTypeEnum.getEnum((accounts.getAcctype())));
-			accInfo.setCreateDate(new Date());
-			accInfo.setCif(inquiryCIFRS.getAccInfo().getCifnumber());
-			accInfo.setMainAccount(false);
-			accInfo.setStatus(AccountInfoStatusEnum.getEnum(1));
-			accInfo.setAccountCard(accCard);
-			accInfo.setProduct(product);
-
-			listAccountInfo.add(accInfo);
-		    }
-		}
-	    }
+	    listAccountInfo.add(accInfo);
 	}
 
 	return listAccountInfo;
@@ -230,61 +224,54 @@ public class AccountUtil {
      * 
      * @return List of Account Info ordered by notActivated ASC
      */
-    public static List<AccountInfo> generateResponseVerification(GetInquiryCIFResType inquiryCIFRS, 
-	    List<DebitCardInfo> cards, List<Product> listProduct, List<Integer> blackListPdid) {
+    public static List<AccountInfo> generateResponseVerification(AccountCard accCard,
+	    List<GetInquiryCIFResType.Accounts> tibcoAccountInfo, List<Product> productsDb, 
+	    List<Integer> blackListPdid) {
 	log.debug("Set response Verification...");
-	List<AccountInfo> listAccountInfo = new ArrayList<>();
+	List<AccountInfo> listResponse = new ArrayList<>();
 	
-	for (DebitCardInfo card : cards) {
-	    // Filter only account number tibco eq with account number xlink db
-	    for (GetInquiryCIFResType.Accounts accounts : inquiryCIFRS.getAccounts()) {
-		String tibcoAccNo = String.valueOf(accounts.getAccnumber());
-		if (tibcoAccNo.length() == 9) {
-		    // padding to 10 with 0
-		    tibcoAccNo = StringUtils.leftPad(tibcoAccNo, 10, "0");
+	for (GetInquiryCIFResType.Accounts accounts : tibcoAccountInfo) {
+	    // padding to 10 with 0
+	    String tibcoAccNo = StringUtils.leftPad(String.valueOf(accounts.getAccnumber()), 
+		    BkpmConstants.BUKOPIN_ACCNO_LENGTH, 
+		    BkpmConstants.BUKOPIN_ACCNO_PADDING);
+	    
+	    AccountInfo accInfo = new AccountInfo();
+	    accInfo.setAccountName(accounts.getAccname());
+	    accInfo.setAccountNo(tibcoAccNo);
+	    accInfo.setAccountStatus(AccountStatusEnum.getEnum(accounts.getStatus()));
+	    accInfo.setAccountType(AccountTypeEnum.getEnum((accounts.getAcctype())));
+	    accInfo.setCreateDate(new Date());
+	    accInfo.setCif(accCard.getCif());
+	    accInfo.setMainAccount(false);
+	    accInfo.setStatus(AccountInfoStatusEnum.getEnum(1));
+	    accInfo.setAccountCard(accCard);
+	    
+	    // set product
+	    List<Product> products = productsDb.stream().distinct().filter(
+			// Make sure account's pdid is exist in table PRODUCT
+			p -> accounts.getProductid()==p.getPdId()
+			// Exclude accounts from tibco with blackListPdid
+			&& !blackListPdid.contains(accounts.getProductid()) )
+			.collect(Collectors.toList());
+		Product product = new Product();
+		if(products==null || products.isEmpty()) {
+		    // if product not exist in PRODUCT table or blacklisted, acc cannot be activated
+		    product.setPdId(accounts.getProductid());
+		    accInfo.setNotActivated(true);
+		} else {
+		    product = products.get(0);
 		}
+	    accInfo.setProduct(product);
 
-		if (card.getAccountNumber().equals(tibcoAccNo)) {
-		    // Filter only Saving and Giro
-		    if (BkpmConstants.CODE_TYPE_SAVING.equals(String.valueOf(accounts.getAcctype()))
-			    || BkpmConstants.CODE_TYPE_GIRO.equals(String.valueOf(accounts.getAcctype()))) {
-			AccountInfo accInfo = new AccountInfo();
-			accInfo.setAccountName(accounts.getAccname());
-			accInfo.setAccountNo(card.getAccountNumber());
-			accInfo.setAccountStatus(AccountStatusEnum.getEnum(accounts.getStatus()));
-			accInfo.setAccountType(AccountTypeEnum.getEnum((accounts.getAcctype())));
-			accInfo.setCreateDate(new Date());
-			accInfo.setCif(inquiryCIFRS.getAccInfo().getCifnumber());
-			accInfo.setMainAccount(false);
-			accInfo.setStatus(AccountInfoStatusEnum.getEnum(1));
-			
-			List<Product> products = listProduct.stream().distinct().filter(
-				// Make sure account's pdid is exist in table PRODUCT
-				p -> accounts.getProductid()==p.getPdId()
-				// Exclude accounts from tibco with blackListPdid
-				&& !blackListPdid.contains(accounts.getProductid()) )
-				.collect(Collectors.toList());
-			Product product = new Product();
-			if(products==null || products.isEmpty()) {
-			    // if product not exist in PRODUCT table or blacklisted, acc cannot be activated
-			    product.setPdId(accounts.getProductid());
-			    accInfo.setNotActivated(true);
-			} else {
-			    product = products.get(0);
-			}
-			accInfo.setProduct(product);
-
-			listAccountInfo.add(accInfo);
-		    }
-		}
-	    }
+	    listResponse.add(accInfo);
 	}
 	
 	// List of Account Info ordered by notActivated ASC
-	listAccountInfo.sort(Comparator.comparing(AccountInfo::isNotActivated));
+	listResponse.sort(Comparator.comparing(AccountInfo::isNotActivated));
 	
-	return listAccountInfo;
+	return listResponse;
     }
-
+    
     /* Overrides: */
 }

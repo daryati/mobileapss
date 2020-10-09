@@ -38,7 +38,6 @@ import id.co.asyst.foundation.service.connector.Services;
  */
 @RestController
 @RequestMapping("/notification")
-@Profile("!prod")
 public class PushNotificationController {
     /* Constants: */
     private final Logger log = LoggerFactory.getLogger(PushNotificationController.class);
@@ -78,6 +77,7 @@ public class PushNotificationController {
 	ObjectMapper oMapper = new ObjectMapper();
 	Configuration configurationValue = oMapper.convertValue(fcmKeyRes.getData(), Configuration.class);
 	String fcmValue = KEY.concat(configurationValue.getValue());
+	//String fcmValue = KEY.concat("AAAArAyrsLg:APA91bE2hOK7uRHQEqZzFysDIup6cFKZr6Cj6-kQikiThaGslwzrMIhJdOhuRxwLmNBw8ZWHNrGfT8son0pBJIL5msXQkr_g9ME3svlrdNTJeP6Ff4xcf1l4ohI3JY-aTQAQpSzZoXsj");
 	
 	Object pushNotifResFirebase = Services.create(PushNotificationService.class)
 		.pushNotif(fcmValue, CONTENT_TYPE, req).execute().body();

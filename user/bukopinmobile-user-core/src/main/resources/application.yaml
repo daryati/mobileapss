@@ -17,19 +17,21 @@ spring:
       username: apps
       password: Apps*2013
       driver-class-name: com.mysql.jdbc.Driver
+      maxActive: 10
       initialization-mode: never # always (on) or never (off)
    jpa:
       hibernate:
          ddl-auto: update      
          #spring.jpa.hibernate.ddl-auto=none
+         naming.physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
       properties:
          hibernate.dialect: org.hibernate.dialect.MySQL5Dialect
          hibernate.jdbc.lob.non_contextual_creation: true
    mail:
-      host: 10.0.14.23
-      port: 25
+      host: 10.2.62.224
+      port: 8587
       username: noreply_mobile@bukopin.co.id
-      password:
+      password: Bukopin@2019
       properties:
          mail:
             smtp:
@@ -43,42 +45,22 @@ spring:
 ## BUKOPIN INTERNAL DATABASE
 bukopin:
    datasource:
-      url: jdbc:sqlserver://10.2.62.231:1433;databaseName=XlinkDWH
-      username: sa
-      password: Bukopin@)!%
-      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-      #url: jdbc:mysql://localhost:3306/bkpm_internal
-      #username: apps
-      #password: Apps*2013
-      #driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/bkpm_internal 
+      username: apps 
+      password: Apps*2013 
+      driver-class-name: com.mysql.jdbc.Driver
    hibernate:
-      #ddl-auto: none
+      #ddl-auto: none,
       dialect: org.hibernate.dialect.SQLServerDialect
 
 ## LIQUIBASE (LiquibaseProperties)
 # spring.liquibase.enabled=false
 
 ## LOGGING
-#logging:
- #  level:
-  #    root: ERROR
-   #   id.co.asyst: TRACE
-      #javax.xml.ws: TRACE
 logging:
    level:
+      root: ERROR
       id.co.asyst: TRACE
-      org:
-         springframework:
-            web: DEBUG
-         ws:
-            client:
-               MessageTracing:
-                  sent: DEBUG
-                  received: TRACE
-            server:
-               MessageTracing:
-                  sent: DEBUG
-                  received: TRACE
 
 jwt:
    header: Authorization
@@ -94,23 +76,24 @@ centagate:
    algorithm:
       hmac: HmacSHA256
    user:
-      admin: anabaticadmin
+      admin: bmobile-dev
       test: wowo@gmail.com
    password:
-      admin: ana123
+      admin: BkpM2019
       test: Bukopin123
    key:
-      secret: mKYGKb2PBeza
-      integration: 2918332a0f44b24cd8f43b5a7ec6cdae53b9f314a1b8ce30ed55612b1c3baee3
-
+      secret: lZ6zlyU110Z9
+      integration: 41964610fc416180c678735ac073009ead25b8c55d4c6b0d40d9f6f506eaa14d
 
 ## IP CONFIG
 config:
    ip:
       passtrough: # client ip no need token
-         10.2.62.163, 
-         0.0.0.1.
-         0:0:0:0:0:0:0:1
+         10.2.62.163,
+         10.2.62.164,
+         10.2.62.222, 
+         0:0:0:0:0:0:0:1,
+         127.0.0.1
 
          
 ## url for other module

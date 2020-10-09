@@ -44,6 +44,7 @@ import id.co.asyst.bukopin.mobile.common.core.exception.MiddlewareException;
 import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
+import id.co.asyst.bukopin.mobile.common.model.SystemCutOffEnum;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonRequest;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
 import id.co.asyst.bukopin.mobile.common.model.payload.Identity;
@@ -173,8 +174,16 @@ public class InsuranceController {
     @PostMapping("/inquiry")
     private CommonResponse inquiryInsurance(@Valid @RequestBody CommonRequest<InquiryInsuranceRequest> req)
 	    throws IOException {
-	log.debug("REST request to inquiry Insurance : {}", req.getData());
 	CommonResponse response = new CommonResponse();
+	
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.BPJS.getId();
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(httpServletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
+	}
 
 	String forwardInsCode = env.getProperty("config.pln.forwarding-institution-code");
 	
@@ -328,6 +337,15 @@ public class InsuranceController {
 	@PostMapping("/payment")
     private CommonResponse purchaseInsurance(@Valid @RequestBody CommonRequest<PaymentInsuranceRequest> req) throws IOException, MessagingException {
 	CommonResponse response = new CommonResponse();
+	
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.BPJS.getId();
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(httpServletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
+	}
 	
 	ObjectMapper oMapper = new ObjectMapper();
 	//-- Validate Account Number's Owner

@@ -30,8 +30,17 @@ public class InquiryMobileDataPrepaidTelcoResponse extends InquiryMobileDataPrep
 	/**
      * totalAmount
      */
-	@JsonProperty("totalAMount")
+	@JsonProperty("totalAmount")
     private BigDecimal totalAmount;
+	
+	@JsonProperty("element11")
+    private String element11;
+	
+	@JsonProperty("element37")
+    private String element37;
+	
+	@JsonProperty("element61")
+    private String element61;
 
 	/* Transient Attributes: */
 
@@ -53,6 +62,50 @@ public class InquiryMobileDataPrepaidTelcoResponse extends InquiryMobileDataPrep
      */
 	public void setTotalAmount(BigDecimal totalAmount) {
 		this.totalAmount = totalAmount;
+	}
+	
+	
+
+	/**
+	 * @return the element11
+	 */
+	public String getElement11() {
+		return element11;
+	}
+
+	/**
+	 * @param element11 the element11 to set
+	 */
+	public void setElement11(String element11) {
+		this.element11 = element11;
+	}
+
+	/**
+	 * @return the element37
+	 */
+	public String getElement37() {
+		return element37;
+	}
+
+	/**
+	 * @param element37 the element37 to set
+	 */
+	public void setElement37(String element37) {
+		this.element37 = element37;
+	}
+
+	/**
+	 * @return the element61
+	 */
+	public String getElement61() {
+		return element61;
+	}
+
+	/**
+	 * @param element61 the element61 to set
+	 */
+	public void setElement61(String element61) {
+		this.element61 = element61;
 	}
 
 	@Override

@@ -14,7 +14,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import id.co.asyst.bukopin.mobile.telco.core.repository.TelcoDataRepository;
 import id.co.asyst.bukopin.mobile.telco.core.repository.TelcoPrepaidRepository;
+import id.co.asyst.bukopin.mobile.telco.model.entity.TelcoData;
 import id.co.asyst.bukopin.mobile.telco.model.entity.TelcoPrepaid;
 
 /**
@@ -38,7 +41,13 @@ public class TelcoPrepaidService {
      */
     @Autowired
     private TelcoPrepaidRepository telcoPrepaidRepository;
-
+    
+    /**
+     * telco Data Repository
+     */
+    @Autowired
+    private TelcoDataRepository telcoDataRepository;
+    
     /* Attributes: */
 
     /* Transient Attributes: */
@@ -63,9 +72,15 @@ public class TelcoPrepaidService {
      * @return plnPrepaid
      */
     @Transactional
-    public TelcoPrepaid save(TelcoPrepaid telcoPrepaid) {
+    public TelcoPrepaid saveTelcoPrepaid(TelcoPrepaid telcoPrepaid) {
 	log.debug("Save Telco Prepaid {}"+telcoPrepaid.getTypeTelco());
 	return telcoPrepaidRepository.save(telcoPrepaid);
+    }
+    
+    @Transactional
+    public TelcoData saveTelcoData(TelcoData telcoData) {
+	log.debug("Save Telco Data {}"+telcoData.getTypeData());
+	return telcoDataRepository.save(telcoData);
     }
 
     /* Overrides: */

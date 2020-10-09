@@ -136,12 +136,15 @@ public class AccountInfoUserService {
      * @param listAccInfo List of Account Info to save.
      */
     @Transactional
-    public void saveAll(List<AccountInfo> listAccInfo) {
+    public List<AccountInfo> saveAll(List<AccountInfo> listAccInfo) {
 	log.debug("Save All Account Info with Account Card : "+ listAccInfo.get(0).getAccountCard().getRegisteredCard());
 	listAccInfo.forEach(ai -> ai.setAccountNo(
 		CryptoUtil.encryptBase64(ai.getAccountNo())));
 	accountInfoUserRepository.saveAll(listAccInfo);
 	accountInfoUserRepository.flush();
+	
+	List<AccountInfo> decrypted = decryptResponse(listAccInfo);
+	return decrypted;
     }
     
     /**

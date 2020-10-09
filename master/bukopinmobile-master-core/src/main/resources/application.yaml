@@ -12,23 +12,36 @@ server:
 ## Database configuration:
 #spring.jpa.hibernate.ddl-auto=create
 spring:
-   #batch:
-    #  initialize-schema: never # always (on) or never (off)
    datasource:
-      url: jdbc:mysql://localhost:3306/bkpm_master_local
+      url: jdbc:mysql://localhost:3306/bkpm_user_local
       username: apps
       password: Apps*2013
       driver-class-name: com.mysql.jdbc.Driver
+      maxActive: 10
       initialization-mode: never # always (on) or never (off)
    jpa:
       hibernate:
          ddl-auto: update      
          #spring.jpa.hibernate.ddl-auto=none
-         naming:
-            physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+         naming.physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
       properties:
          hibernate.dialect: org.hibernate.dialect.MySQL5Dialect
          hibernate.jdbc.lob.non_contextual_creation: true
+   mail:
+      host: 10.2.62.224
+      port: 8587
+      username: noreply_mobile@bukopin.co.id
+      password: Bukopin@2019
+      properties:
+         mail:
+            smtp:
+               auth: true
+               connectiontimeout: 5000
+               timeout: 5000
+               writeout: 5000
+               starttls:
+                  enable: true
+                  
 ## LIQUIBASE (LiquibaseProperties)
 #spring.
    liquibase:
@@ -48,4 +61,12 @@ jwt:
 config:
    status:
       redis: 0 #1 is active, 0 is disable
+    ## IP CONFIG
+   ip:
+      passtrough: # client ip no need token
+         10.2.62.163,
+         10.2.62.164,
+         10.2.62.222,
+         0:0:0:0:0:0:0:1,
+         127.0.0.1
    

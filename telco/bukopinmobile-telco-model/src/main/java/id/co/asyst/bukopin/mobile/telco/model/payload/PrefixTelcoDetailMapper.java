@@ -34,6 +34,12 @@ public class PrefixTelcoDetailMapper<T> {
     private String productCode;
 	
 	/**
+     * productCode
+     */
+	@JsonProperty("codeCbs")
+    private String codeCbs;
+	
+	/**
      * name
      */
 	@JsonProperty("name")
@@ -142,6 +148,23 @@ public class PrefixTelcoDetailMapper<T> {
      */
 	public void setSelection(List<T> selection) {
 		this.selection = selection;
+	}
+	
+	
+	/**
+     * Gets <code>codeCbs</code>.
+     * @return The <code>codeCbs</code>.
+     */
+	public String getCodeCbs() {
+		return codeCbs;
+	}
+
+	 /**
+     * Sets <code>codeCbs</code>.
+     * @param codeCbs The <code>codeCbs</code> to set.
+     */
+	public void setCodeCbs(String codeCbs) {
+		this.codeCbs = codeCbs;
 	}
 
 	@Override

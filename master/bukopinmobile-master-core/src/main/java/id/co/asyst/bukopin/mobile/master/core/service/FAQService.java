@@ -9,8 +9,10 @@
  */
 package id.co.asyst.bukopin.mobile.master.core.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,7 +67,13 @@ public class FAQService {
      */
     @Transactional(readOnly = true)
     public List<FAQ> findAll() {
-	return faqRepository.findAll();
+	List<FAQ> faqs = faqRepository.findAll();
+	if (faqs != null) {
+	    // order by "SORT" column ascending
+	    faqs = faqs.stream().sorted(Comparator.comparing(FAQ::getSort))
+		    .collect(Collectors.toList());
+	}
+	return faqs;
     }
     
     /**

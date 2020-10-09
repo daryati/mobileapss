@@ -92,8 +92,10 @@ public class DestinationController {
 	private static final String NOTE_EN_PLNPOST = "PAY PLN ";
 	private static final String NOTE_ID_EMONEY = "BELI EMONEY ";
 	private static final String NOTE_EN_EMONEY = "PURC EMONEY ";
-	private static final String NOTE_ID_TELCOPRE = "BELI PULSA/PAKET DATA ";
-	private static final String NOTE_EN_TELCOPRE = "PURC PULSA/DATA ";
+	private static final String NOTE_ID_TELCOPRE = "BELI PULSA ";
+	private static final String NOTE_EN_TELCOPRE = "PURC PULSA ";
+	private static final String NOTE_ID_TELCODATA= "BELI PAKET DATA ";
+	private static final String NOTE_EN_TELCODATA = "PURC DATA ";
 	private static final String NOTE_ID_TELCOPOST = "BAYAR TGHN ";
 	private static final String NOTE_EN_TELCOPOST = "PAY TELCO ";
 	private static final String NOTE_ID_INSURANCEPOST = "BAYAR ASURANSI ";
@@ -102,6 +104,7 @@ public class DestinationController {
 	private static final String NOTE_EN_CREDITCARDPOST = "PAY CREDIT CARD ";
 	private static final String NOTE_ID_SAMOLNAS = "BAYAR SAMOLNAS ";
 	private static final String NOTE_EN_SAMOLNAS = "PAY SAMOLNAS ";
+
 
 	/* Attributes: */
 
@@ -608,7 +611,11 @@ public class DestinationController {
 			} else if (TransactionTypeEnum.SAMOLNAS.name().equalsIgnoreCase(transactionType)) {
 				transaction.setNoteId(NOTE_ID_SAMOLNAS.concat(subNumber));
 				transaction.setNoteEn(NOTE_EN_SAMOLNAS.concat(subNumber));
+			} else if (TransactionTypeEnum.TELCODATA.name().equalsIgnoreCase(transactionType)) {
+				transaction.setNoteId(NOTE_ID_TELCODATA.concat(subNumber));
+				transaction.setNoteEn(NOTE_EN_TELCODATA.concat(subNumber));
 			}
+
 
 			log.info("Save to Transaction");
 			transaction = transactionService.save(transaction);

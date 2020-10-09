@@ -17,28 +17,30 @@ spring:
       username: apps
       password: Apps*2013
       driver-class-name: com.mysql.jdbc.Driver
+      maxActive: 10
+      initialization-mode: never # always (on) or never (off)
    jpa:
       hibernate:
          ddl-auto: update      
          #spring.jpa.hibernate.ddl-auto=none
+         naming.physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
       properties:
          hibernate.dialect: org.hibernate.dialect.MySQL5Dialect
          hibernate.jdbc.lob.non_contextual_creation: true
-         
-## BUKOPIN INTERNAL DATABASE
-bukopin:
-   datasource:
-      url: jdbc:mysql://localhost:3306/bkpm_internal
-      #jdbc:sqlserver://10.2.62.224:1433;databaseName=bukopin_migplan_new #
-      username: x #apps
-      password: x1 #Apps*2013
-      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver #com.mysql.jdbc.Driver
-   hibernate:
-      ddl-auto: none
-      dialect: org.hibernate.dialect.MySQL5Dialect
-      jdbc.lob.non_contextual_creation: true
-      
-      
+   mail:
+      host: 10.2.62.224
+      port: 8587
+      username: noreply_mobile@bukopin.co.id
+      password: Bukopin@2019
+      properties:
+         mail:
+            smtp:
+               auth: true
+               connectiontimeout: 5000
+               timeout: 5000
+               writeout: 5000
+               starttls:
+                  enable: true
       
 ## LIQUIBASE (LiquibaseProperties)
 #spring.

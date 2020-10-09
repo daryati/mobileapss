@@ -119,7 +119,7 @@ public class CurrencyService {
      * @return, Single data of Currency
      */
     @Transactional(readOnly = true)
-    public Currency findByCurrencyNo(String currencyNo) {
+    public Currency findByCurrencyNo(Integer currencyNo) {
 	return currencyRepository.findCurrencyByCurrencyNo(currencyNo);
     }
     

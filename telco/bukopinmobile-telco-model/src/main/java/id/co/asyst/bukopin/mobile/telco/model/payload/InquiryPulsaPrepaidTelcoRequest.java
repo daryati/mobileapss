@@ -79,6 +79,27 @@ public class InquiryPulsaPrepaidTelcoRequest {
 	@NotBlank(message="institution type is required!")
 	@JsonProperty("institutionType")
 	private String institutionType;
+	
+	/**
+     * productCode
+     */
+	//@NotBlank(message="product code is required!")
+	@JsonProperty("productCode")
+	private String productCode;
+	
+	/**
+     * codeCbs
+     */
+	//@NotBlank(message="code Cbs is required!")
+	@JsonProperty("codeCbs")
+	private String codeCbs;
+	
+	/**
+     * packageCode
+     */
+	//@NotBlank(message="packageCode is required!")
+	@JsonProperty("packageCode")
+	private String packageCode;
 
 	
 	/* Transient Attributes: */
@@ -197,6 +218,32 @@ public class InquiryPulsaPrepaidTelcoRequest {
      */
 	public void setInstitutionType(String institutionType) {
 		this.institutionType = institutionType;
+	}
+
+	
+	
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+
+	public String getCodeCbs() {
+		return codeCbs;
+	}
+
+	public void setCodeCbs(String codeCbs) {
+		this.codeCbs = codeCbs;
+	}
+
+	public String getPackageCode() {
+		return packageCode;
+	}
+
+	public void setPackageCode(String packageCode) {
+		this.packageCode = packageCode;
 	}
 
 	@Override

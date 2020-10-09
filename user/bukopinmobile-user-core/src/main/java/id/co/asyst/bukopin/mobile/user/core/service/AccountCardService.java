@@ -9,9 +9,16 @@
  */
 package id.co.asyst.bukopin.mobile.user.core.service;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +26,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import id.co.asyst.bukopin.mobile.common.core.util.CryptoUtil;
+import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
+import id.co.asyst.bukopin.mobile.user.core.config.GetConfiguration;
 import id.co.asyst.bukopin.mobile.user.core.repository.AccountCardRepository;
+import id.co.asyst.bukopin.mobile.user.model.AccountBalanceRes;
+import id.co.asyst.bukopin.mobile.user.model.AccountStatusEnum;
+import id.co.asyst.bukopin.mobile.user.model.CIFStatusEnum;
 import id.co.asyst.bukopin.mobile.user.model.entity.AccountCard;
 import id.co.asyst.bukopin.mobile.user.model.entity.AccountInfo;
+import id.co.asyst.bukopin.mobile.user.model.entity.Product;
 import id.co.asyst.bukopin.mobile.user.model.entity.User;
+import id.co.asyst.bukopin.mobile.user.model.entity.internal.DebitCardInfo;
+import id.co.asyst.bukopin.mobile.user.model.soap.account.GetAccountBalanceResType;
+import id.co.asyst.bukopin.mobile.user.model.soap.cif.GetInquiryCIFResType;
+import id.co.asyst.bukopin.mobile.user.model.soap.cif.GetInquiryCIFResType.Accounts;
 
 /**
  * Service Implementation for managing <code>AccountCard</code>.
@@ -45,6 +62,12 @@ public class AccountCardService {
     
     @Autowired
     private UserService userService;
+    
+   /**
+    * Account Balance Service
+    */
+   @Autowired
+   private AccountBalanceService accountBalanceService;
     
     /**
      * Constructor
@@ -75,6 +98,12 @@ public class AccountCardService {
 	}
     }
     
+    /**
+     * Find Account Cards By Username
+     * 
+     * @param username The User's username
+     * @return List of User's Account Cards.
+     */
     @Transactional(readOnly=true)
     public List<AccountCard> findListByUsername(String username) {
 	log.debug("Find User by username : {} " + username);
@@ -162,24 +191,6 @@ public class AccountCardService {
     }
     
     /**
-     * Find Account Cards By Username
-     * 
-     * @param username The User's username
-     * @return List of User's Account Cards.
-     */
-    @Transactional(readOnly=true)
-    public List<AccountCard> findCardsByUsername(String username) {
-	log.debug("Find Account Cards by username : {} " + username);
-	List<AccountCard> accountCards = accountCardRepository.findByUsername(username);
-	if(accountCards!=null && !accountCards.isEmpty()) {
-	    accountCards = decryptResponse(accountCards);
-	}
-	
-	return accountCards;
-//	return accountCardRepository.findByUsername(username);
-    }
-    
-    /**
      * Find AccountCard by Registered Card
      * 
      * @param registCard user's Registered Card
@@ -255,6 +266,117 @@ public class AccountCardService {
 	accCard.setValidYear(accountCard.getValidYear());
 
 	return accCard;
+    }
+    
+    /**
+     * Filter Account Verification
+     * <p> 
+     * Filter data account from tibco before save to database. The filters are:
+     * <ol>
+     * <li>Filter saving and giro only</i>
+     * <li>Filter by card number (only include accinfo in xlink db)</i>
+     * <li>Filter by cifStatus !closed</i>
+     * </ol>
+     * </p>
+     * @param tibcoAccountInfo All of account info from tibco.
+     * @param products All of products from db mbanking.
+     * @return Map filtered account info to save and cif status.
+     */
+    public Map<String, Object> filterAccountVerification(List<GetInquiryCIFResType.Accounts> tibcoAccountInfo,
+	    List<DebitCardInfo> xlinkData, List<Integer> pdidsDb, List<Integer> blackListPdid) {
+	List<String> savingAccNo = new ArrayList<>(); // all saving account number to check status
+	List<String> xlinkAccNo = xlinkData.stream().map(DebitCardInfo::getAccountNumber)
+		.collect(Collectors.toList());
+	
+	// holder accno & cif status
+	Map<String,Integer> accCifStatus = new HashMap<>();
+	
+	// list accountInfo to be response
+	List<GetInquiryCIFResType.Accounts> accInfoResp = new ArrayList();
+	// filtered accinfo (can be activated only)
+	List<GetInquiryCIFResType.Accounts> filteredAccInfo = new ArrayList();
+	for (GetInquiryCIFResType.Accounts accounts : tibcoAccountInfo) {
+	    // Filter Saving and Giro only
+	    if (BkpmConstants.CODE_TYPE_SAVING.equals(String.valueOf(accounts.getAcctype()))
+		    || BkpmConstants.CODE_TYPE_GIRO.equals(String.valueOf(accounts.getAcctype()))) {
+		String tibcoAccountNo = String.valueOf(accounts.getAccnumber());
+		// padding to 10 with 0, because account number in db is 10 digit in length and
+		// left padded with 0.
+		tibcoAccountNo = StringUtils.leftPad(tibcoAccountNo, BkpmConstants.BUKOPIN_ACCNO_LENGTH,
+			BkpmConstants.BUKOPIN_ACCNO_PADDING);
+		// Filter by Card Number. Check is tibcoAccno exist in current card
+		if (xlinkAccNo.contains(tibcoAccountNo)) {
+		    // add saving account number to list, to get account balance
+		    if (BkpmConstants.CODE_TYPE_SAVING.equals(String.valueOf(accounts.getAcctype()))) {
+			savingAccNo.add(tibcoAccountNo);
+		    } else if (BkpmConstants.CODE_TYPE_GIRO.equals(String.valueOf(accounts.getAcctype()))) {
+			// Check status giro
+			if(accounts.getStatus()==AccountStatusEnum.ACTIVE.getValue() ||
+				accounts.getStatus() == AccountStatusEnum.PASSIVE.getValue()) {
+			    // account status to save in accinfo table
+			    accCifStatus.put(tibcoAccountNo, Integer.valueOf(accounts.getStatus()));
+
+			    // Make sure account's pdid is exist in table PRODUCT
+			    if (pdidsDb.contains(accounts.getProductid())
+				    // Exclude accounts from tibco with blackListPdid
+				    && !blackListPdid.contains(accounts.getProductid())) {
+
+				// filtered accs info
+				filteredAccInfo.add(accounts);
+			    }
+			    
+			    // add response list
+			    accInfoResp.add(accounts);
+			}
+		    }
+		    
+		}
+	    }
+	}
+	
+	// Filter by cif status
+	if(!savingAccNo.isEmpty()) {
+	    List<GetAccountBalanceResType.Transaction> transactions = accountBalanceService.callAccBalanceTibco(savingAccNo, 
+		    new BigInteger(BkpmConstants.CODE_TYPE_SAVING));
+	    
+	    for(GetAccountBalanceResType.Transaction trx: transactions) {
+		String accountNoTrx = StringUtils.leftPad(String.valueOf(trx.getAccNo()),
+			BkpmConstants.BUKOPIN_ACCNO_LENGTH, BkpmConstants.BUKOPIN_ACCNO_PADDING);
+		// account status to save in accinfo table
+		accCifStatus.put(accountNoTrx, Integer.valueOf(trx.getCifStatus()));
+		
+		// only add active and passive account info
+		if (CIFStatusEnum.ACTIVE.getValue() == Integer.valueOf(trx.getCifStatus())
+			|| CIFStatusEnum.PASSIVE.getValue() == Integer.valueOf(trx.getCifStatus())) {
+		    
+		    // get account by account no
+		    GetInquiryCIFResType.Accounts accounts = tibcoAccountInfo.stream().filter(acc -> {
+			String accountNoTibco = StringUtils.leftPad(String.valueOf(acc.getAccnumber()),
+				BkpmConstants.BUKOPIN_ACCNO_LENGTH, BkpmConstants.BUKOPIN_ACCNO_PADDING);
+			return accountNoTrx.equals(accountNoTibco);
+		    }).findFirst().orElse(null);
+		    
+		    if(accounts!=null) {
+			// Make sure account's pdid is exist in table PRODUCT
+			if (pdidsDb.contains(accounts.getProductid())
+				// Exclude accounts from tibco with blackListPdid
+				&& !blackListPdid.contains(accounts.getProductid())) {
+
+			    // filtered accs info
+			    filteredAccInfo.add(accounts);
+			}
+			accInfoResp.add(accounts);
+		    }
+		}
+	    }
+	}
+	
+	Map<String, Object> mapResult = new HashMap<>();
+	mapResult.put("ACC_INFO", filteredAccInfo);
+	mapResult.put("ACC_INFO_RESP", accInfoResp);
+	mapResult.put("CIF_STATUS", accCifStatus);
+	
+	return mapResult;
     }
 
     /* Overrides: */

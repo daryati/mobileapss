@@ -39,6 +39,7 @@ import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.core.util.MessageUtil;
 import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
+import id.co.asyst.bukopin.mobile.common.model.SystemCutOffEnum;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonRequest;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
 import id.co.asyst.bukopin.mobile.common.model.payload.Identity;
@@ -166,6 +167,15 @@ public class PLNPrepaidController {
 	    throws IOException {
 	CommonResponse response = new CommonResponse();
 
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.PLN.getId();
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
+	}
+
 	String forwardInsCode = env.getProperty("spring.pln.forwarding-institution-code");
 	
 	PrepaidInquiryRequest reqInquiryPrepaidPLNAranet = PLNUtils
@@ -254,6 +264,15 @@ public class PLNPrepaidController {
     private CommonResponse inquirySubscriberName(@PathVariable String id) throws IOException {
 	CommonResponse response = new CommonResponse();
 
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.PLN.getId();
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
+	}
+
 	String forwardInsCode = env.getProperty("spring.pln.forwarding-institution-code");
 	PrepaidInquiryRequest reqInquiryPrepaidPLNAranet = PLNUtils.generateInquiryPrepaidPLNReq(id, forwardInsCode);
 	log.debug("PLN prepaid req-inq to tibco: {}", BkpmUtil.convertToJson(reqInquiryPrepaidPLNAranet));
@@ -327,6 +346,7 @@ public class PLNPrepaidController {
     private CommonResponse purchaseResult(@Valid @RequestBody CommonRequest<PurchasePrepaidRequestPLN> req) throws IOException, MessagingException {
 	CommonResponse response = new CommonResponse();
 	
+	
 	PurchasePrepaidRequestPLN dataRequest = req.getData();
 	String username = dataRequest.getUsername();
 	String accountNo = dataRequest.getAccountNo();
@@ -345,6 +365,15 @@ public class PLNPrepaidController {
 		log.error("Validate Token and Phone owner error..");
 		return resPhone;
 	    }
+	}
+
+	// Check Cut Off
+	long cutoffId = SystemCutOffEnum.PLN.getId();
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
 	}
 
 	String forwardInsCode = env.getProperty("spring.pln.forwarding-institution-code");

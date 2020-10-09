@@ -1,4 +1,58 @@
 ===============================================================================
+   Bukopin-Mobile-Service 1.5.GA Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Service - Version 1.5.GA
+** Notes
+	* Relase for Paket Data & Trace Push Notification Networking
+
+** Story
+	* 
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
+   Bukopin-Mobile-Service 1.4.GA Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Service - Version 1.4.GA
+** Notes
+	* Relase for Push Notification & System Cut-Off.
+
+** Story
+	* 
+	
+** Bug Fixed
+	* [BKPM-365] - [Backend] Internationalization Doesn't Work in Verify PIN
+	* [BKPM-385] - [Backend] Internationalization Doesn't Work in User Locked Status
+	* [BKPM-388] - [Backend] Internationalization Doesn't Work in Double Login
+	* [BKPM-389] - [Backend] Internationalization Doesn't Work in Session Timeout
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
+   Bukopin-Mobile-Service 1.3.GA2 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Service - Version 1.3.GA2
+** Notes
+	* Relase for Limit Transfer.
+
+** Story
+	* 
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
    Bukopin-Mobile-Service 1.3.GA1 Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Service - Version 1.3.GA1

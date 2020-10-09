@@ -23,7 +23,8 @@ spring:
          ddl-auto: update # update, create, none
          naming.physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
       properties:
-         hibernate.dialect: org.hibernate.dialect.SQLServerDialect
+         #hibernate.dialect: org.hibernate.dialect.SQLServerDialect # < v2008
+         hibernate.dialect: org.hibernate.dialect.SQLServer2008Dialect # >= v2008
    mail:
       host: smtp.office365.com
       port: 587

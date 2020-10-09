@@ -60,7 +60,7 @@ public class CreditCardService {
      */
     private final Logger log = LoggerFactory.getLogger(InsuranceTransService.class);
 
-    private static final String SUBJECT_CC = "Pembayaran Kartu Kredit";
+    private static final String SUBJECT_CC = "Kartu Kredit";
     private static final String CODE_CC_BKP = "CCBKP";
     private static final String CC_BKP_TEMPLATE_NAME = "html/CcBKPTemplate";
     private static final String CC_NON_BKP_TEMPLATE_NAME = "html/CcNonBKPTemplate";
@@ -106,8 +106,11 @@ public class CreditCardService {
 		messageUtil.get("success", loc));
 
 	try {
-	    String resDate = res.getDate();
-	    String resTime = res.getTime();
+		
+		Date today = new Date();
+		
+	    /*String resDate = res.getDate();
+	    String resTime = res.getTime();*/
 
 	    // set date and time
 	    DateFormat formatter = new SimpleDateFormat("yyyyMMdd");
@@ -123,17 +126,17 @@ public class CreditCardService {
 	    String lastName = user.getLastName() != null ? user.getLastName() : "";
 	    fullname = user.getFirstName() + " " + middleName + " " + lastName;
 
-	    String date = "";
-	    String time = "";
+	    String date = formatter1.format(today);
+        String time = formatterTm1.format(today);
 
-	    try {
+	    /*try {
 		date = formatter1.format(formatter.parse(resDate));
 		time = formatterTm1.format(formatterTm.parse(resTime));
 	    } catch (ParseException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
-	    }
-
+	    }*/
+		
 	    // set Currency Rupiah
 	    NumberFormat id = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
 
@@ -158,8 +161,7 @@ public class CreditCardService {
 	    String card3 = regCard.substring(8, 12);
 	    String card4 = regCard.substring(12, 16);
 
-	    String registrationCard = card1
-		    .concat(" " + card1.concat(" " + card2.concat(" " + card3.concat(" " + card4))));
+	    String registrationCard = card1.concat(" " + card2.concat(" " + card3.concat(" " + card4)));
 
 	    final Locale locale = new Locale("en_US.UTF-8");
 	    final Context ctx = new Context(locale);
@@ -167,6 +169,7 @@ public class CreditCardService {
 
 	    // thymleaf template mail
 	    // Prepare the evaluation context
+	    ctx.setVariable("desc", subject);
 	    ctx.setVariable("fullname", fullname);
 	    ctx.setVariable("reference", res.getReferenceNumber());
 	    ctx.setVariable("date", date);
@@ -174,7 +177,7 @@ public class CreditCardService {
 	    ctx.setVariable("accountNumber", accountNumber);
 	    ctx.setVariable("bankName", res.getName());
 	    ctx.setVariable("registrationCard", registrationCard);
-	    ctx.setVariable("amount", total.replace("Rp", "RP "));
+	    ctx.setVariable("amount", total);
 
 	    // Prepare message using a Spring helper
 	    final MimeMessage mimeMessage = this.javaMailSender.createMimeMessage();
@@ -191,19 +194,19 @@ public class CreditCardService {
 		billedAmount = id.format(res.getBilledAmount()).replace(",00", "");
 
 		ctx.setVariable("subscriberName", res.getSubscriberName());
-		ctx.setVariable("billedAmount", billedAmount.replace("Rp", "RP "));
-		ctx.setVariable("minimumPayment", minimumPayment.replace("Rp", "RP "));
+		ctx.setVariable("billedAmount", billedAmount);
+		ctx.setVariable("minimumPayment", minimumPayment);
 		
 		htmlContent = this.htmlTemplateEngine.process(CC_BKP_TEMPLATE_NAME, ctx);
 	    }
 
 	    message.setText(htmlContent, true); // true = isHtml
-	    message.addInline("header", new ClassPathResource("/mail/images/Header-M.png"));
-	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-M.png"));
-	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-M.png"));
-	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-M.png"));
-	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-M.png"));
-	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-M.png"));
+	    message.addInline("header", new ClassPathResource("/mail/images/Header-S.png"));
+	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-S.png"));
+	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-S.png"));
+	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-S.png"));
+	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-S.png"));
+	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-S.png"));
 
 	    javaMailSender.send(mimeMessage);
 	    log.debug("Payment receipt has been sent successfully");

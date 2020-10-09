@@ -163,8 +163,13 @@ public class TelcoPostpaidController {
 	String codeArra = req.getData().getCodeArra();
 	String codeCbs = req.getData().getCodeCbs();
 
-	if (custNo.equals("abc")) {
-	    throw new MiddlewareException("abc xzy");
+	// Check Cut Off
+	long cutoffId = TelcoUtils.getCutOffId(req.getData().getProductName());
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
 	}
 
 	String forwardInsCode = env.getProperty("config.forwarding-institution-code");
@@ -271,6 +276,16 @@ public class TelcoPostpaidController {
 	String codeArra = req.getData().getCodeArra();
 	String codeCbs = req.getData().getCodeCbs();
 	String group = req.getData().getProductName();
+	
+	// Check Cut Off
+	long cutoffId = TelcoUtils.getCutOffId(req.getData().getProductName());
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
+	}
+
 
 	// verify PIN
 	GetVerifyPINRequest verifyPINReqData = new GetVerifyPINRequest();
@@ -490,6 +505,15 @@ public class TelcoPostpaidController {
 	String type = req.getData().getType();
 
 	String custNo = req.getData().getCustNo();
+	
+	// Check Cut Off
+	long cutoffId = TelcoUtils.getCutOffId(req.getData().getType());
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
+	}
 
 	CommonResponse areaCode = Services.create(MasterModuleService.class).findConfigByName(IRREGULAR_AREA_CODE)
 		.execute().body();
@@ -611,7 +635,7 @@ public class TelcoPostpaidController {
 
 	return response;
     }
-
+    																																									
     /**
      * Payment Postpaid Telco Telkom PSTN and SPEEDY
      * 
@@ -660,6 +684,15 @@ public class TelcoPostpaidController {
 	    return response;
 	}
 
+	// Check Cut Off
+	long cutoffId = TelcoUtils.getCutOffId(req.getData().getType());
+	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
+		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
+	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+	    log.error("Error Cutoff");
+	    return cutOffResponse;
+	}
+	
 	// verify pin
 	GetVerifyPINRequest verifyPinData = new GetVerifyPINRequest();
 	verifyPinData.setPin(pin);

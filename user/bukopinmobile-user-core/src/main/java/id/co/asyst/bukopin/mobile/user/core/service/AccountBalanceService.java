@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import id.co.asyst.bukopin.mobile.common.core.exception.MiddlewareException;
 import id.co.asyst.bukopin.mobile.common.core.util.BkpmUtil;
 import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
 import id.co.asyst.bukopin.mobile.user.core.service.soap.PortType;
@@ -294,6 +295,73 @@ public class AccountBalanceService {
 	
 	
 	return accBalanceResult;
+    }
+    
+    public List<GetAccountBalanceResType.Transaction> callAccBalanceTibco(List<String> listAccNo, BigInteger accType) {
+	List<GetAccountBalanceResType.Transaction> transaction = new ArrayList<>();
+	
+	// get transaction ID
+	String txId = BkpmUtil.generateTrxId();
+	// set request
+	HeaderRQ headerRQ = new HeaderRQ();
+	headerRQ.setClientTxnID(txId);
+
+	Credentials credential = new Credentials();
+	credential.setClientID(BkpmConstants.CLIENT_ID);
+	headerRQ.setCredentials(credential);
+
+	try {
+	    GregorianCalendar gregCal = new GregorianCalendar();
+	    gregCal.setTime(new Date());
+	    XMLGregorianCalendar xmlGregCal;
+	    xmlGregCal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregCal);
+	    xmlGregCal.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
+	    headerRQ.setReqDateTime(xmlGregCal);
+	} catch (DatatypeConfigurationException e1) {
+	    e1.printStackTrace();
+	}
+
+	GetAccountBalanceReqType getAccountBalanceRQ = new GetAccountBalanceReqType();
+	getAccountBalanceRQ.setAccType(accType);
+
+	Account acc = new Account();
+	listAccNo.forEach(accountNo -> {
+	    if (accountNo.length() < BkpmConstants.BUKOPIN_ACCNO_LENGTH) {
+		// padding to 10 with 0, because account number in db is 10 digit in length and
+		// left padded with 0.
+		accountNo = StringUtils.leftPad(accountNo, BkpmConstants.BUKOPIN_ACCNO_LENGTH,
+			BkpmConstants.BUKOPIN_ACCNO_PADDING);
+	    }
+	    acc.getAccNo().add(accountNo);
+	});
+	getAccountBalanceRQ.setAccount(acc);
+	
+	if (acc.getAccNo().size() > 0) {
+
+	    Holder<HeaderRS> headerRS = new Holder<HeaderRS>();
+	    Holder<GetAccountBalanceResType> getAccountBalanceRS = new Holder<GetAccountBalanceResType>();
+
+	    try {
+		portType.getAccountBalance(headerRQ, getAccountBalanceRQ, headerRS, getAccountBalanceRS);
+		if ("000".equals(getAccountBalanceRS.value.getResponse().getResCode())) {
+		    transaction = getAccountBalanceRS.value.getTransaction();
+		} else {
+		    String error = getAccountBalanceRS.value.getResponse().getResCode();
+		    if(StringUtils.isNotBlank(getAccountBalanceRS.value.getResponse().getDesc())) {
+			error = error + " ("+getAccountBalanceRS.value.getResponse().getDesc()+")";
+		    }
+		    log.error("Get account balance failed: {}", error);
+		    throw new MiddlewareException(error);
+		}
+	    } catch (Fault e) {
+		log.error("Get account balance failed, caused by: "+e.getMessage());
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
+
+	}
+	
+	return transaction;
     }
 
     public List<InquiryTransactionDetailRes> getLast3Transaction(BigInteger accountType, String accountNumber) {

@@ -126,7 +126,7 @@ public class ControllerInterceptor implements HandlerInterceptor {
 	    } else {
 		String encryptedToken = CryptoUtil.encryptAESHex(token);
 		CommonResponse sessionResponse = Services.create(UserModuleService.class)
-			.validateLoginSession(encryptedToken).execute().body();
+			.validateLoginSession(httpServletRequest.getLocale().getLanguage(), encryptedToken).execute().body();
 		if (ResponseMessage.SUCCESS.getCode().equals(sessionResponse.getCode())) {
 		    status = HandlerInterceptor.super.preHandle(request, response, handler);
 		} else {

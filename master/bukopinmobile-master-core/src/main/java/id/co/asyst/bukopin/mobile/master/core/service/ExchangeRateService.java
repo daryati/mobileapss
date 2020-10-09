@@ -111,11 +111,21 @@ public class ExchangeRateService {
 		exchangePortType.getExchangeRate(headerRQ, exchangeRateRQ, headerRS, exchangeRateRS);
 	    if ("00".equalsIgnoreCase(exchangeRateRS.value.getResponsemessage().getResponsecode())) {
 	    	//get currency data from cache
-	    	Currency currency = currencyService.getCurrencyByCurrencyNoCache(currencyNo);	    	
-	    	if(null != currency) {
+//	    	Currency currency = currencyService.getCurrencyByCurrencyNoCache(currencyNo);	    	
+//	    	if(null != currency) {
 	    		ExchangeRateDetailResponse tt = new ExchangeRateDetailResponse();
-		    	tt.setCurrencyNo(currency.getCurrencyNo().toString());
-		    	tt.setCode(currency.getCode());
+//		    	tt.setCurrencyNo(currency.getCurrencyNo().toString());
+//		    	tt.setCode(currency.getCode());
+	    		tt.setCurrencyNo(currencyNo);
+	    		Integer curNo = Integer.valueOf(currencyNo);
+	    		Currency currentCurrency = currencyService.findByCurrencyNo(
+	    			curNo);
+	    		String currencyCode = "";
+	    		if(currentCurrency!=null) {
+	    		    currencyCode = currentCurrency.getCode();
+	    		}
+	    		tt.setCode(currencyCode);
+		    	
 		    	String ttBuy1 = exchangeRateRS.value.getExchangerate().getKursttbuy().substring(0, 5);
 		    	String ttBuy2 = exchangeRateRS.value.getExchangerate().getKursttbuy().substring(5, 10);
 		    	
@@ -131,8 +141,8 @@ public class ExchangeRateService {
 		    	exchangeRateRes.setTT(tt);
 	    		
 		    	ExchangeRateDetailResponse bankNote = new ExchangeRateDetailResponse();
-		    	bankNote.setCurrencyNo(currency.getCurrencyNo().toString());
-		    	bankNote.setCode(currency.getCode());
+		    	bankNote.setCurrencyNo(currencyNo);
+		    	bankNote.setCode(currencyCode);
 		    	String bankNoteBuy1 = exchangeRateRS.value.getExchangerate().getKursbanknotebuy().substring(0, 5);
 		    	String bankNoteBuy2 = exchangeRateRS.value.getExchangerate().getKursbanknotebuy().substring(5, 10);
 		    	
@@ -146,9 +156,9 @@ public class ExchangeRateService {
 		    	bankNote.setSell(ttsell.toString());
 	    		
 		    	exchangeRateRes.setBankNote(bankNote);
-	    	} else {
-	    		log.error("currency not found in cache");
-	    	}
+//	    	} else {
+//	    		log.error("currency not found in cache");
+//	    	}
 	    } else {
 	    	log.error("error get response in exchange rate :" + exchangeRateRS.value.getResponsemessage().getResponsecode());
 	    	throw new MiddlewareException(exchangeRateRS.value.getResponsemessage().getResponsecode());

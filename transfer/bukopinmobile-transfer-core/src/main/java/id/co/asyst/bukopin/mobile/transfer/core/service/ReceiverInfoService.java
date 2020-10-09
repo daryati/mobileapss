@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,18 +63,20 @@ public class ReceiverInfoService {
     }
   
     @Transactional(readOnly = true)
-    public List<ReceiverInfo> findByBukopinAccount(long username){
+    public List<ReceiverInfo> findByBukopinAccount(long username, int rows){
 	String bankCode = "441";
 	boolean isSave = true;
-	return favoriteDestinationRepository.findBukopinReceiver(username, bankCode, isSave);
+	int firstPage = 0;
+	return favoriteDestinationRepository.findBukopinReceiver(username, bankCode, isSave, PageRequest.of(firstPage, rows));
 	
     }
     
     @Transactional(readOnly = true)
-    public List<ReceiverInfo> findNotBukopinAccount(long username){
+    public List<ReceiverInfo> findNotBukopinAccount(long username, int rows){
 	String bankCode = "441";
 	boolean isSave = true;
-	return favoriteDestinationRepository.findNotBukopinReceiver(username, bankCode, isSave);
+	int firstPage = 0;
+	return favoriteDestinationRepository.findNotBukopinReceiver(username, bankCode, isSave, PageRequest.of(firstPage, rows));
     }
     
     @Transactional(readOnly = true)
@@ -97,18 +100,19 @@ public class ReceiverInfoService {
 	return favoriteDestinationRepository.findFavByUserIdAndAccountNum(info, accountNumber);
 	
     }
-    
+
     /**
-     * findMostFrequent
+     * Find Most Frequent Transaction
      * 
-     * @param username
-     * @param limit
+     * @param username The username to find the transactions
+     * @param rows Limit result
      * @return
      */
     @Transactional(readOnly = true)
-    public List<ReceiverInfo> findMostFrequent(String username) {
+    public List<ReceiverInfo> findMostFrequent(String username, int rows) {
 	boolean isSave = true;
-	return favoriteDestinationRepository.findMostFrequent(username, isSave);
+	int firstPage = 0;
+	return favoriteDestinationRepository.findMostFrequent(username, isSave, PageRequest.of(firstPage, rows));
     }
 
     /* Overrides: */}

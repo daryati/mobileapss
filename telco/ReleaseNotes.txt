@@ -1,9 +1,62 @@
 ===============================================================================
+   Bukopin-Mobile-Telco 1.6.GA Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Telco - Version 1.6.GA
+** Notes
+	* Relase for Credit Card (Bukopin & Non Bukopin)
+
+** Story
+	* 
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
+   Bukopin-Mobile-Telco 1.5.GA Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Telco - Version 1.5.GA
+** Notes
+	* Relase for Paket Data & Trace Push Notification Networking
+
+** Story
+	* [BKPM-154] - [Backend] Telco Prepaid - Inquiry Mobile Data
+	* [BKPM-147] - [Backend] Telco Prepaid (Mobile Credit & Internet Data)
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
+   Bukopin-Mobile-Telco 1.4.GA Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Telco - Version 1.4.GA
+** Notes
+	* Relase for Push Notification & System Cut-Off.
+
+** Story
+	* 
+	
+** Bug Fixed
+	* [BKPM-410] - [Backend] Destination Type XL
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
    Bukopin-Mobile-Telco 1.3.GA2 Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Telco - Version 1.3.GA2
 ** Notes
 	* Relase for Limit Transfer implementation.
+	* Get prefix (4 digit) of phoneNumber param in service telco/prepaid/listMobileDataPulsa
 
 ** Story
 	* 

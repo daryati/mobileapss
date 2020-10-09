@@ -52,6 +52,7 @@ import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryPLNPo
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryPLNPrepaidResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistorySamolnasResponse;
+import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryTelcoDataResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryTelcoPostpaidResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.payload.TransactionHistoryTelcoPrepaidResponse;
 import id.co.asyst.bukopin.mobile.user.core.service.UserService;
@@ -274,6 +275,19 @@ public class TransactionHistoryController {
 		response.setMessage(messageUtil.get("success", servletRequest.getLocale()));
 		response.setData(respSamolnasData.get());
 	    }
+	} else if (TransactionTypeEnum.TELCODATA.name().equalsIgnoreCase(type)) {
+	    Optional<TransactionHistoryTelcoDataResponse> result = transactionHistoryService.getDetailTelcoData(id);
+	    if (!result.isPresent()) {
+		log.error("transaction history " + type + " not found");
+		response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+		response.setMessage(messageUtil.get("data.not.found", servletRequest.getLocale()));
+	    } else {
+		log.debug("get detail transaction history " + type + " success");
+		response.setCode(ResponseMessage.SUCCESS.getCode());
+		response.setMessage(messageUtil.get("success", servletRequest.getLocale()));
+		response.setData(result.get());
+	    }
+
 	} else {
 	    log.error("type incorrect");
 	    response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());

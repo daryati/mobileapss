@@ -61,10 +61,6 @@ public class Bank extends IdBasedObject implements Serializable {
     @Column(name = "BANK_CODE", unique = true)
     @JsonProperty("bankCode")
     private String bankCode;
-    
-    /* receiver info */
-    @OneToMany(fetch=FetchType.EAGER, mappedBy="bank", cascade=CascadeType.ALL)
-    private List<ReceiverInfo> receiverInfo;
 
     /* Transient Attributes: */
 

@@ -45,7 +45,7 @@ import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
 import id.co.asyst.bukopin.mobile.transfer.model.PostingRes;
 import id.co.asyst.bukopin.mobile.transfer.model.entity.Bank;
 import id.co.asyst.bukopin.mobile.transfer.model.entity.ReceiverInfo;
-import id.co.asyst.bukopin.mobile.transfer.model.entity.UserTransfer;
+import id.co.asyst.bukopin.mobile.user.model.entity.User;
 
 /**
  * 
@@ -239,7 +239,7 @@ public class TransferService {
     }
     
     @Async("transferAsyncExecutor")
-    public void sendEmailReceiptSaved(ReceiverInfo receiver, UserTransfer user, Locale loc, String method) {
+    public void sendEmailReceiptSaved(ReceiverInfo receiver, User user, Locale loc, String method) {
 	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(), messageUtil.get("success", loc));
 	
 	try {
