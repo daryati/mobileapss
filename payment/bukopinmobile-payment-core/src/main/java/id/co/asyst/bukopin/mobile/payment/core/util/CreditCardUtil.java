@@ -262,7 +262,9 @@ public class CreditCardUtil {
 	
 	String usernamePad = StringUtils.rightPad(username, 15).replace("\0", " ");
 	
-	String randAlphaNum = generateAlphanumeric(12);
+	/*String randAlphaNum = generateAlphanumeric(12);*/
+	
+	String RRN = generateNumber(12);
 
 	if (codeCc.equalsIgnoreCase(CODE_CC_BKP)) {
 	    param.setElement2(regCard);
@@ -314,7 +316,7 @@ public class CreditCardUtil {
 	param.setElement12(timeLocal.format(today));
 	param.setElement13(dateLocal.format(today));
 	param.setElement18(MERCHANT_TYPE_MOBILE);
-	param.setElement37(randAlphaNum);
+	param.setElement37(RRN);
 	param.setElement41(TERMINAL_ID);
 	param.setElement49(IDR_CURRENCY_CODE);
 	param.setElement63(codeCbs);
