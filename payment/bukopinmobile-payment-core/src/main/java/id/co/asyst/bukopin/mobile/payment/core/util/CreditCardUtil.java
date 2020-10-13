@@ -271,7 +271,7 @@ public class CreditCardUtil {
 	    param.setElement11(req.getElement11());
 	    param.setElement22(ELEMENT_22);
 	    param.setElement32(FORWARD_ID_BUKOPIN);
-	    param.setElement33(FORWARD_ID_BUKOPIN);
+	    
 	    param.setElement48(subscriberNumber);
 
 	    des = StringUtils.rightPad(TRDES_CCBKP.concat(req.getSubscriberNumber()), 40);
@@ -287,7 +287,7 @@ public class CreditCardUtil {
 	    String paddingEl28 = new String(new char[20]).replace('\0', '0');
 	    param.setElement28(paddingEl28);
 	    param.setElement32(ACQUIRING_INSTITUTION_CODE);
-	    param.setElement33(forwardInsCode);
+	    
 	    
 
 	    element120 = "00000000441".concat(codeCbs+"6017441");
@@ -316,6 +316,7 @@ public class CreditCardUtil {
 	param.setElement12(timeLocal.format(today));
 	param.setElement13(dateLocal.format(today));
 	param.setElement18(MERCHANT_TYPE_MOBILE);
+	param.setElement33(forwardInsCode);
 	param.setElement37(RRN);
 	param.setElement41(TERMINAL_ID);
 	param.setElement49(IDR_CURRENCY_CODE);

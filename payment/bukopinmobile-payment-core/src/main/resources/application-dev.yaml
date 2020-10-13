@@ -54,6 +54,11 @@ logging:
 config:
    pln:
       forwarding-institution-code: 4411338
+      
+   # FORWARD INS CODE FOR CC   
+   cc:
+      forwarding-institution-code: 441
+      
    ## IP CONFIG
    ip:
       passtrough: # client ip no need token

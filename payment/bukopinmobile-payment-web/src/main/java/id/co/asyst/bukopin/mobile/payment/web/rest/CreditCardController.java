@@ -371,7 +371,7 @@ public class CreditCardController {
 
 	String accType = verifyAccOwnRespObj.getAccountInfo().getAccountType().name();
 
-	String forwardInsCode = env.getProperty("config.pln.forwarding-institution-code");
+	String forwardInsCode = env.getProperty("config.cc.forwarding-institution-code");
 
 	// get Registered Card
 	CommonResponse findAccountCard = Services.create(UserModuleService.class).getAccountCardByUsername(username)
