@@ -1,4 +1,21 @@
 ===============================================================================
+   Bukopin-Mobile-Service 1.6.GA Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Service - Version 1.6.GA
+** Notes
+	* Relase for Credit Card Bukopin & Non Bukopin
+
+** Story
+	* 
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
    Bukopin-Mobile-Service 1.5.GA Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Service - Version 1.5.GA

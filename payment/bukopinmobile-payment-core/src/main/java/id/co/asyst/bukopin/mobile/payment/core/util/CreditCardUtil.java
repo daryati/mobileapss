@@ -261,6 +261,10 @@ public class CreditCardUtil {
 	String des3 = TRDES_CCBKP_01;
 	
 	String usernamePad = StringUtils.rightPad(username, 15).replace("\0", " ");
+	
+	/*String randAlphaNum = generateAlphanumeric(12);*/
+	
+	String RRN = generateNumber(12);
 
 	if (codeCc.equalsIgnoreCase(CODE_CC_BKP)) {
 	    param.setElement2(regCard);
@@ -268,7 +272,6 @@ public class CreditCardUtil {
 	    param.setElement22(ELEMENT_22);
 	    param.setElement32(FORWARD_ID_BUKOPIN);
 	    param.setElement33(FORWARD_ID_BUKOPIN);
-	    param.setElement37(req.getElement37());
 	    param.setElement48(subscriberNumber);
 
 	    des = StringUtils.rightPad(TRDES_CCBKP.concat(req.getSubscriberNumber()), 40);
@@ -277,7 +280,7 @@ public class CreditCardUtil {
 
 	} else {
 	    param.setElement11(STAN);
-	    String randAlphaNum = generateAlphanumeric(12);
+	    
 
 	    // set element 28
 	    // String amt = req.getAmount().toString();
@@ -285,7 +288,7 @@ public class CreditCardUtil {
 	    param.setElement28(paddingEl28);
 	    param.setElement32(ACQUIRING_INSTITUTION_CODE);
 	    param.setElement33(forwardInsCode);
-	    param.setElement37(randAlphaNum);
+	    
 
 	    element120 = "00000000441".concat(codeCbs+"6017441");
 
@@ -313,9 +316,7 @@ public class CreditCardUtil {
 	param.setElement12(timeLocal.format(today));
 	param.setElement13(dateLocal.format(today));
 	param.setElement18(MERCHANT_TYPE_MOBILE);
-
-	
-
+	param.setElement37(RRN);
 	param.setElement41(TERMINAL_ID);
 	param.setElement49(IDR_CURRENCY_CODE);
 	param.setElement63(codeCbs);
