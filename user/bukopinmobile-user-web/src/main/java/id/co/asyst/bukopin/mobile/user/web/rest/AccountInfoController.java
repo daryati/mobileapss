@@ -13,6 +13,8 @@ import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -38,6 +40,7 @@ import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
 import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonRequest;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
+import id.co.asyst.bukopin.mobile.user.core.config.GetConfiguration;
 import id.co.asyst.bukopin.mobile.user.core.service.AccountBalanceService;
 import id.co.asyst.bukopin.mobile.user.core.service.AccountInfoUserService;
 import id.co.asyst.bukopin.mobile.user.core.service.InquiryTransactionService;
@@ -124,6 +127,12 @@ public class AccountInfoController {
      */
     @Autowired
     private UserMailService userMailService;
+    
+    /**
+     * Get Configuration Service
+     */
+    @Autowired
+    private GetConfiguration configuration;
     
     /**
      * Http Servlet Request
@@ -287,6 +296,24 @@ public class AccountInfoController {
 	
 	List<AccountInfo> findAccountInfo = acUserService.findByActiveCif(user.getCifNumber());
 	if (findAccountInfo.isEmpty()) {
+	    log.error("No acc found for cif {}", user.getCifNumber());
+	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+	    response.setMessage(messageUtil.get("error.data.not.found", httpServletRequest.getLocale()));
+	    return response;
+	}
+	
+	// Get list pdid that couldn't be activated (e.g. 21|87|63)
+	String nonTrxPdidConfig = configuration.getConfigValue(BkpmConstants.KEY_NON_TRX_ACCOUNT);
+	Pattern separator = Pattern.compile("\\|");
+	// Convert blacklist id to array
+	List<Integer> nonTrxPdid = separator.splitAsStream(nonTrxPdidConfig).map(Integer::valueOf)
+		.collect(Collectors.toList());
+
+	// Filter non transactional account by pdid
+	findAccountInfo = findAccountInfo.stream().filter(ai -> !nonTrxPdid.contains(ai.getProduct().getPdId()))
+		.collect(Collectors.toList());
+	if (findAccountInfo.isEmpty()) {
+	    log.error("Account Info filtered non trxl, and no one left. cif: {}", user.getCifNumber());
 	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 	    response.setMessage(messageUtil.get("error.data.not.found", httpServletRequest.getLocale()));
 	    return response;
