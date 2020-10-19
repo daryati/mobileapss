@@ -76,6 +76,7 @@ import id.co.asyst.bukopin.mobile.user.model.entity.User;
 import id.co.asyst.bukopin.mobile.user.model.payload.LoginRequest;
 import id.co.asyst.bukopin.mobile.user.model.payload.LoginResponse;
 import id.co.asyst.bukopin.mobile.user.model.payload.SendOTPEmailRequest;
+import id.co.asyst.bukopin.mobile.user.model.payload.SendOTPSMSRequest;
 import id.co.asyst.bukopin.mobile.user.model.payload.UpdatePinRequest;
 import id.co.asyst.bukopin.mobile.user.model.payload.UpdateUserStatusRequest;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyOTPLoginRequest;
@@ -529,6 +530,54 @@ public class AuthenticationController {
 	
 	// send OTP by phone number
 	response = otpService.sendOTP(user.getMobilePhone(), OTPTypeEnum.SMS, servletRequest.getLocale(), "gqvQAdUZlsd");
+	if (ResponseMessage.SUCCESS.getCode().equals(response.getCode())) {
+	    response.setMessage(messageUtil.get("success", servletRequest.getLocale()));
+	    response.setData(user.getMobilePhone());
+	} else if (ResponseMessage.INTERNAL_SERVER_ERROR.getCode().equals(response.getCode())) {
+	    response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
+	} else {
+	    response.setMessage(messageUtil.get("send.otp.failed", servletRequest.getLocale()));
+	}
+
+	return response;
+    }
+    
+    /**
+     * POST /SMSToken/{phonenumber} : Send SMS Token
+     * 
+     * @param username The User's Username to send SMS Token
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws IOException
+     */
+    @PostMapping("/SMSToken")
+    public CommonResponse sendSMSTokenPost(@Valid @RequestBody CommonRequest<SendOTPSMSRequest> request) throws NoSuchAlgorithmException, IOException {
+	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
+		messageUtil.get("success", servletRequest.getLocale()));
+	
+	String username = request.getData().getUsername();
+	String appSignature = request.getData().getAppSignature();
+
+	User user = userService.findUserByUsername(username);
+	// Handle user not found
+	if (user == null) {
+	    log.error("User not found with username : " + username);
+	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+	    response.setMessage(messageUtil.get("error.data.not.found", servletRequest.getLocale()));
+	    return response;
+	}
+	
+	// Handle phone null
+	if (StringUtils.isBlank(user.getMobilePhone())) {
+	    log.error("User doesn't have phone number yet: " + username);
+	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+	    response.setMessage(messageUtil.get("error.data.not.found", servletRequest.getLocale()));
+	    return response;
+	}
+	
+	// send OTP by phone number
+	response = otpService.sendOTP(user.getMobilePhone(), OTPTypeEnum.SMS, servletRequest.getLocale(), 
+		appSignature);
 	if (ResponseMessage.SUCCESS.getCode().equals(response.getCode())) {
 	    response.setMessage(messageUtil.get("success", servletRequest.getLocale()));
 	    response.setData(user.getMobilePhone());
