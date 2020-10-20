@@ -34,7 +34,6 @@ public class SendOTPSMSRequest {
     /**
      * Application Signature (hashed string need by frontend to autofill SMS OTP)
      */
-    @NotBlank
     private String appSignature;
 
     /* Transient Attributes: */
