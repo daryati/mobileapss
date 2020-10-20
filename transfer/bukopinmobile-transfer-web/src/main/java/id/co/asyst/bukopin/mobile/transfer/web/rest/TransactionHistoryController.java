@@ -104,8 +104,8 @@ public class TransactionHistoryController {
      * @return
      * @throws IOException
      */
-//    @GetMapping("/getAll/{usernameEnc}")
-    @Deprecated
+    @GetMapping("/getAll/{usernameEnc}")
+//    @Deprecated
     public CommonResponse getAllTransactionHistory(@PathVariable String usernameEnc) throws IOException {
 	log.debug("REST request to get all transaction history: {}");
 	CommonResponse response = new CommonResponse();
