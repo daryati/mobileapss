@@ -1,4 +1,21 @@
 ===============================================================================
+   Bukopin-Mobile-Payment 1.6.GA1 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Payment - Version 1.6.GA1
+** Notes
+	* Release for Audit Log, New Activation and New Trx History
+
+** Story
+	* [BKPM-448] Update Element 33 and Element 37 CC
+	
+** Bug Fixed
+	* [BKPM-440] Error while Payment and Purchase
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
    Bukopin-Mobile-Payment 1.6.GA Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Payment - Version 1.6.GA

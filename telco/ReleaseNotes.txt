@@ -1,4 +1,21 @@
 ===============================================================================
+   Bukopin-Mobile-Telco 1.6.GA1 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Telco - Version 1.6.GA1
+** Notes
+	* Release for Audit Log, New Activation and New Trx History
+
+** Story
+	* 
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
    Bukopin-Mobile-Telco 1.6.GA Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Telco - Version 1.6.GA

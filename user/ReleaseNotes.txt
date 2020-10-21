@@ -1,4 +1,25 @@
 ===============================================================================
+   Bukopin-Mobile-User 1.6.GA1 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-User - Version 1.6.GA1
+** Notes
+	* Release for Audit Log, New Activation and New Trx History
+
+** Story
+	* [BKPM-449] New SMS OTP Service
+	* [BKPM-427] Enhancement on New Verification Flow
+	* [BKPM-398] GetAccountInfo - Filter Rekening Non Transactional
+	* [BKPM-314] Customer Non Financial Activity
+	* [BKPM-358] Customer Financial Activity
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
    Bukopin-Mobile-User 1.6.GA Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-User - Version 1.6.GA

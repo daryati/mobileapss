@@ -1,4 +1,21 @@
 ===============================================================================
+   Bukopin-Mobile-Transfer 1.6.GA1 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Transfer - Version 1.6.GA1
+** Notes
+	* Release for Audit Log, New Activation and New Trx History
+
+** Story
+	* [BKPM-443] Pagination Get All History Transaction
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 
+	
+	
+===============================================================================
    Bukopin-Mobile-Transfer 1.6.GA Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Transfer - Version 1.6.GA
