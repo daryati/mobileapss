@@ -29,8 +29,7 @@ import retrofit2.http.Path;
  * @version $Revision$, Nov 27, 2019
  * @since 2.0
  */
-@ServiceUrl("http://localhost:8080/") // dev
-//@ServiceUrl("http://10.0.13.61:8080/") // prod
+@ServiceUrl("http://localhost:8080/")
 public interface NonFinancialService {
 
     @SuppressWarnings("rawtypes")
