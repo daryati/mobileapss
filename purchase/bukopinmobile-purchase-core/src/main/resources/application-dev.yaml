@@ -51,7 +51,7 @@ spring:
 
 ## LOGGING
 logging:
-   file: ${user.home}/BKPM-LOGS/purchase/purchase.log
+   file: /home/dev/BKPM-LOGS/purchase/purchase.log
       
 config:
    emoney:

@@ -35,7 +35,7 @@ spring:
 
 ## LOGGING
 logging:
-   file: ${user.home}/BKPM-LOGS/master/master.log
+   file: /home/dev/BKPM-LOGS/master/master.log
 jwt:
    header: Authorization
 

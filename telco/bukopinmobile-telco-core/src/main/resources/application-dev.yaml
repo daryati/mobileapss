@@ -51,7 +51,7 @@ spring:
 
 ## LOGGING
 logging:
-   file: ${user.home}/BKPM-LOGS/telco/telco.log
+   file: /home/dev/BKPM-LOGS/telco/telco.log
       
 config:
    forwarding-institution-code: 4411338

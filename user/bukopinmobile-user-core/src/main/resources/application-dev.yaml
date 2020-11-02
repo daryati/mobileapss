@@ -63,7 +63,7 @@ bukopin:
 
 ## LOGGING
 logging:
-   file: ${user.home}/BKPM-LOGS/user/user.log
+   file: /home/dev/BKPM-LOGS/user/user.log
 
 jwt:
    header: Authorization

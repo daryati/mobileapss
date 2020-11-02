@@ -51,7 +51,7 @@ spring:
 
 ## LOGGING
 logging:
-   file: ${user.home}/BKPM-LOGS/transfer/transfer.log
+   file: /home/dev/BKPM-LOGS/transfer/transfer.log
 
 jwt:
    header: Authorization

@@ -49,7 +49,7 @@ spring:
 
 ## LOGGING
 logging:
-   file: ${user.home}/BKPM-LOGS/payment/payment.log
+   file: /home/dev/BKPM-LOGS/payment/payment.log
       
 config:
    pln:
