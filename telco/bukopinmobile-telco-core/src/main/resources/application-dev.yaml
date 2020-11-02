@@ -12,6 +12,8 @@ server:
 ## Database configuration:
 #spring.jpa.hibernate.ddl-auto=create
 spring:
+   application:
+      name: bkpm-telco
    datasource:
       url: jdbc:sqlserver://10.2.62.51:1433;databaseName=DB_MBANKING 
       username: sa
@@ -48,10 +50,8 @@ spring:
 # spring.liquibase.enabled=false
 
 ## LOGGING
-#logging:
- #  level:
-  #    root: ERROR
-   #   id.co.asyst: TRACE
+logging:
+   file: ${user.home}/BKPM-LOGS/telco/telco.log
       
 config:
    forwarding-institution-code: 4411338

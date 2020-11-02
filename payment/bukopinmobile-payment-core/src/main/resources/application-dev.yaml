@@ -12,6 +12,8 @@ server:
 ## Database configuration:
 #spring.jpa.hibernate.ddl-auto=create
 spring:
+   application:
+      name: bkpm-payment
    datasource:
       url: jdbc:sqlserver://10.2.62.51:1433;databaseName=DB_MBANKING 
       username: sa
@@ -47,9 +49,7 @@ spring:
 
 ## LOGGING
 logging:
-   level:
-      root: ERROR
-      id.co.asyst: TRACE
+   file: ${user.home}/BKPM-LOGS/payment/payment.log
       
 config:
    pln:
