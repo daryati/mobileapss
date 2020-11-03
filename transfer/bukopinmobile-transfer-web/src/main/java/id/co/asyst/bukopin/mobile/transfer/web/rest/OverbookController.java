@@ -280,6 +280,10 @@ public class OverbookController {
 			log.error("Wokee Account Not Found / Closed – Rekening Wokee tidak ada / tutup: " + request.getData().getPostingTo().getAccountNumber());
 			response.setCode(ResponseMessage.ERROR_WOKEE_ACCOUNT_CLOSED.getCode());
 			response.setMessage(messageUtil.get("error.wokee.account.closed", servletRequest.getLocale()));
+		} else if("Overbook failed".equalsIgnoreCase(res.getStatusDesc())) {
+			log.error("Overbook failed: " + request.getData().getPostingTo().getAccountNumber());
+			response.setCode(ResponseMessage.POSTING_FAILED.getCode());
+			response.setMessage(messageUtil.get("error.overbook.failed", servletRequest.getLocale()));
 		} else {
 			log.error("error code " + res.getStatusCode() + " message: " + res.getStatusDesc());
 			// response = new CommonResponse(res.getStatusCode(), res.getStatusDesc());
