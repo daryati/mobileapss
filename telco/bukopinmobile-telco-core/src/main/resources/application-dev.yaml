@@ -50,8 +50,8 @@ spring:
 # spring.liquibase.enabled=false
 
 ## LOGGING
-logging:
-   file: /home/dev/BKPM-LOGS/telco/telco.log
+#logging:
+#   file: /home/dev/BKPM-LOGS/telco/telco.log
       
 config:
    forwarding-institution-code: 4411338

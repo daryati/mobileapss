@@ -48,8 +48,8 @@ spring:
 # spring.liquibase.enabled=false
 
 ## LOGGING
-logging:
-   file: /home/dev/BKPM-LOGS/payment/payment.log
+#logging:
+#   file: /home/dev/BKPM-LOGS/payment/payment.log
       
 config:
    pln:

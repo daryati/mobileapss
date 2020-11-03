@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/spring.log}"/>
+	<property name="MODULE" value="payment" />
+
+	<!-- APPENDER 'FILE' CONFIGURATION -->
+	<!-- log file path -->
+	<property name="LOG_PATH" value="${user.home}/BKPM-LOGS/${MODULE}" />
+	<!-- each archived file, size max 25MB -->
+	<property name="LOGBACK_ROLLINGPOLICY_MAX_FILE_SIZE" value="20MB" />
+	<!-- total size of all archive files, if total size > 10GB, it will delete old archived file -->
+	<property name="LOGBACK_ROLLINGPOLICY_TOTAL_SIZE_CAP" value="10GB" />
+	<!-- 150 days to keep -->
+	<property name="LOGBACK_ROLLINGPOLICY_MAX_HISTORY" value="150" />
+	<!-- archived file pattern -->
+	<property name="LOGBACK_ROLLINGPOLICY_FILE_NAME_PATTERN" value="${LOG_PATH}/${MODULE}.%d{yyyy-MM-dd}.%i.zip" />
+	
+	<!-- APPENDER 'ECS_JSON_FILE' CONFIGURATION -->
+	<!-- Default conf: 
+			maxSize (LOG_FILE_MAX_SIZE): 10MB 
+			maxHistory (LOG_FILE_MAX_HISTORY): 7; 
+			totalSizeCap (LOG_FILE_TOTAL_SIZE_CAP): 0 -->
+	<!-- archived file pattern -->
+	<property name="ROLLING_FILE_NAME_PATTERN" value="${LOG_PATH}/${MODULE}.json.%d{yyyy-MM-dd}.%i.zip" />
+	
+	
+    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/${MODULE}.log}"/>
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
     <include resource="org/springframework/boot/logging/logback/file-appender.xml" />

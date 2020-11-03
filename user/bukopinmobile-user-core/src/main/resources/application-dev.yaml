@@ -62,8 +62,8 @@ bukopin:
 # spring.liquibase.enabled=false
 
 ## LOGGING
-logging:
-   file: /home/dev/BKPM-LOGS/user/user.log
+#logging:
+#   file: /home/asyst/BKPM-LOGS/user/user.log
 
 jwt:
    header: Authorization

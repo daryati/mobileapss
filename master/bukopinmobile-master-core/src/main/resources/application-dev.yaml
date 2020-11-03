@@ -34,8 +34,9 @@ spring:
 # spring.liquibase.enabled=false
 
 ## LOGGING
-logging:
-   file: /home/dev/BKPM-LOGS/master/master.log
+#logging:
+#   file: /home/dev/BKPM-LOGS/master/master.log
+
 jwt:
    header: Authorization
 

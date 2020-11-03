@@ -50,8 +50,8 @@ spring:
 # spring.liquibase.enabled=false
 
 ## LOGGING
-logging:
-   file: /home/dev/BKPM-LOGS/purchase/purchase.log
+#logging:
+#   file: /home/dev/BKPM-LOGS/purchase/purchase.log
       
 config:
    emoney:

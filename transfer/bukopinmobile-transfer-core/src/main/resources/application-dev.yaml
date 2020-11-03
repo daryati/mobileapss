@@ -50,8 +50,8 @@ spring:
 # spring.liquibase.enabled=false
 
 ## LOGGING
-logging:
-   file: /home/dev/BKPM-LOGS/transfer/transfer.log
+#logging:
+#   file: /home/dev/BKPM-LOGS/transfer/transfer.log
 
 jwt:
    header: Authorization
