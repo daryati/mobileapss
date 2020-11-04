@@ -241,7 +241,7 @@
 	            <directory>src/main/resources</directory>
 	            <filtering>true</filtering>
 	            <excludes>
-	            	<exclude>**/logback.xml</exclude>
+	            	<exclude>**/logback*.xml</exclude>
 	            </excludes>
 	        </resource>
 	        <!-- Keep ${user.home} in logback.xml -->
@@ -249,7 +249,7 @@
 	            <directory>src/main/resources</directory>
 	            <filtering>false</filtering>
 	            <includes>
-	            	<include>**/logback.xml</include>
+	            	<include>**/logback*.xml</include>
 	            </includes>
 	        </resource>
 	    </resources>
