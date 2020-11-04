@@ -27,9 +27,7 @@ import retrofit2.http.POST;
  * @version $Revision$, Jul 7, 2020
  * @since 1.4.Alpha1
  */
-@ServiceUrl("http://localhost:8081/") // non LB
-//@ServiceUrl("http://10.2.62.221:8081/") // dev LB
-//@ServiceUrl("http://10.0.13.54:8081/") // prod LB
+@ServiceUrl("http://localhost:8081/")
 public interface TransferModuleService {
     
     @GET("bukopinmobile-transfer/limitPackage/getDefault")

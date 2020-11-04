@@ -107,7 +107,9 @@ public class TransactionHistoryDaoImpl implements TransactionHistoryDao {
 		" FROM FUND_TRANSFER" + 
 		" WHERE" + 
 		" USER_ID = "+ id + 
-		" AND CREATED_ON >= "+ interval3Month +";";
+		" AND CREATED_ON >= "+ interval3Month +
+		" AND STATUS='SUCCESS'"+
+		";";
 	
 	// from transaction table to get purchase and payment data
 	String slqT = "SELECT" +
@@ -116,7 +118,9 @@ public class TransactionHistoryDaoImpl implements TransactionHistoryDao {
 		" FROM TRX" + 
 		" WHERE" +
 		" ID_USER = "+ id + 
-		" AND CREATED_DATE >= "+ interval3Month +";";
+		" AND CREATED_DATE >= "+ interval3Month +
+		" AND STATUS='SUCCESS'"+ 
+		";";
 	
 	// run query
 	Session session = entityManager.unwrap(Session.class);
