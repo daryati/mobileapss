@@ -85,6 +85,11 @@
 			<version>${bukopin.user.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bukopinmobile-transfer-model</artifactId>
+			<version>${bukopin.common.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>id.co.asyst.bukopin.mobile</groupId>
 			<artifactId>bukopinmobile-telco-model</artifactId>
 			<version>${project.parent.version}</version>

@@ -79,7 +79,11 @@
 			<artifactId>bukopinmobile-service-model</artifactId>
 			<version>${bukopin.common.version}</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bukopinmobile-transfer-model</artifactId>
+			<version>${bukopin.common.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>${jdbc.groupId}</groupId>
 			<artifactId>${jdbc.artifactId}</artifactId>

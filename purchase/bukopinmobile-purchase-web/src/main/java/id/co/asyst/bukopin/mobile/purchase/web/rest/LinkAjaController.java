@@ -55,6 +55,7 @@ import id.co.asyst.bukopin.mobile.purchase.model.payload.PurchaseLinkAjaRequest;
 import id.co.asyst.bukopin.mobile.purchase.model.payload.PurchaseLinkAjaResponse;
 import id.co.asyst.bukopin.mobile.service.core.EMoneyModuleService;
 import id.co.asyst.bukopin.mobile.service.core.MasterModuleService;
+import id.co.asyst.bukopin.mobile.service.core.TransferModuleService;
 import id.co.asyst.bukopin.mobile.service.core.UserModuleService;
 import id.co.asyst.bukopin.mobile.service.model.payload.emoney.EMoneyInquiryResponse;
 import id.co.asyst.bukopin.mobile.service.model.payload.emoney.LinkAjaInquiryRequest;
@@ -63,6 +64,7 @@ import id.co.asyst.bukopin.mobile.service.model.payload.emoney.LinkAjaInquiryRes
 import id.co.asyst.bukopin.mobile.service.model.payload.emoney.LinkAjaPurchaseRequest;
 import id.co.asyst.bukopin.mobile.service.model.payload.emoney.LinkAjaPurchaseResponse;
 import id.co.asyst.bukopin.mobile.service.model.payload.pln.GetVerifyPINRequest;
+import id.co.asyst.bukopin.mobile.transfer.model.limitUserDailyClass;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyAccountOwnerRequest;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyAccountOwnerResponse;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyPhoneOwnerRequest;
@@ -94,8 +96,10 @@ public class LinkAjaController {
 	private static final String BILL_ALREADY_PAID = "188";
 	private static final String EMONEY_ACCOUNT_INACTIVE = "839";
 	private static final String EMONEY_NOT_ENOUGH_BALANCE = "851";
-	private static final BigDecimal MINIMUM_LINKAJA_AMOUNT = new BigDecimal("10000");
-	private static final BigDecimal MAXIMUM_LINKAJA_AMOUNT = new BigDecimal("2000000");
+	private static final BigDecimal MINIMUM_LINKAJA_AMOUNT = new BigDecimal(
+			"10000");
+	private static final BigDecimal MAXIMUM_LINKAJA_AMOUNT = new BigDecimal(
+			"2000000");
 
 	// giro error handling
 	private static final String GIRO_AMOUNT_NOT_ENOUGH_BALANCE = "805";
@@ -138,294 +142,420 @@ public class LinkAjaController {
 	@Autowired
 	private EMoneyTransService eMoneyTransService;
 
-    /* Transient Attributes: */
+	/* Transient Attributes: */
 
-    /* Constructors: */
+	/* Constructors: */
 
-    /* Getters & setters for attributes: */
+	/* Getters & setters for attributes: */
 
-    /* Getters & setters for transient attributes: */
+	/* Getters & setters for transient attributes: */
 
-    /* Functionalities: */
-    /**
-     * POST /purchase: Purchasing Link Aja
-     * 
-     * @return The response with status 200 (OK) and with body transaction summary.
-     * @throws IOException
-     */
-    @PostMapping("/purchase/LINKAJA")
-    @ResponseStatus(HttpStatus.OK)
-    public CommonResponse purchase(@RequestBody CommonRequest<PurchaseLinkAjaRequest> request) throws IOException {
-	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
-		messageUtil.get("success", servletRequest.getLocale()));
+	/* Functionalities: */
+	/**
+	 * POST /purchase: Purchasing Link Aja
+	 * 
+	 * @return The response with status 200 (OK) and with body transaction
+	 *         summary.
+	 * @throws IOException
+	 */
+	@PostMapping("/purchase/LINKAJA")
+	@ResponseStatus(HttpStatus.OK)
+	public CommonResponse purchase(
+			@RequestBody CommonRequest<PurchaseLinkAjaRequest> request)
+			throws IOException {
+		CommonResponse response = new CommonResponse(
+				ResponseMessage.SUCCESS.getCode(), messageUtil.get("success",
+						servletRequest.getLocale()));
 
-	// Validate Token and Phone Owner
-	CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
-	VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
-	phoneReqData.setUsername(request.getData().getUsername());
-	phoneReqData.setToken(servletRequest.getHeader(HttpHeaders.AUTHORIZATION));
-	phoneReqData.setPhoneIdentity(servletRequest.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
-	phoneReq.setData(phoneReqData);
-	CommonResponse resPhone = Services.create(UserModuleService.class).verifyPhoneOwner(phoneReq).execute().body();
-	if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
-	    log.error("Validate Token and Phone owner error..");
-	    return resPhone;
+		// Validate Token and Phone Owner
+		CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
+		VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
+		phoneReqData.setUsername(request.getData().getUsername());
+		phoneReqData.setToken(servletRequest
+				.getHeader(HttpHeaders.AUTHORIZATION));
+		phoneReqData.setPhoneIdentity(servletRequest
+				.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
+		phoneReq.setData(phoneReqData);
+		CommonResponse resPhone = Services.create(UserModuleService.class)
+				.verifyPhoneOwner(phoneReq).execute().body();
+		if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
+			log.error("Validate Token and Phone owner error..");
+			return resPhone;
+		}
+
+		// Check Cut Off
+		long cutoffId = SystemCutOffEnum.LINKAJA.getId();
+		CommonResponse cutOffResponse = Services
+				.create(MasterModuleService.class)
+				.checkCutOffStatus(servletRequest.getLocale().getLanguage(),
+						cutoffId).execute().body();
+		if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+			log.error("Error Cutoff");
+			return cutOffResponse;
+		}
+
+		// verify PIN
+		GetVerifyPINRequest verifyPINReqData = new GetVerifyPINRequest();
+		verifyPINReqData.setUsername(request.getData().getUsername());
+		verifyPINReqData.setPin(request.getData().getPin());
+
+		CommonRequest<GetVerifyPINRequest> verifyPINReq = new CommonRequest<>();
+		verifyPINReq.setIdentity(request.getIdentity());
+		verifyPINReq.setData(verifyPINReqData);
+
+		CommonResponse verifyPINRes = Services
+				.create(UserModuleService.class)
+				.verifyPIN(
+						servletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE),
+						verifyPINReq).execute().body();
+		log.debug("Verify PIN Response {} : "
+				+ BkpmUtil.convertToJson(verifyPINRes));
+		if (!ResponseMessage.SUCCESS.getCode().equals(verifyPINRes.getCode())) {
+
+			return verifyPINRes;
+		}
+		// verify account
+		VerifyAccountOwnerRequest verifyAccountOwnerReqData = new VerifyAccountOwnerRequest();
+		verifyAccountOwnerReqData
+				.setAccountNo(request.getData().getAccountNo());
+		verifyAccountOwnerReqData.setUsername(request.getData().getUsername());
+
+		CommonRequest<VerifyAccountOwnerRequest> verifyAccOwnerRequest = new CommonRequest<>();
+		verifyAccOwnerRequest.setIdentity(request.getIdentity());
+		verifyAccOwnerRequest.setData(verifyAccountOwnerReqData);
+
+		CommonResponse verifyAccOwnerResponse = Services
+				.create(UserModuleService.class)
+				.verifyAccountOwner(verifyAccOwnerRequest).execute().body();
+		if (!ResponseMessage.SUCCESS.getCode().equals(
+				verifyAccOwnerResponse.getCode())) {
+			log.error("Error while verify account owner");
+			return verifyAccOwnerResponse;
+		}
+		ObjectMapper oMapper = new ObjectMapper();
+		VerifyAccountOwnerResponse verifyAccOwnRespObj = oMapper.convertValue(
+				verifyAccOwnerResponse.getData(),
+				VerifyAccountOwnerResponse.class);
+		if (!verifyAccOwnRespObj.isValid()) {
+			log.error("User and Account Info didn't match: "
+					+ request.getData().getAccountNo());
+			response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+			response.setMessage(messageUtil.get("error.invalid.user.accountno",
+					servletRequest.getLocale()));
+			return response;
+		}
+
+		String accType = verifyAccOwnRespObj.getAccountInfo().getAccountType()
+				.name();
+		String forwardInsCode = env
+				.getProperty("config.emoney.forwarding-institution-code");
+
+		// cek limit harian
+		CommonRequest<limitUserDailyClass> lmtDl = new CommonRequest<>();
+		limitUserDailyClass lmtDLClass = new limitUserDailyClass();
+		lmtDLClass.setAccNo(request.getData().getAccountNo());
+		lmtDLClass.setUsername(request.getData().getUsername());
+		lmtDLClass.setAmount(request.getData().getAmount());
+		lmtDLClass.setJenis("purchase");
+		lmtDl.setData(lmtDLClass);
+		lmtDl.setIdentity(request.getIdentity());
+		CommonResponse resLmtDL = Services.create(TransferModuleService.class)
+				.verifydailylimit(lmtDl).execute().body();
+		log.debug("log dari limit harian link aja " + lmtDl + " response "
+				+ resLmtDL);
+		if (resLmtDL.getCode().equals("000")) {
+			// Set Request Purchase
+			LinkAjaPurchaseRequest purchaseRequest = EMoneyUtils
+					.generatePurchaseLinkAja(request.getData(), forwardInsCode,
+							accType);
+			log.debug("Request to aranet : "
+					+ BkpmUtil.convertToJson(purchaseRequest));
+
+			LinkAjaPurchaseResponse purchaseResponse = Services
+					.create(EMoneyModuleService.class)
+					.linkAjaPurchase(purchaseRequest).execute().body();
+			log.debug("Response from aranet : "
+					+ BkpmUtil.convertToJson(purchaseResponse));
+
+			String codeRes = purchaseResponse.getRespayment().getResult()
+					.getElement39();
+			if (SUCCESS_CODE.equals(codeRes)) {
+				PurchaseEMoneyResponse resp = new PurchaseEMoneyResponse();
+				resp = EMoneyUtils.purchaseLinkAjaResponse(request.getData(),
+						purchaseResponse);
+
+				// send email
+				CommonResponse userResp = Services
+						.create(UserModuleService.class)
+						.getUserByUsername(request.getData().getUsername())
+						.execute().body();
+				if (null != userResp) {
+					oMapper = new ObjectMapper();
+					Map<String, Object> res = oMapper.convertValue(
+							userResp.getData(), Map.class);
+					Map<String, String> resUser = oMapper.convertValue(
+							res.get("user"), Map.class);
+					log.debug("Send email receipt LinkAja...");
+					eMoneyService.sendEmailReceiptEMoney(resp, resUser,
+							servletRequest.getLocale());
+				}
+				// save data
+				log.debug("save purchase emoney to DB");
+				CommonResponse saveRes = savePurchaseEMoney(
+						request.getIdentity(), resp);
+
+				if (SUCCESS_CODE.equals(saveRes.getCode())) {
+					log.debug("ID DESTINATION .... "
+							+ saveRes.getData().toString());
+					resp.setDestinationId(saveRes.getData().toString());
+				}
+
+				response.setCode(ResponseMessage.SUCCESS.getCode());
+				response.setMessage(messageUtil.get("success",
+						servletRequest.getLocale()));
+				response.setData(resp);
+				// save limit harian
+				log.debug("param save limit " + resLmtDL.getData());
+				CommonResponse prosesLimit = Services
+						.create(TransferModuleService.class)
+						.prosesdailyLimit(resLmtDL.getData()).execute().body();
+				log.debug("log dari proses simpan limit " + prosesLimit);
+				log.debug("Success purchase LinkAja...");
+			} else if (EMONEY_ACCOUNT_INACTIVE.equalsIgnoreCase(codeRes)) {
+				log.error("account in active");
+				response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT
+						.getCode());
+				response.setMessage(messageUtil.get(
+						"error.inactive.bank.account",
+						servletRequest.getLocale()));
+			} else if (CUSTNO_BLOCKED.equalsIgnoreCase(codeRes)) {
+				log.error("Custumer Number was blocked");
+				response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
+				response.setMessage(messageUtil.get(
+						"error.customer.was.blocked",
+						servletRequest.getLocale()));
+			} else if (BILL_ALREADY_PAID.equalsIgnoreCase(codeRes)) {
+				log.error("Bill already Paid");
+				response.setCode(ResponseMessage.ERROR_BILL_ALREADY_PAID
+						.getCode());
+				response.setMessage(messageUtil.get(
+						"error.emoney.already.paid", servletRequest.getLocale()));
+			} else if (INVALID_AMOUNT.equals(codeRes)) {
+				log.error("Error invallid amount");
+				response.setCode(ResponseMessage.INVALID_AMOUNT.getCode());
+				response.setMessage(messageUtil.get("error.invalid.amount",
+						servletRequest.getLocale()));
+			} else if (EMONEY_NOT_ENOUGH_BALANCE.equals(codeRes)) {
+				log.error("Not enough balance: "
+						+ request.getData().getAccountNo());
+				response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
+				response.setMessage(messageUtil.get("error.amount.not.enough",
+						servletRequest.getLocale()));
+				return response;
+			} else if (TRANSACTION_PROCESSING.equals(codeRes)) {
+				log.error("Error Transaction still processing");
+				response.setCode(ResponseMessage.TRANSACTION_PROCESSING
+						.getCode());
+				response.setMessage(messageUtil.get(
+						"error.transaction.processing",
+						servletRequest.getLocale()));
+			} else if (SYSTEM_BROKEN_168.equals(codeRes)
+					|| SYSTEM_BROKEN_169.equals(codeRes)) {
+				log.error("System error from aranet");
+				response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR
+						.getCode());
+				response.setMessage(messageUtil.get("error.internal.server",
+						servletRequest.getLocale()));
+			} else {
+				log.error("Error (result) EMoney Link Aja: " + codeRes);
+				throw new MiddlewareException(codeRes);
+			}
+
+		} else {
+			if (resLmtDL.getMessage().equals("Limit user not set")) {
+				response.setCode(resLmtDL.getCode());
+				response.setMessage(messageUtil.get("error.limit.unset",
+						servletRequest.getLocale()));
+
+			} else if (resLmtDL.getMessage().equals(
+					"amount more than daily limit user")) {
+				response.setCode(resLmtDL.getCode());
+				response.setMessage(messageUtil.get("error.limit.exceed",
+						servletRequest.getLocale()));
+			} else if (resLmtDL.getMessage().equals(
+					"transactions exceed daily limit")) {
+				response.setCode(resLmtDL.getCode());
+				response.setMessage(messageUtil.get("error.limit.exceed",
+						servletRequest.getLocale()));
+			} else {
+				response.setCode(resLmtDL.getCode());
+				response.setMessage(resLmtDL.getMessage());
+			}
+		}
+
+		return response;
 	}
-
-	// Check Cut Off
-	long cutoffId = SystemCutOffEnum.LINKAJA.getId();
-	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
-		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
-	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
-	    log.error("Error Cutoff");
-	    return cutOffResponse;
-	}
-
-	// verify PIN
-	GetVerifyPINRequest verifyPINReqData = new GetVerifyPINRequest();
-	verifyPINReqData.setUsername(request.getData().getUsername());
-	verifyPINReqData.setPin(request.getData().getPin());
-
-	CommonRequest<GetVerifyPINRequest> verifyPINReq = new CommonRequest<>();
-	verifyPINReq.setIdentity(request.getIdentity());
-	verifyPINReq.setData(verifyPINReqData);
-
-	CommonResponse verifyPINRes = Services.create(UserModuleService.class)
-		.verifyPIN(servletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE), verifyPINReq).execute().body();
-	log.debug("Verify PIN Response {} : " + BkpmUtil.convertToJson(verifyPINRes));
-	if (!ResponseMessage.SUCCESS.getCode().equals(verifyPINRes.getCode())) {
-
-	    return verifyPINRes;
-	}
-	// verify account
-	VerifyAccountOwnerRequest verifyAccountOwnerReqData = new VerifyAccountOwnerRequest();
-	verifyAccountOwnerReqData.setAccountNo(request.getData().getAccountNo());
-	verifyAccountOwnerReqData.setUsername(request.getData().getUsername());
-
-	CommonRequest<VerifyAccountOwnerRequest> verifyAccOwnerRequest = new CommonRequest<>();
-	verifyAccOwnerRequest.setIdentity(request.getIdentity());
-	verifyAccOwnerRequest.setData(verifyAccountOwnerReqData);
-
-	CommonResponse verifyAccOwnerResponse = Services.create(UserModuleService.class)
-		.verifyAccountOwner(verifyAccOwnerRequest).execute().body();
-	if (!ResponseMessage.SUCCESS.getCode().equals(verifyAccOwnerResponse.getCode())) {
-	    log.error("Error while verify account owner");
-	    return verifyAccOwnerResponse;
-	}
-	ObjectMapper oMapper = new ObjectMapper();
-	VerifyAccountOwnerResponse verifyAccOwnRespObj = oMapper.convertValue(verifyAccOwnerResponse.getData(),
-		VerifyAccountOwnerResponse.class);
-	if (!verifyAccOwnRespObj.isValid()) {
-	    log.error("User and Account Info didn't match: " + request.getData().getAccountNo());
-	    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
-	    response.setMessage(messageUtil.get("error.invalid.user.accountno", servletRequest.getLocale()));
-	    return response;
-	}
-
-	String accType = verifyAccOwnRespObj.getAccountInfo().getAccountType().name();
-	String forwardInsCode = env.getProperty("config.emoney.forwarding-institution-code");
-
-	// Set Request Purchase
-	LinkAjaPurchaseRequest purchaseRequest = EMoneyUtils.generatePurchaseLinkAja(request.getData(), forwardInsCode,
-		accType);
-	log.debug("Request to aranet : " + BkpmUtil.convertToJson(purchaseRequest));
-
-	LinkAjaPurchaseResponse purchaseResponse = Services.create(EMoneyModuleService.class)
-		.linkAjaPurchase(purchaseRequest).execute().body();
-	log.debug("Response from aranet : " + BkpmUtil.convertToJson(purchaseResponse));
-
-	String codeRes = purchaseResponse.getRespayment().getResult().getElement39();
-	if (SUCCESS_CODE.equals(codeRes)) {
-	    PurchaseEMoneyResponse resp = new PurchaseEMoneyResponse();
-	    resp = EMoneyUtils.purchaseLinkAjaResponse(request.getData(), purchaseResponse);
-
-	    // send email
-	    CommonResponse userResp = Services.create(UserModuleService.class)
-		    .getUserByUsername(request.getData().getUsername()).execute().body();
-	    if (null != userResp) {
-		oMapper = new ObjectMapper();
-		Map<String, Object> res = oMapper.convertValue(userResp.getData(), Map.class);
-		Map<String, String> resUser = oMapper.convertValue(res.get("user"), Map.class);
-		log.debug("Send email receipt LinkAja...");
-		eMoneyService.sendEmailReceiptEMoney(resp, resUser, servletRequest.getLocale());
-	    }
-	    // save data
-	    log.debug("save purchase emoney to DB");
-	    CommonResponse saveRes = savePurchaseEMoney(request.getIdentity(), resp);
-
-	    if (SUCCESS_CODE.equals(saveRes.getCode())) {
-		log.debug("ID DESTINATION .... " + saveRes.getData().toString());
-		resp.setDestinationId(saveRes.getData().toString());
-	    }
-
-	    response.setCode(ResponseMessage.SUCCESS.getCode());
-	    response.setMessage(messageUtil.get("success", servletRequest.getLocale()));
-	    response.setData(resp);
-	    log.debug("Success purchase LinkAja...");
-	} else if (EMONEY_ACCOUNT_INACTIVE.equalsIgnoreCase(codeRes)) {
-	    log.error("account in active");
-	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
-	    response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
-	} else if (CUSTNO_BLOCKED.equalsIgnoreCase(codeRes)) {
-	    log.error("Custumer Number was blocked");
-	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
-	    response.setMessage(messageUtil.get("error.customer.was.blocked", servletRequest.getLocale()));
-	} else if (BILL_ALREADY_PAID.equalsIgnoreCase(codeRes)) {
-	    log.error("Bill already Paid");
-	    response.setCode(ResponseMessage.ERROR_BILL_ALREADY_PAID.getCode());
-	    response.setMessage(messageUtil.get("error.emoney.already.paid", servletRequest.getLocale()));
-	} else if (INVALID_AMOUNT.equals(codeRes)) {
-	    log.error("Error invallid amount");
-	    response.setCode(ResponseMessage.INVALID_AMOUNT.getCode());
-	    response.setMessage(messageUtil.get("error.invalid.amount", servletRequest.getLocale()));
-	} else if (EMONEY_NOT_ENOUGH_BALANCE.equals(codeRes)) {
-	    log.error("Not enough balance: " + request.getData().getAccountNo());
-	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
-	    response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
-	    return response;
-	} else if (TRANSACTION_PROCESSING.equals(codeRes)) {
-	    log.error("Error Transaction still processing");
-	    response.setCode(ResponseMessage.TRANSACTION_PROCESSING.getCode());
-	    response.setMessage(messageUtil.get("error.transaction.processing", servletRequest.getLocale()));
-	} else if (SYSTEM_BROKEN_168.equals(codeRes) || SYSTEM_BROKEN_169.equals(codeRes)) {
-	    log.error("System error from aranet");
-	    response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
-	    response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
-	} else {
-	    log.error("Error (result) EMoney Link Aja: " + codeRes);
-	    throw new MiddlewareException(codeRes);
-	}
-	return response;
-    }
-
 
 	/**
 	 * POST /Inquiry: Inquiry Link Aja
 	 * 
-	 * @return The response with status 200 (OK) and with body transaction summary.
+	 * @return The response with status 200 (OK) and with body transaction
+	 *         summary.
 	 * @throws IOException
 	 */
 	@PostMapping("/inquiry/LINKAJA")
 	@ResponseStatus(HttpStatus.OK)
-    public CommonResponse inquiryLinkAja(@RequestBody CommonRequest<InquiryLinkAjaRequest> req) throws IOException {
-	log.debug("REST request to Purchasing Link Aja : {}", BkpmUtil.convertToJson(req.getData()));
-	CommonResponse response = new CommonResponse();
+	public CommonResponse inquiryLinkAja(
+			@RequestBody CommonRequest<InquiryLinkAjaRequest> req)
+			throws IOException {
+		log.debug("REST request to Purchasing Link Aja : {}",
+				BkpmUtil.convertToJson(req.getData()));
+		CommonResponse response = new CommonResponse();
 
-	// Check Cut Off
-	long cutoffId = SystemCutOffEnum.LINKAJA.getId();
-	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
-		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
-	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
-	    log.error("Error Cutoff");
-	    return cutOffResponse;
+		// Check Cut Off
+		long cutoffId = SystemCutOffEnum.LINKAJA.getId();
+		CommonResponse cutOffResponse = Services
+				.create(MasterModuleService.class)
+				.checkCutOffStatus(servletRequest.getLocale().getLanguage(),
+						cutoffId).execute().body();
+		if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+			log.error("Error Cutoff");
+			return cutOffResponse;
+		}
+
+		String custNo = req.getData().getCustNo();
+		String amount = String.valueOf(req.getData().getAmount());
+
+		String forwardInsCode = env
+				.getProperty("config.emoney.forwarding-institution-code");
+
+		// handle minimum and maximum topup
+		if (req.getData().getAmount().compareTo(MINIMUM_LINKAJA_AMOUNT) == -1) {
+			log.error("Amount less than minimum");
+			response.setCode(ResponseMessage.INVALID_MIN_LIMIT_AMOUNT.getCode());
+			response.setMessage(messageUtil.get("error.invalid.min.amount",
+					servletRequest.getLocale()));
+			return response;
+		}
+		if (req.getData().getAmount().compareTo(MAXIMUM_LINKAJA_AMOUNT) == 1) {
+			log.error("Amount greater than minimum");
+			response.setCode(ResponseMessage.INVALID_MAX_LIMIT_AMOUNT.getCode());
+			response.setMessage(messageUtil.get("error.invalid.max.amount",
+					servletRequest.getLocale()));
+			return response;
+		}
+
+		LinkAjaInquiryRequest requestInquiry = EMoneyUtils
+				.generateInquiryLinkAja(amount, custNo, forwardInsCode,
+						servletRequest.getLocale().getLanguage());
+
+		log.debug("Request inquiry LinkAja to tibco : "
+				+ BkpmUtil.convertToJson(requestInquiry));
+
+		LinkAjaInquiryResponse responseInquiry = Services
+				.create(EMoneyModuleService.class)
+				.linkAjaInquiry(requestInquiry).execute().body();
+		log.debug("Response inquiry LinkAja from tibco : "
+				+ BkpmUtil.convertToJson(responseInquiry));
+
+		// set customer name
+
+		String codeRes = responseInquiry.getRespayment().getResult()
+				.getElement39();
+		if (codeRes.equals(SUCCESS_CODE)) {
+			log.debug("Inquiry LinkAja success");
+
+			String element48 = responseInquiry.getRespayment().getResult()
+					.getElement48();
+			String[] datas = element48.split("\\|", -1);
+			String custName = datas[1];
+
+			String resAmountFee = datas[6];
+
+			BigDecimal resAmount = req.getData().getAmount();
+			BigDecimal amountFee = new BigDecimal(resAmountFee);
+			BigDecimal totalAmount = resAmount.add(amountFee);
+
+			InquiryLinkAjaResponse result = new InquiryLinkAjaResponse();
+			result.setCustName(custName.trim());
+			result.setCustNo(custNo);
+			result.setAmount(req.getData().getAmount());
+			result.setAmountFee(amountFee);
+			result.setElement11(responseInquiry.getRespayment().getResult()
+					.getElement11());
+			result.setElement48(element48);
+			result.setTotalAmount(totalAmount);
+
+			response.setCode(ResponseMessage.SUCCESS.getCode());
+			response.setMessage(messageUtil.get("success",
+					servletRequest.getLocale()));
+			response.setData(result);
+
+		} else if (CUSTNO_BLOCKED.equalsIgnoreCase(codeRes)) {
+			log.error("Custumer Number was blocked");
+			response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
+			response.setMessage(messageUtil.get("error.customer.was.blocked",
+					servletRequest.getLocale()));
+		} else if (EMONEY_ACCOUNT_INACTIVE.equalsIgnoreCase(codeRes)
+				|| GIRO_INACTIVE_ACCOUNT.equalsIgnoreCase(codeRes)
+				|| GIRO_CLOSED_ACCOUNT.equalsIgnoreCase(codeRes)) {
+			log.error("account inactive");
+			response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT
+					.getCode());
+			response.setMessage(messageUtil.get("error.inactive.bank.account",
+					servletRequest.getLocale()));
+		} else if (GIRO_LIMIT_TRANSFER.equals(codeRes)
+				|| GIRO_OVER_LIMIT.equals(codeRes)) {
+			log.error("exceed limit");
+			response.setCode(ResponseMessage.LIMIT_TRANSFER_DAY.getCode());
+			response.setMessage(messageUtil.get("error.exceed.limit",
+					servletRequest.getLocale()));
+		} else if (GIRO_CUT_OFF.equals(codeRes)) {
+			log.error("Giro cut off");
+			response = new CommonResponse();
+			response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
+			response.setMessage(messageUtil.get("error.cutoff.pln",
+					servletRequest.getLocale()));
+		} else if (GIRO_DUPLICATE_DATA.equals(codeRes)) {
+			log.error("Giro Duplicate Data");
+			response = new CommonResponse();
+			response.setCode(ResponseMessage.DUPLICATE_DATA.getCode());
+			response.setMessage(messageUtil.get("error.duplicate.data",
+					servletRequest.getLocale()));
+		} else if (GIRO_ACCOUNT_WAS_BLOCKED.equals(codeRes)
+				|| GIRO_ACCOUNT_BLOCKED.equals(codeRes)) {
+			log.error("account wass blocked");
+			response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
+			response.setMessage(messageUtil.get("error.customer.was.blocked",
+					servletRequest.getLocale()));
+		} else if (INVALID_AMOUNT.equals(codeRes)) {
+			log.error("Error invallid amount");
+			response.setCode(ResponseMessage.INVALID_AMOUNT.getCode());
+			response.setMessage(messageUtil.get("error.invalid.amount",
+					servletRequest.getLocale()));
+		} else if (INVALID_SUBSCRIBER_ID.equals(codeRes)
+				|| GIRO_USER_NOT_FOUND.equalsIgnoreCase(codeRes)) {
+			log.error("Error invalid number");
+			response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+			response.setMessage(messageUtil.get("error.id.emoney.not.found",
+					servletRequest.getLocale()));
+		} else if (BILL_ALREADY_PAID.equalsIgnoreCase(codeRes)) {
+			log.error("Bill already Paid");
+			response.setCode(ResponseMessage.ERROR_BILL_ALREADY_PAID.getCode());
+			response.setMessage(messageUtil.get("error.emoney.already.paid",
+					servletRequest.getLocale()));
+		} else if (SYSTEM_BROKEN_168.equals(codeRes)
+				|| SYSTEM_BROKEN_169.equals(codeRes)) {
+			log.error("System error from aranet");
+			response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
+			response.setMessage(messageUtil.get("error.internal.server",
+					servletRequest.getLocale()));
+		} else {
+			log.error("Error (result) EMoney Link Aja: " + codeRes);
+			throw new MiddlewareException(codeRes);
+		}
+		return response;
 	}
-
-	String custNo = req.getData().getCustNo();
-	String amount = String.valueOf(req.getData().getAmount());
-
-	String forwardInsCode = env.getProperty("config.emoney.forwarding-institution-code");
-
-	// handle minimum and maximum topup
-	if (req.getData().getAmount().compareTo(MINIMUM_LINKAJA_AMOUNT) == -1) {
-	    log.error("Amount less than minimum");
-	    response.setCode(ResponseMessage.INVALID_MIN_LIMIT_AMOUNT.getCode());
-	    response.setMessage(messageUtil.get("error.invalid.min.amount", servletRequest.getLocale()));
-	    return response;
-	}
-	if (req.getData().getAmount().compareTo(MAXIMUM_LINKAJA_AMOUNT) == 1) {
-	    log.error("Amount greater than minimum");
-	    response.setCode(ResponseMessage.INVALID_MAX_LIMIT_AMOUNT.getCode());
-	    response.setMessage(messageUtil.get("error.invalid.max.amount", servletRequest.getLocale()));
-	    return response;
-	}
-
-	LinkAjaInquiryRequest requestInquiry = EMoneyUtils.generateInquiryLinkAja(amount, custNo, forwardInsCode,
-		servletRequest.getLocale().getLanguage());
-
-	log.debug("Request inquiry LinkAja to tibco : " + BkpmUtil.convertToJson(requestInquiry));
-
-	LinkAjaInquiryResponse responseInquiry = Services.create(EMoneyModuleService.class)
-		.linkAjaInquiry(requestInquiry).execute().body();
-	log.debug("Response inquiry LinkAja from tibco : " + BkpmUtil.convertToJson(responseInquiry));
-
-	// set customer name
-
-	String codeRes = responseInquiry.getRespayment().getResult().getElement39();
-	if (codeRes.equals(SUCCESS_CODE)) {
-	    log.debug("Inquiry LinkAja success");
-
-	    String element48 = responseInquiry.getRespayment().getResult().getElement48();
-	    String[] datas = element48.split("\\|", -1);
-	    String custName = datas[1];
-
-	    String resAmountFee = datas[6];
-
-	    BigDecimal resAmount = req.getData().getAmount();
-	    BigDecimal amountFee = new BigDecimal(resAmountFee);
-	    BigDecimal totalAmount = resAmount.add(amountFee);
-
-	    InquiryLinkAjaResponse result = new InquiryLinkAjaResponse();
-	    result.setCustName(custName.trim());
-	    result.setCustNo(custNo);
-	    result.setAmount(req.getData().getAmount());
-	    result.setAmountFee(amountFee);
-	    result.setElement11(responseInquiry.getRespayment().getResult().getElement11());
-	    result.setElement48(element48);
-	    result.setTotalAmount(totalAmount);
-
-	    response.setCode(ResponseMessage.SUCCESS.getCode());
-	    response.setMessage(messageUtil.get("success", servletRequest.getLocale()));
-	    response.setData(result);
-
-	} else if (CUSTNO_BLOCKED.equalsIgnoreCase(codeRes)) {
-	    log.error("Custumer Number was blocked");
-	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
-	    response.setMessage(messageUtil.get("error.customer.was.blocked", servletRequest.getLocale()));
-	} else if (EMONEY_ACCOUNT_INACTIVE.equalsIgnoreCase(codeRes) || GIRO_INACTIVE_ACCOUNT.equalsIgnoreCase(codeRes)
-		|| GIRO_CLOSED_ACCOUNT.equalsIgnoreCase(codeRes)) {
-	    log.error("account inactive");
-	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
-	    response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
-	} else if (GIRO_LIMIT_TRANSFER.equals(codeRes) || GIRO_OVER_LIMIT.equals(codeRes)) {
-	    log.error("exceed limit");
-	    response.setCode(ResponseMessage.LIMIT_TRANSFER_DAY.getCode());
-	    response.setMessage(messageUtil.get("error.exceed.limit", servletRequest.getLocale()));
-	} else if (GIRO_CUT_OFF.equals(codeRes)) {
-	    log.error("Giro cut off");
-	    response = new CommonResponse();
-	    response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
-	    response.setMessage(messageUtil.get("error.cutoff.pln", servletRequest.getLocale()));
-	} else if (GIRO_DUPLICATE_DATA.equals(codeRes)) {
-	    log.error("Giro Duplicate Data");
-	    response = new CommonResponse();
-	    response.setCode(ResponseMessage.DUPLICATE_DATA.getCode());
-	    response.setMessage(messageUtil.get("error.duplicate.data", servletRequest.getLocale()));
-	} else if (GIRO_ACCOUNT_WAS_BLOCKED.equals(codeRes) || GIRO_ACCOUNT_BLOCKED.equals(codeRes)) {
-	    log.error("account wass blocked");
-	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
-	    response.setMessage(messageUtil.get("error.customer.was.blocked", servletRequest.getLocale()));
-	} else if (INVALID_AMOUNT.equals(codeRes)) {
-	    log.error("Error invallid amount");
-	    response.setCode(ResponseMessage.INVALID_AMOUNT.getCode());
-	    response.setMessage(messageUtil.get("error.invalid.amount", servletRequest.getLocale()));
-	} else if (INVALID_SUBSCRIBER_ID.equals(codeRes) || GIRO_USER_NOT_FOUND.equalsIgnoreCase(codeRes)) {
-	    log.error("Error invalid number");
-	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
-	    response.setMessage(messageUtil.get("error.id.emoney.not.found", servletRequest.getLocale()));
-	} else if (BILL_ALREADY_PAID.equalsIgnoreCase(codeRes)) {
-	    log.error("Bill already Paid");
-	    response.setCode(ResponseMessage.ERROR_BILL_ALREADY_PAID.getCode());
-	    response.setMessage(messageUtil.get("error.emoney.already.paid", servletRequest.getLocale()));
-	} else if (SYSTEM_BROKEN_168.equals(codeRes) || SYSTEM_BROKEN_169.equals(codeRes)) {
-	    log.error("System error from aranet");
-	    response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
-	    response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
-	} else {
-	    log.error("Error (result) EMoney Link Aja: " + codeRes);
-	    throw new MiddlewareException(codeRes);
-	}
-	return response;
-    }
 
 	/**
 	 * Save the purchase to DB
@@ -434,9 +564,11 @@ public class LinkAjaController {
 	 * @param resEMoney
 	 * @return The response with status 200 (OK)
 	 */
-	public CommonResponse savePurchaseEMoney(Identity identity, PurchaseEMoneyResponse resEMoney) {
-		CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
-				messageUtil.get("success", servletRequest.getLocale()));
+	public CommonResponse savePurchaseEMoney(Identity identity,
+			PurchaseEMoneyResponse resEMoney) {
+		CommonResponse response = new CommonResponse(
+				ResponseMessage.SUCCESS.getCode(), messageUtil.get("success",
+						servletRequest.getLocale()));
 		try {
 
 			// Prepare data request to save transaction
@@ -456,16 +588,20 @@ public class LinkAjaController {
 			destinationReq.setData(dataReq);
 			dataReq.setDestinationType(DestinationTypeEnum.PRELINKAJA.name());
 
-			CommonResponse resSaveFav = Services.create(MasterModuleService.class).saveToFavouriteCommon(destinationReq)
-					.execute().body();
+			CommonResponse resSaveFav = Services
+					.create(MasterModuleService.class)
+					.saveToFavouriteCommon(destinationReq).execute().body();
 			if (null != resSaveFav) {
 				if (!SUCCESS_CODE.equals(resSaveFav.getCode())) {
 					log.error("Save to favourite Failed");
-					response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
-					response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
+					response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR
+							.getCode());
+					response.setMessage(messageUtil.get(
+							"error.internal.server", servletRequest.getLocale()));
 				} else {
 					ObjectMapper oMapper = new ObjectMapper();
-					Transaction transaction = oMapper.convertValue(resSaveFav.getData(), Transaction.class);
+					Transaction transaction = oMapper.convertValue(
+							resSaveFav.getData(), Transaction.class);
 					log.debug("create");
 					EMoney emoney = new EMoney();
 					emoney.setAmount(resEMoney.getAmount());
@@ -474,18 +610,21 @@ public class LinkAjaController {
 					emoney.setTotalAmount(resEMoney.getTotalAmount());
 					emoney.setTypeEMoney(resEMoney.getType());
 					emoney.setTransaction(transaction);
-					emoney.setDestination(emoney.getTransaction().getDestination());
+					emoney.setDestination(emoney.getTransaction()
+							.getDestination());
 
 					log.debug("save purchase to EMONEY");
 					eMoneyTransService.save(emoney);
 					log.debug("save OK.");
-					response.setData(emoney.getTransaction().getDestination().getId());
+					response.setData(emoney.getTransaction().getDestination()
+							.getId());
 				}
 			}
 		} catch (IOException e) {
 			log.error(e.getMessage(), e);
 			response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
-			response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
+			response.setMessage(messageUtil.get("error.internal.server",
+					servletRequest.getLocale()));
 		}
 
 		return response;

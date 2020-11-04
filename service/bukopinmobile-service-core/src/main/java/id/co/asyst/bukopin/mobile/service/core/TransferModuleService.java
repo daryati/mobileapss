@@ -12,10 +12,13 @@
  */
 package id.co.asyst.bukopin.mobile.service.core;
 
+import id.co.asyst.bukopin.mobile.common.model.payload.CommonRequest;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
 import id.co.asyst.foundation.service.connector.annotations.ServiceUrl;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 
 /**
  * Transfer Module Service
@@ -31,5 +34,11 @@ public interface TransferModuleService {
     
     @GET("bukopinmobile-transfer/limitPackage/getDefault")
     Call<CommonResponse> getDefaultLimit();
+    
+    @POST("bukopinmobile-transfer/limitPackage/verifydailylimit")
+    Call<CommonResponse>verifydailylimit  (@Body CommonRequest request);
+    
+    @POST("bukopinmobile-transfer/limitPackage/prosesdailyLimit")
+    Call<CommonResponse>prosesdailyLimit  (@Body Object request);
 
 }

@@ -10,6 +10,7 @@
 package id.co.asyst.bukopin.mobile.payment.web.rest;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,12 +52,14 @@ import id.co.asyst.bukopin.mobile.payment.model.payload.SamolnasPaymentRequest;
 import id.co.asyst.bukopin.mobile.payment.model.payload.SamolnasPaymentResponse;
 import id.co.asyst.bukopin.mobile.service.core.MasterModuleService;
 import id.co.asyst.bukopin.mobile.service.core.SamolnasModuleService;
+import id.co.asyst.bukopin.mobile.service.core.TransferModuleService;
 import id.co.asyst.bukopin.mobile.service.core.UserModuleService;
 import id.co.asyst.bukopin.mobile.service.model.payload.pln.GetVerifyPINRequest;
 import id.co.asyst.bukopin.mobile.service.model.payload.samolnas.SamolnasInquiryTibcoRequest;
 import id.co.asyst.bukopin.mobile.service.model.payload.samolnas.SamolnasInquiryTibcoResponse;
 import id.co.asyst.bukopin.mobile.service.model.payload.samolnas.SamolnasPaymentTibcoRequest;
 import id.co.asyst.bukopin.mobile.service.model.payload.samolnas.SamolnasPaymentTibcoResponse;
+import id.co.asyst.bukopin.mobile.transfer.model.limitUserDailyClass;
 import id.co.asyst.bukopin.mobile.user.model.entity.User;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyAccountOwnerRequest;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyAccountOwnerResponse;
@@ -73,363 +76,479 @@ import id.co.asyst.foundation.service.connector.Services;
 @RestController
 @RequestMapping("/samolnas")
 public class SamolnasController {
-    /* Constants: */
-    private final Logger log = LoggerFactory.getLogger(SamolnasController.class);
+	/* Constants: */
+	private final Logger log = LoggerFactory
+			.getLogger(SamolnasController.class);
 
-    private static final long PREFIX_SAMOLNAS = 29;
-    private static final String INSTITUTION_TYPE_SAMOLNAS = "Postpaid";
+	private static final long PREFIX_SAMOLNAS = 29;
+	private static final String INSTITUTION_TYPE_SAMOLNAS = "Postpaid";
 
-    private static final String SUCCESS_CODE = "000";
-    private static final String ERROR_PAYCODE = "110";
-    private static final String ERROR_MISC = "199";
-    private static final String ERROR_PAYMENT_TIMEOUT = "168";
-    private static final String ERROR_PAYMENT_TIMEOUT_2 = "068";
-    private static final String ERROR_INVALID_AMOUNT = "150";
-    private static final String ERROR_CODE_BILL_ALREADY_PAID = "188";
-    private static final String ERROR_NOT_ENOUGH_BALANCE = "851";
-    private static final String ERROR_ACCOUNT_INACTIVE = "839";
-    private static final String ERROR_INVALID_SUBSCRIBER_ID = "114";
-    
-    // giro error handle
-    private static final String GIRO_AMOUNT_NOT_ENOUGH_BALANCE = "805";
-    private static final String GIRO_LIMIT_TRANSFER = "802";
-    private static final String GIRO_ACCOUNT_WAS_BLOCKED = "806";
-    private static final String GIRO_OVER_LIMIT = "808";
-    private static final String GIRO_ACCOUNT_BLOCKED= "814";
-    private static final String GIRO_CUT_OFF= "818";
-    private static final String GIRO_INACTIVE_ACCOUNT= "822";
-    private static final String GIRO_USER_NOT_FOUND= "831";
-    private static final String GIRO_DUPLICATE_DATA= "869";
-    private static final String GIRO_CLOSED_ACCOUNT= "878";
-    private static final String GIRO_ERROR_VALUTA_CODE= "885";
-    private static final String GIRO_LIMITED_BALANCE= "897";
+	private static final String SUCCESS_CODE = "000";
+	private static final String ERROR_PAYCODE = "110";
+	private static final String ERROR_MISC = "199";
+	private static final String ERROR_PAYMENT_TIMEOUT = "168";
+	private static final String ERROR_PAYMENT_TIMEOUT_2 = "068";
+	private static final String ERROR_INVALID_AMOUNT = "150";
+	private static final String ERROR_CODE_BILL_ALREADY_PAID = "188";
+	private static final String ERROR_NOT_ENOUGH_BALANCE = "851";
+	private static final String ERROR_ACCOUNT_INACTIVE = "839";
+	private static final String ERROR_INVALID_SUBSCRIBER_ID = "114";
 
-    /* Attributes: */
-    @Autowired
-    private Environment env;
+	// giro error handle
+	private static final String GIRO_AMOUNT_NOT_ENOUGH_BALANCE = "805";
+	private static final String GIRO_LIMIT_TRANSFER = "802";
+	private static final String GIRO_ACCOUNT_WAS_BLOCKED = "806";
+	private static final String GIRO_OVER_LIMIT = "808";
+	private static final String GIRO_ACCOUNT_BLOCKED = "814";
+	private static final String GIRO_CUT_OFF = "818";
+	private static final String GIRO_INACTIVE_ACCOUNT = "822";
+	private static final String GIRO_USER_NOT_FOUND = "831";
+	private static final String GIRO_DUPLICATE_DATA = "869";
+	private static final String GIRO_CLOSED_ACCOUNT = "878";
+	private static final String GIRO_ERROR_VALUTA_CODE = "885";
+	private static final String GIRO_LIMITED_BALANCE = "897";
 
-    @Autowired
-    private MessageUtil messageUtil;
+	/* Attributes: */
+	@Autowired
+	private Environment env;
 
-    @Autowired
-    private HttpServletRequest servletRequest;
+	@Autowired
+	private MessageUtil messageUtil;
 
-    @Autowired
-    private SamolnasService samolnasService;
+	@Autowired
+	private HttpServletRequest servletRequest;
 
-    @Autowired
-    PaymentServices paymentServices;
+	@Autowired
+	private SamolnasService samolnasService;
 
-    /* Transient Attributes: */
+	@Autowired
+	PaymentServices paymentServices;
 
-    /* Constructors: */
+	/* Transient Attributes: */
 
-    /* Getters & setters for attributes: */
+	/* Constructors: */
 
-    /* Getters & setters for transient attributes: */
+	/* Getters & setters for attributes: */
 
-    /* Functionalities: */
+	/* Getters & setters for transient attributes: */
 
-    /**
-     * inquirySamolnas
-     * 
-     * @param req
-     * @return
-     * @throws IOException
-     */
-    @SuppressWarnings("unchecked")
-    @PostMapping("/inquiry")
-    public CommonResponse inquirySamolnas(@Valid @RequestBody CommonRequest<SamolnasInquiryRequest> req)
-	    throws IOException {
-	CommonResponse response = new CommonResponse();
+	/* Functionalities: */
 
-	// Validate Token and Phone Owner
-	CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
-	VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
-	phoneReqData.setUsername(req.getData().getUsername());
-	phoneReqData.setToken(servletRequest.getHeader(HttpHeaders.AUTHORIZATION));
-	phoneReqData.setPhoneIdentity(servletRequest.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
-	phoneReq.setData(phoneReqData);
-	CommonResponse resPhone = Services.create(UserModuleService.class).verifyPhoneOwner(phoneReq).execute().body();
-	if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
-	    log.error("Validate Token and Phone owner error..");
-	    return resPhone;
-	}
-	ObjectMapper oMapper = new ObjectMapper();
-	Map<String, Boolean> resultPhoneObj = oMapper.convertValue(resPhone.getData(), Map.class);
-	if (!resultPhoneObj.get("valid")) {
-	    log.error("Token and phone owner invalid");
-	    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
-	    response.setMessage(messageUtil.get("error.invalid.token.phone.owner", servletRequest.getLocale()));
-	    return response;
-	}
-	
-	// Check Cut Off
-	long cutoffId = SystemCutOffEnum.SAMOLNAS.getId();
-	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
-		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
-	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
-	    log.error("Error Cutoff");
-	    return cutOffResponse;
-	}
+	/**
+	 * inquirySamolnas
+	 * 
+	 * @param req
+	 * @return
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	@PostMapping("/inquiry")
+	public CommonResponse inquirySamolnas(
+			@Valid @RequestBody CommonRequest<SamolnasInquiryRequest> req)
+			throws IOException {
+		CommonResponse response = new CommonResponse();
 
-	String payCode = req.getData().getPayCode();
-	String nik = req.getData().getNik();
-	String forwardInsCode = env.getProperty("config.pln.forwarding-institution-code");
+		// Validate Token and Phone Owner
+		CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
+		VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
+		phoneReqData.setUsername(req.getData().getUsername());
+		phoneReqData.setToken(servletRequest
+				.getHeader(HttpHeaders.AUTHORIZATION));
+		phoneReqData.setPhoneIdentity(servletRequest
+				.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
+		phoneReq.setData(phoneReqData);
+		CommonResponse resPhone = Services.create(UserModuleService.class)
+				.verifyPhoneOwner(phoneReq).execute().body();
+		if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
+			log.error("Validate Token and Phone owner error..");
+			return resPhone;
+		}
+		ObjectMapper oMapper = new ObjectMapper();
+		Map<String, Boolean> resultPhoneObj = oMapper.convertValue(
+				resPhone.getData(), Map.class);
+		if (!resultPhoneObj.get("valid")) {
+			log.error("Token and phone owner invalid");
+			response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+			response.setMessage(messageUtil.get(
+					"error.invalid.token.phone.owner",
+					servletRequest.getLocale()));
+			return response;
+		}
 
-	// get institution data
-	InstitutionRequest insReq = new InstitutionRequest();
-	insReq.setIdPrefix(PREFIX_SAMOLNAS);
-	insReq.setInstitutionType(INSTITUTION_TYPE_SAMOLNAS);
-	CommonRequest<InstitutionRequest> ins = new CommonRequest<InstitutionRequest>();
-	ins.setData(insReq);
-	CommonResponse institutionRes = Services.create(MasterModuleService.class).findByPrefixIdAndInstitutionType(ins)
-		.execute().body();
-	if (!ResponseMessage.SUCCESS.getCode().equals(institutionRes.getCode())) {
-	    // response not success
-	    return institutionRes;
-	}
-	ObjectMapper mapper = new ObjectMapper();
-	Map<String, String> instRespObj = mapper.convertValue(institutionRes.getData(), Map.class);
-	// set code arra and code cbs from institution
-	String codeArra = String.valueOf(instRespObj.get("codeArra"));
-	String codeCbs = String.valueOf(instRespObj.get("codeCbs"));
+		// Check Cut Off
+		long cutoffId = SystemCutOffEnum.SAMOLNAS.getId();
+		CommonResponse cutOffResponse = Services
+				.create(MasterModuleService.class)
+				.checkCutOffStatus(servletRequest.getLocale().getLanguage(),
+						cutoffId).execute().body();
+		if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+			log.error("Error Cutoff");
+			return cutOffResponse;
+		}
 
-	SamolnasInquiryTibcoRequest inquiryTibcoReq = SamolnasUtils.generateSamolnasInquiryRequest(payCode, nik,
-		forwardInsCode, codeArra, codeCbs);
-	log.debug("Request inquiry samolnas to tibco : " + BkpmUtil.convertToJson(inquiryTibcoReq));
+		String payCode = req.getData().getPayCode();
+		String nik = req.getData().getNik();
+		String forwardInsCode = env
+				.getProperty("config.pln.forwarding-institution-code");
 
-	SamolnasInquiryTibcoResponse inquiryTibcoRes = Services.create(SamolnasModuleService.class)
-		.inquirySamolnas(inquiryTibcoReq).execute().body();
-	String codeRes = inquiryTibcoRes.getRespayment().getResult().getElement39();
-	log.debug("Response inquiry samolnas to tibco : " + BkpmUtil.convertToJson(inquiryTibcoRes));
+		// get institution data
+		InstitutionRequest insReq = new InstitutionRequest();
+		insReq.setIdPrefix(PREFIX_SAMOLNAS);
+		insReq.setInstitutionType(INSTITUTION_TYPE_SAMOLNAS);
+		CommonRequest<InstitutionRequest> ins = new CommonRequest<InstitutionRequest>();
+		ins.setData(insReq);
+		CommonResponse institutionRes = Services
+				.create(MasterModuleService.class)
+				.findByPrefixIdAndInstitutionType(ins).execute().body();
+		if (!ResponseMessage.SUCCESS.getCode().equals(institutionRes.getCode())) {
+			// response not success
+			return institutionRes;
+		}
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String, String> instRespObj = mapper.convertValue(
+				institutionRes.getData(), Map.class);
+		// set code arra and code cbs from institution
+		String codeArra = String.valueOf(instRespObj.get("codeArra"));
+		String codeCbs = String.valueOf(instRespObj.get("codeCbs"));
 
-	if (SUCCESS_CODE.equals(codeRes)) {
-	    log.debug("Inquiry samolnas success");
+		SamolnasInquiryTibcoRequest inquiryTibcoReq = SamolnasUtils
+				.generateSamolnasInquiryRequest(payCode, nik, forwardInsCode,
+						codeArra, codeCbs);
+		log.debug("Request inquiry samolnas to tibco : "
+				+ BkpmUtil.convertToJson(inquiryTibcoReq));
 
-	    // set response
-	    SamolnasInquiryResponse resp = new SamolnasInquiryResponse();
-	    resp = SamolnasUtils.generateSamolnasInquiryResponse(inquiryTibcoRes.getRespayment().getResult());
-	    resp.setCodeArra(codeArra);
-	    resp.setCodeCbs(codeCbs);
+		SamolnasInquiryTibcoResponse inquiryTibcoRes = Services
+				.create(SamolnasModuleService.class)
+				.inquirySamolnas(inquiryTibcoReq).execute().body();
+		String codeRes = inquiryTibcoRes.getRespayment().getResult()
+				.getElement39();
+		log.debug("Response inquiry samolnas to tibco : "
+				+ BkpmUtil.convertToJson(inquiryTibcoRes));
 
-	    response.setCode(ResponseMessage.SUCCESS.getCode());
-	    response.setMessage(messageUtil.get("success", servletRequest.getLocale()));
-	    response.setData(resp);
-	} else if (ERROR_PAYCODE.equals(codeRes)) {
-	    log.error("invalid pay code");
-	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
-	    response.setMessage(messageUtil.get("error.data.not.found", servletRequest.getLocale()));
-	} else if (ERROR_CODE_BILL_ALREADY_PAID.equals(codeRes)) {
-	    log.error("bill already paid");
-	    response.setCode(ResponseMessage.ERROR_BILL_ALREADY_PAID.getCode());
-	    response.setMessage(messageUtil.get("error.bill.already.paid", servletRequest.getLocale()));
-	} else if (GIRO_LIMIT_TRANSFER.equals(codeRes) 
-			|| GIRO_OVER_LIMIT.equals(codeRes)) {
-	    log.error("exceed limit");
-	    response = new CommonResponse();
-	    response.setCode(ResponseMessage.LIMIT_TRANSFER_DAY.getCode());
-	    response.setMessage(messageUtil.get("error.exceed.limit", servletRequest.getLocale()));
-	} else if (GIRO_CUT_OFF.equals(codeRes)) {
-	    log.error("Giro cut off");
-	    response = new CommonResponse();
-	    response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
-	    response.setMessage(messageUtil.get("error.cutoff.pln", servletRequest.getLocale()));
-	} else if (GIRO_DUPLICATE_DATA.equals(codeRes)) {
-	    log.error("Giro Duplicate Data");
-	    response = new CommonResponse();
-	    response.setCode(ResponseMessage.DUPLICATE_DATA.getCode());
-	    response.setMessage(messageUtil.get("error.duplicate.data", servletRequest.getLocale()));
-	} else if (GIRO_ACCOUNT_WAS_BLOCKED.equals(codeRes)
-			|| GIRO_ACCOUNT_BLOCKED.equals(codeRes)) {
-	    log.error("account was blocked");
-	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
-	    response.setMessage(messageUtil.get("error.customer.was.blocked", servletRequest.getLocale()));    
-	} else if (ERROR_MISC.equals(codeRes)) {
-	    log.error("Misc error");
-	    throw new MiddlewareException(codeRes);
-	} else if (ERROR_INVALID_AMOUNT.equals(codeRes)) {
-	    log.error("invalid amount");
-	    response.setCode(ResponseMessage.INVALID_AMOUNT.getCode());
-	    response.setMessage(messageUtil.get("error.invalid.amount", servletRequest.getLocale()));
-	} else {
-	    log.error("error from aranet with code : " + codeRes);
-	    throw new MiddlewareException(codeRes);
-	}
+		if (SUCCESS_CODE.equals(codeRes)) {
+			log.debug("Inquiry samolnas success");
 
-	return response;
-    }
+			// set response
+			SamolnasInquiryResponse resp = new SamolnasInquiryResponse();
+			resp = SamolnasUtils
+					.generateSamolnasInquiryResponse(inquiryTibcoRes
+							.getRespayment().getResult());
+			resp.setCodeArra(codeArra);
+			resp.setCodeCbs(codeCbs);
 
-    /**
-     * paymentSamolnas
-     * @param req
-     * @return
-     * @throws IOException
-     * @throws ParseException
-     */
-    @PostMapping("/payment")
-    public CommonResponse paymentSamolnas(@Valid @RequestBody CommonRequest<SamolnasPaymentRequest> req)
-	    throws IOException, ParseException {
-	CommonResponse response = new CommonResponse();
+			response.setCode(ResponseMessage.SUCCESS.getCode());
+			response.setMessage(messageUtil.get("success",
+					servletRequest.getLocale()));
+			response.setData(resp);
+		} else if (ERROR_PAYCODE.equals(codeRes)) {
+			log.error("invalid pay code");
+			response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+			response.setMessage(messageUtil.get("error.data.not.found",
+					servletRequest.getLocale()));
+		} else if (ERROR_CODE_BILL_ALREADY_PAID.equals(codeRes)) {
+			log.error("bill already paid");
+			response.setCode(ResponseMessage.ERROR_BILL_ALREADY_PAID.getCode());
+			response.setMessage(messageUtil.get("error.bill.already.paid",
+					servletRequest.getLocale()));
+		} else if (GIRO_LIMIT_TRANSFER.equals(codeRes)
+				|| GIRO_OVER_LIMIT.equals(codeRes)) {
+			log.error("exceed limit");
+			response = new CommonResponse();
+			response.setCode(ResponseMessage.LIMIT_TRANSFER_DAY.getCode());
+			response.setMessage(messageUtil.get("error.exceed.limit",
+					servletRequest.getLocale()));
+		} else if (GIRO_CUT_OFF.equals(codeRes)) {
+			log.error("Giro cut off");
+			response = new CommonResponse();
+			response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
+			response.setMessage(messageUtil.get("error.cutoff.pln",
+					servletRequest.getLocale()));
+		} else if (GIRO_DUPLICATE_DATA.equals(codeRes)) {
+			log.error("Giro Duplicate Data");
+			response = new CommonResponse();
+			response.setCode(ResponseMessage.DUPLICATE_DATA.getCode());
+			response.setMessage(messageUtil.get("error.duplicate.data",
+					servletRequest.getLocale()));
+		} else if (GIRO_ACCOUNT_WAS_BLOCKED.equals(codeRes)
+				|| GIRO_ACCOUNT_BLOCKED.equals(codeRes)) {
+			log.error("account was blocked");
+			response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
+			response.setMessage(messageUtil.get("error.customer.was.blocked",
+					servletRequest.getLocale()));
+		} else if (ERROR_MISC.equals(codeRes)) {
+			log.error("Misc error");
+			throw new MiddlewareException(codeRes);
+		} else if (ERROR_INVALID_AMOUNT.equals(codeRes)) {
+			log.error("invalid amount");
+			response.setCode(ResponseMessage.INVALID_AMOUNT.getCode());
+			response.setMessage(messageUtil.get("error.invalid.amount",
+					servletRequest.getLocale()));
+		} else {
+			log.error("error from aranet with code : " + codeRes);
+			throw new MiddlewareException(codeRes);
+		}
 
-	// Validate Token and Phone Owner
-	CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
-	VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
-	phoneReqData.setUsername(req.getData().getUsername());
-	phoneReqData.setToken(servletRequest.getHeader(HttpHeaders.AUTHORIZATION));
-	phoneReqData.setPhoneIdentity(servletRequest.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
-	phoneReq.setData(phoneReqData);
-	CommonResponse resPhone = Services.create(UserModuleService.class).verifyPhoneOwner(phoneReq).execute().body();
-	if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
-	    log.error("Validate Token and Phone owner error..");
-	    return resPhone;
-	}
-	ObjectMapper mapper = new ObjectMapper();
-	Map<String, Boolean> resultPhoneObj = mapper.convertValue(resPhone.getData(), Map.class);
-	if (!resultPhoneObj.get("valid")) {
-	    log.error("Token and phone owner invalid");
-	    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
-	    response.setMessage(messageUtil.get("error.invalid.token.phone.owner", servletRequest.getLocale()));
-	    return response;
-	}
-	
-	// Check Cut Off
-	long cutoffId = SystemCutOffEnum.SAMOLNAS.getId();
-	CommonResponse cutOffResponse = Services.create(MasterModuleService.class)
-		.checkCutOffStatus(servletRequest.getLocale().getLanguage(), cutoffId).execute().body();
-	if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
-	    log.error("Error Cutoff");
-	    return cutOffResponse;
+		return response;
 	}
 
-	// verify PIN
-	GetVerifyPINRequest verifyPINReqData = new GetVerifyPINRequest();
-	verifyPINReqData.setUsername(req.getData().getUsername());
-	verifyPINReqData.setPin(req.getData().getPin());
+	/**
+	 * paymentSamolnas
+	 * 
+	 * @param req
+	 * @return
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	@PostMapping("/payment")
+	public CommonResponse paymentSamolnas(
+			@Valid @RequestBody CommonRequest<SamolnasPaymentRequest> req)
+			throws IOException, ParseException {
+		CommonResponse response = new CommonResponse();
 
-	CommonRequest<GetVerifyPINRequest> verifyPINReq = new CommonRequest<>();
-	verifyPINReq.setIdentity(req.getIdentity());
-	verifyPINReq.setData(verifyPINReqData);
+		// Validate Token and Phone Owner
+		CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
+		VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
+		phoneReqData.setUsername(req.getData().getUsername());
+		phoneReqData.setToken(servletRequest
+				.getHeader(HttpHeaders.AUTHORIZATION));
+		phoneReqData.setPhoneIdentity(servletRequest
+				.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
+		phoneReq.setData(phoneReqData);
+		CommonResponse resPhone = Services.create(UserModuleService.class)
+				.verifyPhoneOwner(phoneReq).execute().body();
+		if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
+			log.error("Validate Token and Phone owner error..");
+			return resPhone;
+		}
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String, Boolean> resultPhoneObj = mapper.convertValue(
+				resPhone.getData(), Map.class);
+		if (!resultPhoneObj.get("valid")) {
+			log.error("Token and phone owner invalid");
+			response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+			response.setMessage(messageUtil.get(
+					"error.invalid.token.phone.owner",
+					servletRequest.getLocale()));
+			return response;
+		}
 
-	CommonResponse verifyPINRes = Services.create(UserModuleService.class).verifyPIN(
-		servletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE), verifyPINReq).execute().body();
-	if (!ResponseMessage.SUCCESS.getCode().equals(verifyPINRes.getCode())) {
-	    log.error("Error while verify PIN");
-	    return verifyPINRes;
+		// Check Cut Off
+		long cutoffId = SystemCutOffEnum.SAMOLNAS.getId();
+		CommonResponse cutOffResponse = Services
+				.create(MasterModuleService.class)
+				.checkCutOffStatus(servletRequest.getLocale().getLanguage(),
+						cutoffId).execute().body();
+		if (!ResponseMessage.SUCCESS.getCode().equals(cutOffResponse.getCode())) {
+			log.error("Error Cutoff");
+			return cutOffResponse;
+		}
+
+		// verify PIN
+		GetVerifyPINRequest verifyPINReqData = new GetVerifyPINRequest();
+		verifyPINReqData.setUsername(req.getData().getUsername());
+		verifyPINReqData.setPin(req.getData().getPin());
+
+		CommonRequest<GetVerifyPINRequest> verifyPINReq = new CommonRequest<>();
+		verifyPINReq.setIdentity(req.getIdentity());
+		verifyPINReq.setData(verifyPINReqData);
+
+		CommonResponse verifyPINRes = Services
+				.create(UserModuleService.class)
+				.verifyPIN(
+						servletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE),
+						verifyPINReq).execute().body();
+		if (!ResponseMessage.SUCCESS.getCode().equals(verifyPINRes.getCode())) {
+			log.error("Error while verify PIN");
+			return verifyPINRes;
+		}
+
+		// validate account number's owner user
+		VerifyAccountOwnerRequest verifyAccountOwnerReqData = new VerifyAccountOwnerRequest();
+		verifyAccountOwnerReqData
+				.setAccountNo(req.getData().getAccountNumber());
+		verifyAccountOwnerReqData.setUsername(req.getData().getUsername());
+
+		CommonRequest<VerifyAccountOwnerRequest> verifyAccOwnerRequest = new CommonRequest<>();
+		verifyAccOwnerRequest.setIdentity(req.getIdentity());
+		verifyAccOwnerRequest.setData(verifyAccountOwnerReqData);
+
+		CommonResponse verifyAccOwnerResponse = Services
+				.create(UserModuleService.class)
+				.verifyAccountOwner(verifyAccOwnerRequest).execute().body();
+		if (!ResponseMessage.SUCCESS.getCode().equals(
+				verifyAccOwnerResponse.getCode())) {
+			log.error("Error while verify account owner");
+			return verifyAccOwnerResponse;
+		}
+		ObjectMapper oMapper = new ObjectMapper();
+		VerifyAccountOwnerResponse verifyAccOwnRespObj = oMapper.convertValue(
+				verifyAccOwnerResponse.getData(),
+				VerifyAccountOwnerResponse.class);
+		if (!verifyAccOwnRespObj.isValid()) {
+			log.error("User and Account Info didn't match: "
+					+ req.getData().getAccountNumber());
+			response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+			response.setMessage(messageUtil.get("error.invalid.user.accountno",
+					servletRequest.getLocale()));
+			return response;
+		}
+		User user = verifyAccOwnRespObj.getUser();
+		String accType = verifyAccOwnRespObj.getAccountInfo().getAccountType()
+				.name();
+
+		String forwardInsCode = env
+				.getProperty("config.pln.forwarding-institution-code");
+		String codeArra = req.getData().getCodeArra();
+		String codeCbs = req.getData().getCodeCbs();
+
+		// cek limit harian
+		CommonRequest<limitUserDailyClass> lmtDl = new CommonRequest<>();
+		limitUserDailyClass lmtDLClass = new limitUserDailyClass();
+		lmtDLClass.setAccNo(req.getData().getAccountNumber());
+		lmtDLClass.setUsername(req.getData().getUsername());
+		lmtDLClass.setAmount(new BigDecimal(req.getData().getAmount() + ""));
+		lmtDLClass.setJenis("payment");
+		lmtDl.setData(lmtDLClass);
+		lmtDl.setIdentity(req.getIdentity());
+		CommonResponse resLmtDL = Services.create(TransferModuleService.class)
+				.verifydailylimit(lmtDl).execute().body();
+		log.debug("log dari limit harian samolnas " + lmtDl + " response "
+				+ resLmtDL);
+		if (resLmtDL.getCode().equals("000")) {
+			SamolnasPaymentTibcoRequest reqPaymentTibco = SamolnasUtils
+					.generateSamolnasPaymentRequest(req.getData(),
+							forwardInsCode, codeArra, codeCbs, accType);
+			log.debug("Request payment samolnas to tibco : "
+					+ BkpmUtil.convertToJson(reqPaymentTibco));
+
+			SamolnasPaymentTibcoResponse resPaymentTibco = Services
+					.create(SamolnasModuleService.class)
+					.paymentSamolnas(reqPaymentTibco).execute().body();
+			String codeRes = resPaymentTibco.getRespayment().getResult()
+					.getElement39();
+			log.debug("Response payment samolnas to tibco : "
+					+ BkpmUtil.convertToJson(resPaymentTibco));
+
+			if (SUCCESS_CODE.equals(codeRes)) {
+				// set response
+				SamolnasPaymentResponse resp = new SamolnasPaymentResponse();
+				resp = SamolnasUtils
+						.generateSamolnasPaymentResponse(resPaymentTibco
+								.getRespayment().getResult());
+
+				// save to db (Destination and transaction)
+				log.debug("saving to database destination and transaction");
+				CommonRequest<DestinationCommonRequest> destReq = SamolnasUtils
+						.generateDestinationReq(req.getIdentity(),
+								req.getData(), resp);
+				CommonResponse saveFavRes = Services
+						.create(MasterModuleService.class)
+						.saveToFavouriteCommon(destReq).execute().body();
+				if (SUCCESS_CODE.equals(saveFavRes.getCode())) {
+					log.debug("saving to database samolnas");
+					// save to db (Samolnas)
+					ObjectMapper objMapper = new ObjectMapper();
+					Transaction transaction = objMapper.convertValue(
+							saveFavRes.getData(), Transaction.class);
+					Samolnas samolnas = SamolnasUtils.generateDataSamolnas(
+							resp, transaction, destReq.getData());
+					samolnasService.saveSamolnas(samolnas);
+					log.debug("data has been saved successfully");
+
+					// save limit harian
+					log.debug("param save limit " + resLmtDL.getData());
+					CommonResponse prosesLimit = Services
+							.create(TransferModuleService.class)
+							.prosesdailyLimit(resLmtDL.getData()).execute()
+							.body();
+					log.debug("log dari proses simpan limit " + prosesLimit);
+
+					// sendEmail
+					log.debug("Send email receipt samolnas");
+					paymentServices.sendEmailReceiptSamolnas(resp, user,
+							servletRequest.getLocale());
+					// set destination id to response
+					resp.setIdDestination(transaction.getDestination().getId());
+
+					response.setCode(ResponseMessage.SUCCESS.getCode());
+					response.setMessage(messageUtil.get("success",
+							servletRequest.getLocale()));
+					response.setData(resp);
+					log.debug("Payment samolnas Success");
+				} else {
+					log.error("Save to favourite Failed");
+					response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR
+							.getCode());
+					response.setMessage(messageUtil.get(
+							"error.internal.server", servletRequest.getLocale()));
+				}
+			} else if (ERROR_INVALID_SUBSCRIBER_ID.equals(codeRes)
+					|| GIRO_USER_NOT_FOUND.equalsIgnoreCase(codeRes)) {
+				log.error("User not found/invalid");
+				response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+				response.setMessage(messageUtil.get("error.id.pln.not.found",
+						servletRequest.getLocale()));
+			} else if (ERROR_NOT_ENOUGH_BALANCE.equals(codeRes)
+					|| GIRO_AMOUNT_NOT_ENOUGH_BALANCE.equals(codeRes)
+					|| GIRO_ERROR_VALUTA_CODE.equals(codeRes)
+					|| GIRO_LIMITED_BALANCE.equals(codeRes)) {
+				log.error("Not enough balance");
+				response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
+				response.setMessage(messageUtil.get("error.amount.not.enough",
+						servletRequest.getLocale()));
+				return response;
+			} else if (ERROR_ACCOUNT_INACTIVE.equals(codeRes)
+					|| GIRO_INACTIVE_ACCOUNT.equalsIgnoreCase(codeRes)
+					|| GIRO_CLOSED_ACCOUNT.equalsIgnoreCase(codeRes)) {
+				log.error("account inactive");
+				response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT
+						.getCode());
+				response.setMessage(messageUtil.get(
+						"error.inactive.bank.account",
+						servletRequest.getLocale()));
+			} else if (ERROR_CODE_BILL_ALREADY_PAID.equals(codeRes)) {
+				log.error("bill already paid");
+				response.setCode(ResponseMessage.ERROR_BILL_ALREADY_PAID
+						.getCode());
+				response.setMessage(messageUtil.get("error.bill.already.paid",
+						servletRequest.getLocale()));
+			} else if (ERROR_PAYMENT_TIMEOUT.equals(codeRes)) {
+				log.error("Payment timeout no response");
+				throw new MiddlewareException(codeRes);
+			} else if (ERROR_PAYMENT_TIMEOUT_2.equals(codeRes)) {
+				log.error("Payment timeout");
+				throw new MiddlewareException(codeRes);
+			} else {
+				log.error("error aranet with code : " + codeRes);
+				throw new MiddlewareException(codeRes);
+			}
+
+		} else {
+			if (resLmtDL.getMessage().equals("Limit user not set")) {
+				response.setCode(resLmtDL.getCode());
+				response.setMessage(messageUtil.get("error.limit.unset",
+						servletRequest.getLocale()));
+
+			} else if (resLmtDL.getMessage().equals(
+					"amount more than daily limit user")) {
+				response.setCode(resLmtDL.getCode());
+				response.setMessage(messageUtil.get("error.limit.exceed",
+						servletRequest.getLocale()));
+			} else if (resLmtDL.getMessage().equals(
+					"transactions exceed daily limit")) {
+				response.setCode(resLmtDL.getCode());
+				response.setMessage(messageUtil.get("error.limit.exceed",
+						servletRequest.getLocale()));
+			} else {
+				response.setCode(resLmtDL.getCode());
+				response.setMessage(resLmtDL.getMessage());
+			}
+
+		}
+
+		return response;
 	}
 
-	// validate account number's owner user
-	VerifyAccountOwnerRequest verifyAccountOwnerReqData = new VerifyAccountOwnerRequest();
-	verifyAccountOwnerReqData.setAccountNo(req.getData().getAccountNumber());
-	verifyAccountOwnerReqData.setUsername(req.getData().getUsername());
-
-	CommonRequest<VerifyAccountOwnerRequest> verifyAccOwnerRequest = new CommonRequest<>();
-	verifyAccOwnerRequest.setIdentity(req.getIdentity());
-	verifyAccOwnerRequest.setData(verifyAccountOwnerReqData);
-
-	CommonResponse verifyAccOwnerResponse = Services.create(UserModuleService.class)
-		.verifyAccountOwner(verifyAccOwnerRequest).execute().body();
-	if (!ResponseMessage.SUCCESS.getCode().equals(verifyAccOwnerResponse.getCode())) {
-	    log.error("Error while verify account owner");
-	    return verifyAccOwnerResponse;
-	}
-	ObjectMapper oMapper = new ObjectMapper();
-	VerifyAccountOwnerResponse verifyAccOwnRespObj = oMapper.convertValue(verifyAccOwnerResponse.getData(),
-		VerifyAccountOwnerResponse.class);
-	if (!verifyAccOwnRespObj.isValid()) {
-	    log.error("User and Account Info didn't match: " + req.getData().getAccountNumber());
-	    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
-	    response.setMessage(messageUtil.get("error.invalid.user.accountno", servletRequest.getLocale()));
-	    return response;
-	}
-	User user = verifyAccOwnRespObj.getUser();
-	String accType = verifyAccOwnRespObj.getAccountInfo().getAccountType().name();
-
-	String forwardInsCode = env.getProperty("config.pln.forwarding-institution-code");
-	String codeArra = req.getData().getCodeArra();
-	String codeCbs = req.getData().getCodeCbs();
-
-	SamolnasPaymentTibcoRequest reqPaymentTibco = SamolnasUtils.generateSamolnasPaymentRequest(req.getData(),
-		forwardInsCode, codeArra, codeCbs, accType);
-	log.debug("Request payment samolnas to tibco : " + BkpmUtil.convertToJson(reqPaymentTibco));
-
-	SamolnasPaymentTibcoResponse resPaymentTibco = Services.create(SamolnasModuleService.class)
-		.paymentSamolnas(reqPaymentTibco).execute().body();
-	String codeRes = resPaymentTibco.getRespayment().getResult().getElement39();
-	log.debug("Response payment samolnas to tibco : " + BkpmUtil.convertToJson(resPaymentTibco));
-
-	if (SUCCESS_CODE.equals(codeRes)) {
-	    // set response
-	    SamolnasPaymentResponse resp = new SamolnasPaymentResponse();
-	    resp = SamolnasUtils.generateSamolnasPaymentResponse(resPaymentTibco.getRespayment().getResult());
-
-	    // save to db (Destination and transaction)
-	    log.debug("saving to database destination and transaction");
-	    CommonRequest<DestinationCommonRequest> destReq = SamolnasUtils.generateDestinationReq(req.getIdentity(),
-		    req.getData(), resp);
-	    CommonResponse saveFavRes = Services.create(MasterModuleService.class).saveToFavouriteCommon(destReq)
-		    .execute().body();
-	    if (SUCCESS_CODE.equals(saveFavRes.getCode())) {
-		log.debug("saving to database samolnas");
-		// save to db (Samolnas)
-		ObjectMapper objMapper = new ObjectMapper();
-		Transaction transaction = objMapper.convertValue(saveFavRes.getData(), Transaction.class);
-		Samolnas samolnas = SamolnasUtils.generateDataSamolnas(resp, transaction, destReq.getData());
-		samolnasService.saveSamolnas(samolnas);
-		log.debug("data has been saved successfully");
-
-		// sendEmail
-		log.debug("Send email receipt samolnas");
-		paymentServices.sendEmailReceiptSamolnas(resp, user, servletRequest.getLocale());
-		// set destination id to response
-		resp.setIdDestination(transaction.getDestination().getId());
-
-		response.setCode(ResponseMessage.SUCCESS.getCode());
-		response.setMessage(messageUtil.get("success", servletRequest.getLocale()));
-		response.setData(resp);
-		log.debug("Payment samolnas Success");
-	    } else {
-		log.error("Save to favourite Failed");
-		response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
-		response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
-	    }
-	} else if (ERROR_INVALID_SUBSCRIBER_ID.equals(codeRes)
-		||GIRO_USER_NOT_FOUND.equalsIgnoreCase(codeRes)) {
-	    log.error("User not found/invalid");
-	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
-	    response.setMessage(messageUtil.get("error.id.pln.not.found", servletRequest.getLocale()));
-	} else if (ERROR_NOT_ENOUGH_BALANCE.equals(codeRes)
-		|| GIRO_AMOUNT_NOT_ENOUGH_BALANCE.equals(codeRes)
-		|| GIRO_ERROR_VALUTA_CODE.equals(codeRes)
-		|| GIRO_LIMITED_BALANCE.equals(codeRes)) {
-	    log.error("Not enough balance");
-	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
-	    response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
-	    return response;
-	} else if (ERROR_ACCOUNT_INACTIVE.equals(codeRes)
-		|| GIRO_INACTIVE_ACCOUNT.equalsIgnoreCase(codeRes)
-		|| GIRO_CLOSED_ACCOUNT.equalsIgnoreCase(codeRes)) {
-	    log.error("account inactive");
-	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
-	    response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
-	} else if (ERROR_CODE_BILL_ALREADY_PAID.equals(codeRes)) {
-	    log.error("bill already paid");
-	    response.setCode(ResponseMessage.ERROR_BILL_ALREADY_PAID.getCode());
-	    response.setMessage(messageUtil.get("error.bill.already.paid", servletRequest.getLocale()));
-	} else if (ERROR_PAYMENT_TIMEOUT.equals(codeRes)) {
-	    log.error("Payment timeout no response");
-	    throw new MiddlewareException(codeRes);
-	} else if (ERROR_PAYMENT_TIMEOUT_2.equals(codeRes)) {
-	    log.error("Payment timeout");
-	    throw new MiddlewareException(codeRes);
-	} else {
-	    log.error("error aranet with code : " + codeRes);
-	    throw new MiddlewareException(codeRes);
-	}
-
-	return response;
-    }
-
-    /* Overrides: */
+	/* Overrides: */
 
 }

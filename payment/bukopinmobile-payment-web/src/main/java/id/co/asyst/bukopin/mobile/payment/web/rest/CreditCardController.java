@@ -61,12 +61,14 @@ import id.co.asyst.bukopin.mobile.payment.model.payload.cc.PaymentCreditCardRequ
 import id.co.asyst.bukopin.mobile.payment.model.payload.cc.PaymentCreditCardResponse;
 import id.co.asyst.bukopin.mobile.service.core.MasterModuleService;
 import id.co.asyst.bukopin.mobile.service.core.PaymentModuleService;
+import id.co.asyst.bukopin.mobile.service.core.TransferModuleService;
 import id.co.asyst.bukopin.mobile.service.core.UserModuleService;
 import id.co.asyst.bukopin.mobile.service.model.payload.cc.InquiryCreditCardTibcoReq;
 import id.co.asyst.bukopin.mobile.service.model.payload.cc.InquiryCreditCardTibcoResponse;
 import id.co.asyst.bukopin.mobile.service.model.payload.cc.PaymentCreditCardTibcoReq;
 import id.co.asyst.bukopin.mobile.service.model.payload.cc.PaymentCreditCardTibcoResponse;
 import id.co.asyst.bukopin.mobile.service.model.payload.pln.GetVerifyPINRequest;
+import id.co.asyst.bukopin.mobile.transfer.model.limitUserDailyClass;
 import id.co.asyst.bukopin.mobile.user.model.entity.AccountCard;
 import id.co.asyst.bukopin.mobile.user.model.entity.User;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyAccountOwnerRequest;
@@ -85,644 +87,814 @@ import id.co.asyst.foundation.service.connector.Services;
 @RestController
 @RequestMapping("/creditCard")
 public class CreditCardController {
-    /* Constants: */
-    private Logger log = LoggerFactory.getLogger(CreditCardController.class);
+	/* Constants: */
+	private Logger log = LoggerFactory.getLogger(CreditCardController.class);
 
-    private static final String SUCCESS_CODE = "000";
-    private static final String ERROR_CODE_BILL_ALREADY_PAID = "188";
-    private static final String ERROR_CODE_PHONE_NUMBER_EXPIRED = "181";
-    private static final String ERROR_CODE_SYSTEM_FAILURE = "191";
-    private static final String ERROR_CODE_PREFIX_UNKNOWN = "192";
-    private static final String ERROR_CODE_SYSTEM_FAILURE_2 = "196";
-    private static final String ERROR_CODE_CUTT_OFF = "190";
-    private static final String ERROR_CODE_PHONE_NUMBER_NOT_FOUND = "214";
-    private static final String ERROR_CODE_BLOCKED_ACCOUNT = "183";
-    private static final String ERROR_CODE_INVALID_AMOUNT = "113";
-    private static final String ERROR_CODE_INVALID_AMOUNT2 = "050";
-    private static final String ERROR_CODE_CARD_NOT_FOUND = "114";
-    private static final String ERROR_CODE_CARD_EXPIRED = "154";
-    private static final String ERROR_CODE_BILL_ALREADY_PAID2 = "080";
-    private static final String ERROR_CODE_BANK_ACCOUNT_BLOCKED = "814";
-    private static final String ERROR_CODE_SPECIAL_NUMBER = "179";
-    private static final String ERROR_CODE_INVALID_PHONE_NUMBER = "185";
-    private static final String ERROR_CODE_CUSTOMER_NAME = "176";
-    private static final String ERROR_CODE_EXCEED_BILL_LIMIT = "177";
-    private static final String ERROR_CODE_DIFFERENT_BILL = "178";
-    private static final String ERROR_NOT_ENOUGH_BALANCE = "851";
-    private static final String ERROR_ACCOUNT_INACTIVE = "839";
-    private static final String CODE_CC_BKP = "CCBKP";
-    private static final String TRANSACTION_TYPE_POST = "POST";
-    private static final String ISFALSE = "FALSE";
+	private static final String SUCCESS_CODE = "000";
+	private static final String ERROR_CODE_BILL_ALREADY_PAID = "188";
+	private static final String ERROR_CODE_PHONE_NUMBER_EXPIRED = "181";
+	private static final String ERROR_CODE_SYSTEM_FAILURE = "191";
+	private static final String ERROR_CODE_PREFIX_UNKNOWN = "192";
+	private static final String ERROR_CODE_SYSTEM_FAILURE_2 = "196";
+	private static final String ERROR_CODE_CUTT_OFF = "190";
+	private static final String ERROR_CODE_PHONE_NUMBER_NOT_FOUND = "214";
+	private static final String ERROR_CODE_BLOCKED_ACCOUNT = "183";
+	private static final String ERROR_CODE_INVALID_AMOUNT = "113";
+	private static final String ERROR_CODE_INVALID_AMOUNT2 = "050";
+	private static final String ERROR_CODE_CARD_NOT_FOUND = "114";
+	private static final String ERROR_CODE_CARD_EXPIRED = "154";
+	private static final String ERROR_CODE_BILL_ALREADY_PAID2 = "080";
+	private static final String ERROR_CODE_BANK_ACCOUNT_BLOCKED = "814";
+	private static final String ERROR_CODE_SPECIAL_NUMBER = "179";
+	private static final String ERROR_CODE_INVALID_PHONE_NUMBER = "185";
+	private static final String ERROR_CODE_CUSTOMER_NAME = "176";
+	private static final String ERROR_CODE_EXCEED_BILL_LIMIT = "177";
+	private static final String ERROR_CODE_DIFFERENT_BILL = "178";
+	private static final String ERROR_NOT_ENOUGH_BALANCE = "851";
+	private static final String ERROR_ACCOUNT_INACTIVE = "839";
+	private static final String CODE_CC_BKP = "CCBKP";
+	private static final String TRANSACTION_TYPE_POST = "POST";
+	private static final String ISFALSE = "FALSE";
 
-    /* Attributes: */
-    @Autowired
-    private MessageUtil messageUtil;
+	/* Attributes: */
+	@Autowired
+	private MessageUtil messageUtil;
 
-    @Autowired
-    private HttpServletRequest servletRequest;
+	@Autowired
+	private HttpServletRequest servletRequest;
 
-    @Autowired
-    private CreditCardService creditCardService;
+	@Autowired
+	private CreditCardService creditCardService;
 
-    @Autowired
-    private ListCreditService listCreditService;
+	@Autowired
+	private ListCreditService listCreditService;
 
-    /**
-     * Environment
-     */
-    @Autowired
-    private Environment env;
+	/**
+	 * Environment
+	 */
+	@Autowired
+	private Environment env;
 
-    /* Transient Attributes: */
+	/* Transient Attributes: */
 
-    /* Constructors: */
+	/* Constructors: */
 
-    /* Getters & setters for attributes: */
+	/* Getters & setters for attributes: */
 
-    /* Getters & setters for transient attributes: */
+	/* Getters & setters for transient attributes: */
 
-    /* Functionalities: */
-    /**
-     * Credit Card Inquiry (FOR BKP ONLY)
-     * 
-     * @param request
-     * @return
-     * @throws IOException
-     */
-    @SuppressWarnings("unchecked")
-    @PostMapping("/inquiry")
-    @ResponseStatus(HttpStatus.OK)
-    public CommonResponse inquiryCreditCard(@Valid @RequestBody CommonRequest<InquiryCreditCardRequest> request)
-	    throws IOException {
-	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
-		messageUtil.get("success", servletRequest.getLocale()));
+	/* Functionalities: */
+	/**
+	 * Credit Card Inquiry (FOR BKP ONLY)
+	 * 
+	 * @param request
+	 * @return
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	@PostMapping("/inquiry")
+	@ResponseStatus(HttpStatus.OK)
+	public CommonResponse inquiryCreditCard(
+			@Valid @RequestBody CommonRequest<InquiryCreditCardRequest> request)
+			throws IOException {
+		CommonResponse response = new CommonResponse(
+				ResponseMessage.SUCCESS.getCode(), messageUtil.get("success",
+						servletRequest.getLocale()));
 
-	ObjectMapper omapper = new ObjectMapper();
+		ObjectMapper omapper = new ObjectMapper();
 
-	// Validate Token and Phone Owner
-	CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
-	VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
-	phoneReqData.setUsername(request.getData().getUsername());
-	phoneReqData.setToken(servletRequest.getHeader(HttpHeaders.AUTHORIZATION));
-	phoneReqData.setPhoneIdentity(servletRequest.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
-	phoneReq.setData(phoneReqData);
-	CommonResponse resPhone = Services.create(UserModuleService.class).verifyPhoneOwner(phoneReq).execute().body();
+		// Validate Token and Phone Owner
+		CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
+		VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
+		phoneReqData.setUsername(request.getData().getUsername());
+		phoneReqData.setToken(servletRequest
+				.getHeader(HttpHeaders.AUTHORIZATION));
+		phoneReqData.setPhoneIdentity(servletRequest
+				.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
+		phoneReq.setData(phoneReqData);
+		CommonResponse resPhone = Services.create(UserModuleService.class)
+				.verifyPhoneOwner(phoneReq).execute().body();
 
-	if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
-	    log.error("Validate Token and Phone owner error..");
-	    return resPhone;
-	}
+		if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
+			log.error("Validate Token and Phone owner error..");
+			return resPhone;
+		}
 
-	Map<String, String> resPhoneData = omapper.convertValue(resPhone.getData(), Map.class);
-	String valid = String.valueOf(resPhoneData.get("valid"));
+		Map<String, String> resPhoneData = omapper.convertValue(
+				resPhone.getData(), Map.class);
+		String valid = String.valueOf(resPhoneData.get("valid"));
 
-	if (valid.equalsIgnoreCase(ISFALSE)) {
-	    log.error("Token owner is not match...");
-	    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
-	    response.setMessage(messageUtil.get("error.data.not.match", servletRequest.getLocale()));
+		if (valid.equalsIgnoreCase(ISFALSE)) {
+			log.error("Token owner is not match...");
+			response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+			response.setMessage(messageUtil.get("error.data.not.match",
+					servletRequest.getLocale()));
 
-	    return response;
-	}
+			return response;
+		}
 
-	String username = request.getData().getUsername();
-	String codeCc = request.getData().getCodeCc();
-	String name = request.getData().getName();
+		String username = request.getData().getUsername();
+		String codeCc = request.getData().getCodeCc();
+		String name = request.getData().getName();
 
-	// get Registered Card
-	CommonResponse findAccountCard = Services.create(UserModuleService.class).getAccountCardByUsername(username)
-		.execute().body();
-	if (!ResponseMessage.SUCCESS.getCode().equals(findAccountCard.getCode())) {
-	    return findAccountCard;
-	}
-	AccountCard accCard = omapper.convertValue(findAccountCard.getData(), AccountCard.class);
-	String regCard = accCard.getRegisteredCard();
+		// get Registered Card
+		CommonResponse findAccountCard = Services
+				.create(UserModuleService.class)
+				.getAccountCardByUsername(username).execute().body();
+		if (!ResponseMessage.SUCCESS.getCode()
+				.equals(findAccountCard.getCode())) {
+			return findAccountCard;
+		}
+		AccountCard accCard = omapper.convertValue(findAccountCard.getData(),
+				AccountCard.class);
+		String regCard = accCard.getRegisteredCard();
 
-	// get code Cbs
-	CommonResponse institutionRes = Services.create(MasterModuleService.class).findCodeByProvider(codeCc).execute()
-		.body();
-	InstitutionMapper findInstitution = omapper.convertValue(institutionRes.getData(), InstitutionMapper.class);
+		// get code Cbs
+		CommonResponse institutionRes = Services
+				.create(MasterModuleService.class).findCodeByProvider(codeCc)
+				.execute().body();
+		InstitutionMapper findInstitution = omapper.convertValue(
+				institutionRes.getData(), InstitutionMapper.class);
 
-	String codeCbs = findInstitution.getCodeCbs();
+		String codeCbs = findInstitution.getCodeCbs();
 
-	InquiryCreditCardTibcoReq inquiryTibco = CreditCardUtil.generateInquiryRequest(request.getData(), regCard,
-		codeCbs);
-	log.debug("Request Inquiry Credit Card to Tibco {}" + BkpmUtil.convertToJson(inquiryTibco));
+		InquiryCreditCardTibcoReq inquiryTibco = CreditCardUtil
+				.generateInquiryRequest(request.getData(), regCard, codeCbs);
+		log.debug("Request Inquiry Credit Card to Tibco {}"
+				+ BkpmUtil.convertToJson(inquiryTibco));
 
-	InquiryCreditCardTibcoResponse inquiryTibcoResp = Services.create(PaymentModuleService.class)
-		.creditCardInquiryTibcoResponse(inquiryTibco).execute().body();
-	log.debug("Response Inquiry Credit Card to Tibco {}" + BkpmUtil.convertToJson(inquiryTibcoResp));
+		InquiryCreditCardTibcoResponse inquiryTibcoResp = Services
+				.create(PaymentModuleService.class)
+				.creditCardInquiryTibcoResponse(inquiryTibco).execute().body();
+		log.debug("Response Inquiry Credit Card to Tibco {}"
+				+ BkpmUtil.convertToJson(inquiryTibcoResp));
 
-	String codeRes = inquiryTibcoResp.getRespayment().getResult().getElement39();
+		String codeRes = inquiryTibcoResp.getRespayment().getResult()
+				.getElement39();
 
-	if (SUCCESS_CODE.equalsIgnoreCase(codeRes)) {
-	    log.debug("Inquiry Credit Card Success...");
-	    InquiryCreditCardResponse resp = new InquiryCreditCardResponse();
-	    resp = CreditCardUtil.generateInquiryResponse(inquiryTibcoResp, codeCc, name);
+		if (SUCCESS_CODE.equalsIgnoreCase(codeRes)) {
+			log.debug("Inquiry Credit Card Success...");
+			InquiryCreditCardResponse resp = new InquiryCreditCardResponse();
+			resp = CreditCardUtil.generateInquiryResponse(inquiryTibcoResp,
+					codeCc, name);
 
-	    response.setData(resp);
-	} else if (ERROR_CODE_PHONE_NUMBER_EXPIRED.equals(codeRes)) {
-	    log.error("phone number expired");
-	    response.setCode(ResponseMessage.PHONE_NUMBER_EXPIRED.getCode());
-	    response.setMessage(messageUtil.get("error.phone.number.expired", servletRequest.getLocale()));
-	} else if (ERROR_NOT_ENOUGH_BALANCE.equals(codeRes)) {
-	    log.error("Not enough balance");
-	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
-	    response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
-	    return response;
-	} else if (ERROR_ACCOUNT_INACTIVE.equals(codeRes)) {
-	    log.error("account inactive");
-	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
-	    response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
-	} else if (ERROR_CODE_BILL_ALREADY_PAID.equals(codeRes)) {
-	    log.error("bill already paid");
-	    response.setCode(ResponseMessage.ERROR_BILL_ALREADY_PAID.getCode());
-	    response.setMessage(messageUtil.get("error.bill.already.paid", servletRequest.getLocale()));
-	} else if (ERROR_CODE_CUTT_OFF.equals(codeRes)) {
-	    log.error("cutoff in progress");
-	    response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
-	    response.setMessage(messageUtil.get("error.cutoff", servletRequest.getLocale()));
-	} else if (ERROR_CODE_SYSTEM_FAILURE.equals(codeRes) || ERROR_CODE_SYSTEM_FAILURE_2.equals(codeRes)) {
-	    log.error("system failure");
-	    response.setCode(ResponseMessage.ERROR_SYSTEM_FAILURE.getCode());
-	    response.setMessage(messageUtil.get("error.system.failure", servletRequest.getLocale()));
-	} else if (ERROR_CODE_PHONE_NUMBER_NOT_FOUND.equals(codeRes) || ERROR_CODE_SPECIAL_NUMBER.equals(codeRes)
-		|| ERROR_CODE_INVALID_PHONE_NUMBER.equals(codeRes)) {
-	    log.error("data not found with code : " + codeRes);
-	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
-	    response.setMessage(messageUtil.get("error.data.not.found", servletRequest.getLocale()));
-	} else if (ERROR_CODE_INVALID_AMOUNT.equals(codeRes)) {
-	    log.error("invalid amount");
-	    response.setCode(ResponseMessage.INVALID_AMOUNT.getCode());
-	    response.setMessage(messageUtil.get("error.invalid.amount", servletRequest.getLocale()));
-	} else if (ERROR_CODE_BLOCKED_ACCOUNT.equals(codeRes)) {
-	    log.error("blocked account");
-	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
-	    response.setMessage(messageUtil.get("error.account.was.blocked", servletRequest.getLocale()));
-	} else if (ERROR_CODE_CUSTOMER_NAME.equals(codeRes)) {
-	    log.error("customer name are not same in two bill at the same phone number");
-	    response.setCode(ResponseMessage.ERROR_CUSTOMER_NAME_NOT_SAME.getCode());
-	    response.setMessage(messageUtil.get("error.customer.not.same", servletRequest.getLocale()));
-	} else if (ERROR_CODE_EXCEED_BILL_LIMIT.equals(codeRes)) {
-	    log.error("phone number exceed bill limit");
-	    response.setCode(ResponseMessage.ERROR_EXCEED_BILL_LIMIT.getCode());
-	    response.setMessage(messageUtil.get("error.exceed.bill.limit", servletRequest.getLocale()));
-	} else if (ERROR_CODE_DIFFERENT_BILL.equals(codeRes)) {
-	    log.error("different bill at same month");
-	    response.setCode(ResponseMessage.ERROR_DIFFERENT_BILL.getCode());
-	    response.setMessage(messageUtil.get("error.different.bill", servletRequest.getLocale()));
-	} else {
-	    log.error("error aranet with code : " + codeRes);
-	    throw new MiddlewareException(codeRes);
-	}
-
-	return response;
-    }
-
-    /**
-     * Credit Card BKP and NON BKP Payment Service
-     * 
-     * @param request
-     * @return
-     * @throws IOException
-     */
-    @SuppressWarnings("unchecked")
-    @PostMapping("/payment")
-    @ResponseStatus(HttpStatus.OK)
-    public CommonResponse paymentCreditCard(@Valid @RequestBody CommonRequest<PaymentCreditCardRequest> request)
-	    throws IOException {
-	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
-		messageUtil.get("success", servletRequest.getLocale()));
-
-	String username = request.getData().getUsername();
-	String pin = request.getData().getPin();
-	String codeCc = request.getData().getCodeCc();
-	String name = request.getData().getName();
-
-	ObjectMapper oMapper = new ObjectMapper();
-
-	// Validate Token and Phone Owner
-	CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
-	VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
-	phoneReqData.setUsername(request.getData().getUsername());
-	phoneReqData.setToken(servletRequest.getHeader(HttpHeaders.AUTHORIZATION));
-	phoneReqData.setPhoneIdentity(servletRequest.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
-	phoneReq.setData(phoneReqData);
-	CommonResponse resPhone = Services.create(UserModuleService.class).verifyPhoneOwner(phoneReq).execute().body();
-
-	if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
-	    log.error("Validate Token and Phone owner error..");
-	    return resPhone;
-	}
-
-	Map<String, String> resPhoneData = oMapper.convertValue(resPhone.getData(), Map.class);
-	String valid = String.valueOf(resPhoneData.get("valid"));
-
-	if (valid.equalsIgnoreCase(ISFALSE)) {
-	    log.error("Token owner is not match...");
-	    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
-	    response.setMessage(messageUtil.get("error.data.not.match", servletRequest.getLocale()));
-
-	    return response;
-	}
-
-	// verify pin
-	GetVerifyPINRequest verifyPinData = new GetVerifyPINRequest();
-	verifyPinData.setPin(pin);
-	verifyPinData.setUsername(username);
-
-	CommonRequest<GetVerifyPINRequest> verifyPinReq = new CommonRequest<>();
-	verifyPinReq.setIdentity(request.getIdentity());
-	verifyPinReq.setData(verifyPinData);
-
-	CommonResponse verifyPinRes = Services.create(UserModuleService.class)
-		.verifyPIN(servletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE), verifyPinReq).execute().body();
-
-	if ((verifyPinRes == null) || (!ResponseMessage.SUCCESS.getCode().equals(verifyPinRes.getCode()))) {
-
-	    return verifyPinRes;
-	}
-
-	// validate account number's owner user
-	VerifyAccountOwnerRequest verifyAccountOwnerReqData = new VerifyAccountOwnerRequest();
-	verifyAccountOwnerReqData.setAccountNo(request.getData().getAccountNumber());
-	verifyAccountOwnerReqData.setUsername(request.getData().getUsername());
-
-	CommonRequest<VerifyAccountOwnerRequest> verifyAccOwnerRequest = new CommonRequest<>();
-	verifyAccOwnerRequest.setIdentity(request.getIdentity());
-	verifyAccOwnerRequest.setData(verifyAccountOwnerReqData);
-
-	CommonResponse verifyAccOwnerResponse = Services.create(UserModuleService.class)
-		.verifyAccountOwner(verifyAccOwnerRequest).execute().body();
-	if (!ResponseMessage.SUCCESS.getCode().equals(verifyAccOwnerResponse.getCode())) {
-	    log.error("Error while verify account owner");
-	    return verifyAccOwnerResponse;
-	}
-
-	VerifyAccountOwnerResponse verifyAccOwnRespObj = oMapper.convertValue(verifyAccOwnerResponse.getData(),
-		VerifyAccountOwnerResponse.class);
-	if (!verifyAccOwnRespObj.isValid()) {
-	    log.error("User and Account Info didn't match: " + request.getData().getAccountNumber());
-	    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
-	    response.setMessage(messageUtil.get("error.invalid.user.accountno", servletRequest.getLocale()));
-	    return response;
-	}
-
-	User user = verifyAccOwnRespObj.getUser();
-
-	String accType = verifyAccOwnRespObj.getAccountInfo().getAccountType().name();
-
-	String forwardInsCode = env.getProperty("config.cc.forwarding-institution-code");
-
-	// get Registered Card
-	CommonResponse findAccountCard = Services.create(UserModuleService.class).getAccountCardByUsername(username)
-		.execute().body();
-	if (!ResponseMessage.SUCCESS.getCode().equals(findAccountCard.getCode())) {
-	    return findAccountCard;
-	}
-	AccountCard accCard = oMapper.convertValue(findAccountCard.getData(), AccountCard.class);
-	String regCard = accCard.getRegisteredCard();
-
-	// get code Cbs
-	CommonResponse institutionRes = Services.create(MasterModuleService.class).findCodeByProvider(codeCc).execute()
-		.body();
-	InstitutionMapper findInstitution = oMapper.convertValue(institutionRes.getData(), InstitutionMapper.class);
-	String codeCbs = findInstitution.getCodeCbs();
-
-	if (!codeCc.equalsIgnoreCase(CODE_CC_BKP)) {
-	    CheckBINRequest checkBinData = new CheckBINRequest();
-	    checkBinData.setUsername(username);
-	    checkBinData.setCodeCc(codeCc);
-	    checkBinData.setName(name);
-	    checkBinData.setAmount(request.getData().getAmount());
-	    checkBinData.setSubscriberNumber(request.getData().getSubscriberNumber());
-
-	    CommonRequest<CheckBINRequest> binReq = new CommonRequest<>();
-	    binReq.setIdentity(request.getIdentity());
-	    binReq.setData(checkBinData);
-
-	    CommonResponse checkBin = checkBin(binReq);
-
-	    if (!SUCCESS_CODE.equals(checkBin.getCode())) {
-		response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
-		response.setMessage(messageUtil.get("error.data.not.match", servletRequest.getLocale()));
+			response.setData(resp);
+		} else if (ERROR_CODE_PHONE_NUMBER_EXPIRED.equals(codeRes)) {
+			log.error("phone number expired");
+			response.setCode(ResponseMessage.PHONE_NUMBER_EXPIRED.getCode());
+			response.setMessage(messageUtil.get("error.phone.number.expired",
+					servletRequest.getLocale()));
+		} else if (ERROR_NOT_ENOUGH_BALANCE.equals(codeRes)) {
+			log.error("Not enough balance");
+			response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
+			response.setMessage(messageUtil.get("error.amount.not.enough",
+					servletRequest.getLocale()));
+			return response;
+		} else if (ERROR_ACCOUNT_INACTIVE.equals(codeRes)) {
+			log.error("account inactive");
+			response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT
+					.getCode());
+			response.setMessage(messageUtil.get("error.inactive.bank.account",
+					servletRequest.getLocale()));
+		} else if (ERROR_CODE_BILL_ALREADY_PAID.equals(codeRes)) {
+			log.error("bill already paid");
+			response.setCode(ResponseMessage.ERROR_BILL_ALREADY_PAID.getCode());
+			response.setMessage(messageUtil.get("error.bill.already.paid",
+					servletRequest.getLocale()));
+		} else if (ERROR_CODE_CUTT_OFF.equals(codeRes)) {
+			log.error("cutoff in progress");
+			response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
+			response.setMessage(messageUtil.get("error.cutoff",
+					servletRequest.getLocale()));
+		} else if (ERROR_CODE_SYSTEM_FAILURE.equals(codeRes)
+				|| ERROR_CODE_SYSTEM_FAILURE_2.equals(codeRes)) {
+			log.error("system failure");
+			response.setCode(ResponseMessage.ERROR_SYSTEM_FAILURE.getCode());
+			response.setMessage(messageUtil.get("error.system.failure",
+					servletRequest.getLocale()));
+		} else if (ERROR_CODE_PHONE_NUMBER_NOT_FOUND.equals(codeRes)
+				|| ERROR_CODE_SPECIAL_NUMBER.equals(codeRes)
+				|| ERROR_CODE_INVALID_PHONE_NUMBER.equals(codeRes)) {
+			log.error("data not found with code : " + codeRes);
+			response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+			response.setMessage(messageUtil.get("error.data.not.found",
+					servletRequest.getLocale()));
+		} else if (ERROR_CODE_INVALID_AMOUNT.equals(codeRes)) {
+			log.error("invalid amount");
+			response.setCode(ResponseMessage.INVALID_AMOUNT.getCode());
+			response.setMessage(messageUtil.get("error.invalid.amount",
+					servletRequest.getLocale()));
+		} else if (ERROR_CODE_BLOCKED_ACCOUNT.equals(codeRes)) {
+			log.error("blocked account");
+			response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
+			response.setMessage(messageUtil.get("error.account.was.blocked",
+					servletRequest.getLocale()));
+		} else if (ERROR_CODE_CUSTOMER_NAME.equals(codeRes)) {
+			log.error("customer name are not same in two bill at the same phone number");
+			response.setCode(ResponseMessage.ERROR_CUSTOMER_NAME_NOT_SAME
+					.getCode());
+			response.setMessage(messageUtil.get("error.customer.not.same",
+					servletRequest.getLocale()));
+		} else if (ERROR_CODE_EXCEED_BILL_LIMIT.equals(codeRes)) {
+			log.error("phone number exceed bill limit");
+			response.setCode(ResponseMessage.ERROR_EXCEED_BILL_LIMIT.getCode());
+			response.setMessage(messageUtil.get("error.exceed.bill.limit",
+					servletRequest.getLocale()));
+		} else if (ERROR_CODE_DIFFERENT_BILL.equals(codeRes)) {
+			log.error("different bill at same month");
+			response.setCode(ResponseMessage.ERROR_DIFFERENT_BILL.getCode());
+			response.setMessage(messageUtil.get("error.different.bill",
+					servletRequest.getLocale()));
+		} else {
+			log.error("error aranet with code : " + codeRes);
+			throw new MiddlewareException(codeRes);
+		}
 
 		return response;
-	    }
-	}
-	PaymentCreditCardTibcoReq tibcoRequest = CreditCardUtil.generatePaymentCreditCardTibcoReq(request.getData(),
-		name, regCard, accType, forwardInsCode, codeCbs);
-	log.debug("Request Payment credit card to Tibco {}" + BkpmUtil.convertToJson(tibcoRequest));
-
-	PaymentCreditCardTibcoResponse tibcoResponse = Services.create(PaymentModuleService.class)
-		.creditCardPaymentTibcoResponse(tibcoRequest).execute().body();
-	log.debug("Response Payment Credit Card from Tibco{}" + BkpmUtil.convertToJson(tibcoResponse));
-
-	String codeRes = tibcoResponse.getRespayment().getResult().getElement39();
-
-	if (SUCCESS_CODE.equals(codeRes)) {
-	    PaymentCreditCardResponse resp = new PaymentCreditCardResponse();
-	    resp = CreditCardUtil.generatePaymentCreditCardResponse(request.getData(), tibcoResponse);
-
-	    // save data
-	    log.debug("save Payment Credit Card to DB");
-	    CommonResponse saveRes = savePaymentCreditCard(request.getIdentity(), resp, codeCc, username);
-
-	    if (SUCCESS_CODE.equals(saveRes.getCode())) {
-		log.debug("ID DESTINATION .... " + saveRes.getData().toString());
-		resp.setIdDestination(saveRes.getData().toString());
-
-		log.debug("Send email receipt payment credit card...");
-		creditCardService.sendEmailReceiptCreditCard(resp, codeCc, user, servletRequest.getLocale());
-
-		response.setCode(ResponseMessage.SUCCESS.getCode());
-		response.setMessage(messageUtil.get("success", servletRequest.getLocale()));
-		response.setData(resp);
-
-		log.debug("Credit Card Payment Saved to Favorite...");
-	    } else {
-		log.error("Save to Favourite Failed");
-		response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
-		response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
-	    }
-
-	} else if (ERROR_CODE_PHONE_NUMBER_EXPIRED.equals(codeRes)) {
-	    log.error("phone number expired");
-	    response.setCode(ResponseMessage.PHONE_NUMBER_EXPIRED.getCode());
-	    response.setMessage(messageUtil.get("error.phone.number.expired", servletRequest.getLocale()));
-	} else if (ERROR_NOT_ENOUGH_BALANCE.equals(codeRes)) {
-	    log.error("Not enough balance");
-	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
-	    response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
-	    return response;
-	} else if (ERROR_ACCOUNT_INACTIVE.equals(codeRes)) {
-	    log.error("account inactive");
-	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
-	    response.setMessage(messageUtil.get("error.inactive.bank.account", servletRequest.getLocale()));
-	} else if (ERROR_CODE_BILL_ALREADY_PAID.equals(codeRes)) {
-	    log.error("bill already paid");
-	    response.setCode(ResponseMessage.ERROR_BILL_ALREADY_PAID.getCode());
-	    response.setMessage(messageUtil.get("error.bill.already.paid", servletRequest.getLocale()));
-	} else if (ERROR_CODE_CUTT_OFF.equals(codeRes)) {
-	    log.error("cutoff in progress");
-	    response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
-	    response.setMessage(messageUtil.get("error.cutoff", servletRequest.getLocale()));
-	} else if (ERROR_CODE_SYSTEM_FAILURE.equals(codeRes) || ERROR_CODE_SYSTEM_FAILURE_2.equals(codeRes)) {
-	    log.error("system failure");
-	    response.setCode(ResponseMessage.ERROR_SYSTEM_FAILURE.getCode());
-	    response.setMessage(messageUtil.get("error.system.failure", servletRequest.getLocale()));
-	} else if (ERROR_CODE_PHONE_NUMBER_NOT_FOUND.equals(codeRes) || ERROR_CODE_SPECIAL_NUMBER.equals(codeRes)
-		|| ERROR_CODE_INVALID_PHONE_NUMBER.equals(codeRes)) {
-	    log.error("data not found with code : " + codeRes);
-	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
-	    response.setMessage(messageUtil.get("error.data.not.found", servletRequest.getLocale()));
-	} else if (ERROR_CODE_INVALID_AMOUNT.equals(codeRes)) {
-	    log.error("invalid amount");
-	    response.setCode(ResponseMessage.INVALID_AMOUNT.getCode());
-	    response.setMessage(messageUtil.get("error.invalid.amount", servletRequest.getLocale()));
-	} else if (ERROR_CODE_BLOCKED_ACCOUNT.equals(codeRes)) {
-	    log.error("blocked account");
-	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
-	    response.setMessage(messageUtil.get("error.account.was.blocked", servletRequest.getLocale()));
-	} else if (ERROR_CODE_CUSTOMER_NAME.equals(codeRes)) {
-	    log.error("customer name are not same in two bill at the same phone number");
-	    response.setCode(ResponseMessage.ERROR_CUSTOMER_NAME_NOT_SAME.getCode());
-	    response.setMessage(messageUtil.get("error.customer.not.same", servletRequest.getLocale()));
-	} else if (ERROR_CODE_EXCEED_BILL_LIMIT.equals(codeRes)) {
-	    log.error("phone number exceed bill limit");
-	    response.setCode(ResponseMessage.ERROR_EXCEED_BILL_LIMIT.getCode());
-	    response.setMessage(messageUtil.get("error.exceed.bill.limit", servletRequest.getLocale()));
-	} else if (ERROR_CODE_DIFFERENT_BILL.equals(codeRes)) {
-	    log.error("different bill at same month");
-	    response.setCode(ResponseMessage.ERROR_DIFFERENT_BILL.getCode());
-	    response.setMessage(messageUtil.get("error.different.bill", servletRequest.getLocale()));
-	} else {
-	    log.error("error aranet with code : " + codeRes);
-	    throw new MiddlewareException(codeRes);
 	}
 
-	return response;
-    }
+	/**
+	 * Credit Card BKP and NON BKP Payment Service
+	 * 
+	 * @param request
+	 * @return
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	@PostMapping("/payment")
+	@ResponseStatus(HttpStatus.OK)
+	public CommonResponse paymentCreditCard(
+			@Valid @RequestBody CommonRequest<PaymentCreditCardRequest> request)
+			throws IOException {
+		CommonResponse response = new CommonResponse(
+				ResponseMessage.SUCCESS.getCode(), messageUtil.get("success",
+						servletRequest.getLocale()));
 
-    /**
-     * Save Payment Transaction
-     * 
-     * @param identity
-     * @param res
-     * @param codeCc
-     * @param username
-     * @return
-     */
-    public CommonResponse savePaymentCreditCard(Identity identity, PaymentCreditCardResponse res, String codeCc,
-	    String username) {
-	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
-		messageUtil.get("success", servletRequest.getLocale()));
-	try {
+		String username = request.getData().getUsername();
+		String pin = request.getData().getPin();
+		String codeCc = request.getData().getCodeCc();
+		String name = request.getData().getName();
 
-	    // Prepare data request to save transaction
-	    DestinationCommonRequest dataReq = new DestinationCommonRequest();
-	    dataReq.setCategoryId(CategoryEnum.KARTU_KREDIT.getId());
-	    dataReq.setUsername(username);
-	    dataReq.setSubscriberNumber(res.getSubscriberNumber());
-	    dataReq.setSubscriberName(res.getSubscriberName());
-	    dataReq.setTransactionType(TransactionTypeEnum.CREDITCARD.name());
-	    dataReq.setReference(res.getReferenceNumber());
-	    dataReq.setAccountNumber(res.getAccountNumber());
-	    dataReq.setTotalAmount(res.getAmount());
+		ObjectMapper oMapper = new ObjectMapper();
 
-	    // Call service to save Destination/ Favorite
-	    CommonRequest<DestinationCommonRequest> destinationReq = new CommonRequest<>();
-	    destinationReq.setIdentity(identity);
-	    destinationReq.setData(dataReq);
-	    dataReq.setDestinationType(TRANSACTION_TYPE_POST.concat(codeCc));
+		// Validate Token and Phone Owner
+		CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
+		VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
+		phoneReqData.setUsername(request.getData().getUsername());
+		phoneReqData.setToken(servletRequest
+				.getHeader(HttpHeaders.AUTHORIZATION));
+		phoneReqData.setPhoneIdentity(servletRequest
+				.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
+		phoneReq.setData(phoneReqData);
+		CommonResponse resPhone = Services.create(UserModuleService.class)
+				.verifyPhoneOwner(phoneReq).execute().body();
 
-	    CommonResponse resSaveFav = Services.create(MasterModuleService.class).saveToFavouriteCommon(destinationReq)
-		    .execute().body();
-	    if (null != resSaveFav) {
-		if (!SUCCESS_CODE.equals(resSaveFav.getCode())) {
-		    log.error("Save to favourite Failed");
-		    response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
-		    response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
+		if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
+			log.error("Validate Token and Phone owner error..");
+			return resPhone;
+		}
+
+		Map<String, String> resPhoneData = oMapper.convertValue(
+				resPhone.getData(), Map.class);
+		String valid = String.valueOf(resPhoneData.get("valid"));
+
+		if (valid.equalsIgnoreCase(ISFALSE)) {
+			log.error("Token owner is not match...");
+			response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+			response.setMessage(messageUtil.get("error.data.not.match",
+					servletRequest.getLocale()));
+
+			return response;
+		}
+
+		// verify pin
+		GetVerifyPINRequest verifyPinData = new GetVerifyPINRequest();
+		verifyPinData.setPin(pin);
+		verifyPinData.setUsername(username);
+
+		CommonRequest<GetVerifyPINRequest> verifyPinReq = new CommonRequest<>();
+		verifyPinReq.setIdentity(request.getIdentity());
+		verifyPinReq.setData(verifyPinData);
+
+		CommonResponse verifyPinRes = Services
+				.create(UserModuleService.class)
+				.verifyPIN(
+						servletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE),
+						verifyPinReq).execute().body();
+
+		if ((verifyPinRes == null)
+				|| (!ResponseMessage.SUCCESS.getCode().equals(
+						verifyPinRes.getCode()))) {
+
+			return verifyPinRes;
+		}
+
+		// validate account number's owner user
+		VerifyAccountOwnerRequest verifyAccountOwnerReqData = new VerifyAccountOwnerRequest();
+		verifyAccountOwnerReqData.setAccountNo(request.getData()
+				.getAccountNumber());
+		verifyAccountOwnerReqData.setUsername(request.getData().getUsername());
+
+		CommonRequest<VerifyAccountOwnerRequest> verifyAccOwnerRequest = new CommonRequest<>();
+		verifyAccOwnerRequest.setIdentity(request.getIdentity());
+		verifyAccOwnerRequest.setData(verifyAccountOwnerReqData);
+
+		CommonResponse verifyAccOwnerResponse = Services
+				.create(UserModuleService.class)
+				.verifyAccountOwner(verifyAccOwnerRequest).execute().body();
+		if (!ResponseMessage.SUCCESS.getCode().equals(
+				verifyAccOwnerResponse.getCode())) {
+			log.error("Error while verify account owner");
+			return verifyAccOwnerResponse;
+		}
+
+		VerifyAccountOwnerResponse verifyAccOwnRespObj = oMapper.convertValue(
+				verifyAccOwnerResponse.getData(),
+				VerifyAccountOwnerResponse.class);
+		if (!verifyAccOwnRespObj.isValid()) {
+			log.error("User and Account Info didn't match: "
+					+ request.getData().getAccountNumber());
+			response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+			response.setMessage(messageUtil.get("error.invalid.user.accountno",
+					servletRequest.getLocale()));
+			return response;
+		}
+
+		User user = verifyAccOwnRespObj.getUser();
+
+		String accType = verifyAccOwnRespObj.getAccountInfo().getAccountType()
+				.name();
+
+		String forwardInsCode = env
+				.getProperty("config.cc.forwarding-institution-code");
+
+		// get Registered Card
+		CommonResponse findAccountCard = Services
+				.create(UserModuleService.class)
+				.getAccountCardByUsername(username).execute().body();
+		if (!ResponseMessage.SUCCESS.getCode()
+				.equals(findAccountCard.getCode())) {
+			return findAccountCard;
+		}
+		AccountCard accCard = oMapper.convertValue(findAccountCard.getData(),
+				AccountCard.class);
+		String regCard = accCard.getRegisteredCard();
+
+		// get code Cbs
+		CommonResponse institutionRes = Services
+				.create(MasterModuleService.class).findCodeByProvider(codeCc)
+				.execute().body();
+		InstitutionMapper findInstitution = oMapper.convertValue(
+				institutionRes.getData(), InstitutionMapper.class);
+		String codeCbs = findInstitution.getCodeCbs();
+
+		if (!codeCc.equalsIgnoreCase(CODE_CC_BKP)) {
+			CheckBINRequest checkBinData = new CheckBINRequest();
+			checkBinData.setUsername(username);
+			checkBinData.setCodeCc(codeCc);
+			checkBinData.setName(name);
+			checkBinData.setAmount(request.getData().getAmount());
+			checkBinData.setSubscriberNumber(request.getData()
+					.getSubscriberNumber());
+
+			CommonRequest<CheckBINRequest> binReq = new CommonRequest<>();
+			binReq.setIdentity(request.getIdentity());
+			binReq.setData(checkBinData);
+
+			CommonResponse checkBin = checkBin(binReq);
+
+			if (!SUCCESS_CODE.equals(checkBin.getCode())) {
+				response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+				response.setMessage(messageUtil.get("error.data.not.match",
+						servletRequest.getLocale()));
+
+				return response;
+			}
+		}
+
+		// cek limit harian
+		CommonRequest<limitUserDailyClass> lmtDl = new CommonRequest<>();
+		limitUserDailyClass lmtDLClass = new limitUserDailyClass();
+		lmtDLClass.setAccNo(request.getData().getAccountNumber());
+		lmtDLClass.setUsername(username);
+		lmtDLClass
+				.setAmount(new BigDecimal(request.getData().getAmount() + ""));
+		lmtDLClass.setJenis("payment");
+		lmtDl.setData(lmtDLClass);
+		lmtDl.setIdentity(request.getIdentity());
+		CommonResponse resLmtDL = Services.create(TransferModuleService.class)
+				.verifydailylimit(lmtDl).execute().body();
+		log.debug("log dari limit harian kartu kredit " + lmtDl + " response "
+				+ resLmtDL);
+		if (resLmtDL.getCode().equals("000")) {
+			PaymentCreditCardTibcoReq tibcoRequest = CreditCardUtil
+					.generatePaymentCreditCardTibcoReq(request.getData(), name,
+							regCard, accType, forwardInsCode, codeCbs);
+			log.debug("Request Payment credit card to Tibco {}"
+					+ BkpmUtil.convertToJson(tibcoRequest));
+
+			PaymentCreditCardTibcoResponse tibcoResponse = Services
+					.create(PaymentModuleService.class)
+					.creditCardPaymentTibcoResponse(tibcoRequest).execute()
+					.body();
+			log.debug("Response Payment Credit Card from Tibco{}"
+					+ BkpmUtil.convertToJson(tibcoResponse));
+
+			String codeRes = tibcoResponse.getRespayment().getResult()
+					.getElement39();
+
+			if (SUCCESS_CODE.equals(codeRes)) {
+				PaymentCreditCardResponse resp = new PaymentCreditCardResponse();
+				resp = CreditCardUtil.generatePaymentCreditCardResponse(
+						request.getData(), tibcoResponse);
+
+				// save data
+				log.debug("save Payment Credit Card to DB");
+				CommonResponse saveRes = savePaymentCreditCard(
+						request.getIdentity(), resp, codeCc, username);
+
+				if (SUCCESS_CODE.equals(saveRes.getCode())) {
+					log.debug("ID DESTINATION .... "
+							+ saveRes.getData().toString());
+					resp.setIdDestination(saveRes.getData().toString());
+
+					log.debug("Send email receipt payment credit card...");
+					creditCardService.sendEmailReceiptCreditCard(resp, codeCc,
+							user, servletRequest.getLocale());
+
+					response.setCode(ResponseMessage.SUCCESS.getCode());
+					response.setMessage(messageUtil.get("success",
+							servletRequest.getLocale()));
+					response.setData(resp);
+
+					log.debug("Credit Card Payment Saved to Favorite...");
+				} else {
+					log.error("Save to Favourite Failed");
+					response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR
+							.getCode());
+					response.setMessage(messageUtil.get(
+							"error.internal.server", servletRequest.getLocale()));
+				}
+				// save limit harian
+				log.debug("param save limit " + resLmtDL.getData());
+				CommonResponse prosesLimit = Services
+						.create(TransferModuleService.class)
+						.prosesdailyLimit(resLmtDL.getData()).execute().body();
+				log.debug("log dari proses simpan limit cc " + prosesLimit);
+
+			} else if (ERROR_CODE_PHONE_NUMBER_EXPIRED.equals(codeRes)) {
+				log.error("phone number expired");
+				response.setCode(ResponseMessage.PHONE_NUMBER_EXPIRED.getCode());
+				response.setMessage(messageUtil.get(
+						"error.phone.number.expired",
+						servletRequest.getLocale()));
+			} else if (ERROR_NOT_ENOUGH_BALANCE.equals(codeRes)) {
+				log.error("Not enough balance");
+				response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
+				response.setMessage(messageUtil.get("error.amount.not.enough",
+						servletRequest.getLocale()));
+				return response;
+			} else if (ERROR_ACCOUNT_INACTIVE.equals(codeRes)) {
+				log.error("account inactive");
+				response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT
+						.getCode());
+				response.setMessage(messageUtil.get(
+						"error.inactive.bank.account",
+						servletRequest.getLocale()));
+			} else if (ERROR_CODE_BILL_ALREADY_PAID.equals(codeRes)) {
+				log.error("bill already paid");
+				response.setCode(ResponseMessage.ERROR_BILL_ALREADY_PAID
+						.getCode());
+				response.setMessage(messageUtil.get("error.bill.already.paid",
+						servletRequest.getLocale()));
+			} else if (ERROR_CODE_CUTT_OFF.equals(codeRes)) {
+				log.error("cutoff in progress");
+				response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
+				response.setMessage(messageUtil.get("error.cutoff",
+						servletRequest.getLocale()));
+			} else if (ERROR_CODE_SYSTEM_FAILURE.equals(codeRes)
+					|| ERROR_CODE_SYSTEM_FAILURE_2.equals(codeRes)) {
+				log.error("system failure");
+				response.setCode(ResponseMessage.ERROR_SYSTEM_FAILURE.getCode());
+				response.setMessage(messageUtil.get("error.system.failure",
+						servletRequest.getLocale()));
+			} else if (ERROR_CODE_PHONE_NUMBER_NOT_FOUND.equals(codeRes)
+					|| ERROR_CODE_SPECIAL_NUMBER.equals(codeRes)
+					|| ERROR_CODE_INVALID_PHONE_NUMBER.equals(codeRes)) {
+				log.error("data not found with code : " + codeRes);
+				response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+				response.setMessage(messageUtil.get("error.data.not.found",
+						servletRequest.getLocale()));
+			} else if (ERROR_CODE_INVALID_AMOUNT.equals(codeRes)) {
+				log.error("invalid amount");
+				response.setCode(ResponseMessage.INVALID_AMOUNT.getCode());
+				response.setMessage(messageUtil.get("error.invalid.amount",
+						servletRequest.getLocale()));
+			} else if (ERROR_CODE_BLOCKED_ACCOUNT.equals(codeRes)) {
+				log.error("blocked account");
+				response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
+				response.setMessage(messageUtil.get(
+						"error.account.was.blocked", servletRequest.getLocale()));
+			} else if (ERROR_CODE_CUSTOMER_NAME.equals(codeRes)) {
+				log.error("customer name are not same in two bill at the same phone number");
+				response.setCode(ResponseMessage.ERROR_CUSTOMER_NAME_NOT_SAME
+						.getCode());
+				response.setMessage(messageUtil.get("error.customer.not.same",
+						servletRequest.getLocale()));
+			} else if (ERROR_CODE_EXCEED_BILL_LIMIT.equals(codeRes)) {
+				log.error("phone number exceed bill limit");
+				response.setCode(ResponseMessage.ERROR_EXCEED_BILL_LIMIT
+						.getCode());
+				response.setMessage(messageUtil.get("error.exceed.bill.limit",
+						servletRequest.getLocale()));
+			} else if (ERROR_CODE_DIFFERENT_BILL.equals(codeRes)) {
+				log.error("different bill at same month");
+				response.setCode(ResponseMessage.ERROR_DIFFERENT_BILL.getCode());
+				response.setMessage(messageUtil.get("error.different.bill",
+						servletRequest.getLocale()));
+			} else {
+				log.error("error aranet with code : " + codeRes);
+				throw new MiddlewareException(codeRes);
+			}
+
 		} else {
-		    ObjectMapper oMapper = new ObjectMapper();
-		    Transaction transaction = oMapper.convertValue(resSaveFav.getData(), Transaction.class);
-		    log.debug("create");
+			if (resLmtDL.getMessage().equals("Limit user not set")) {
+				response.setCode(resLmtDL.getCode());
+				response.setMessage(messageUtil.get("error.limit.unset",
+						servletRequest.getLocale()));
 
-		    CreditCard cc = new CreditCard();
-		    cc.setAmount(res.getAmount());
-		    cc.setBilledAmount(res.getBilledAmount());
-		    cc.setMinimumAmount(res.getMinimumPayment());
-		    cc.setType(res.getName());
-		    cc.setTransaction(transaction);
-
-		    if (!codeCc.equalsIgnoreCase(CODE_CC_BKP)) {
-			cc.setBilledAmount(new BigDecimal("0"));
-			cc.setMinimumAmount(new BigDecimal("0"));
-		    }
-
-		    log.debug("save Payment to Credit Card");
-		    creditCardService.saveCreditCard(cc);
-
-		    log.debug("save OK.");
-		    response.setData(cc.getTransaction().getDestination().getId());
+			} else if (resLmtDL.getMessage().equals(
+					"amount more than daily limit user")) {
+				response.setCode(resLmtDL.getCode());
+				response.setMessage(messageUtil.get("error.limit.exceed",
+						servletRequest.getLocale()));
+			} else if (resLmtDL.getMessage().equals(
+					"transactions exceed daily limit")) {
+				response.setCode(resLmtDL.getCode());
+				response.setMessage(messageUtil.get("error.limit.exceed",
+						servletRequest.getLocale()));
+			} else {
+				response.setCode(resLmtDL.getCode());
+				response.setMessage(resLmtDL.getMessage());
+			}
 
 		}
-	    }
-	} catch (IOException e) {
-	    log.error(e.getMessage(), e);
-	    response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
-	    response.setMessage(messageUtil.get("error.internal.server", servletRequest.getLocale()));
+
+		return response;
 	}
 
-	return response;
+	/**
+	 * Save Payment Transaction
+	 * 
+	 * @param identity
+	 * @param res
+	 * @param codeCc
+	 * @param username
+	 * @return
+	 */
+	public CommonResponse savePaymentCreditCard(Identity identity,
+			PaymentCreditCardResponse res, String codeCc, String username) {
+		CommonResponse response = new CommonResponse(
+				ResponseMessage.SUCCESS.getCode(), messageUtil.get("success",
+						servletRequest.getLocale()));
+		try {
 
-    }
+			// Prepare data request to save transaction
+			DestinationCommonRequest dataReq = new DestinationCommonRequest();
+			dataReq.setCategoryId(CategoryEnum.KARTU_KREDIT.getId());
+			dataReq.setUsername(username);
+			dataReq.setSubscriberNumber(res.getSubscriberNumber());
+			dataReq.setSubscriberName(res.getSubscriberName());
+			dataReq.setTransactionType(TransactionTypeEnum.CREDITCARD.name());
+			dataReq.setReference(res.getReferenceNumber());
+			dataReq.setAccountNumber(res.getAccountNumber());
+			dataReq.setTotalAmount(res.getAmount());
 
-    /**
-     * Check BIN Service
-     * 
-     * @param request
-     * @return
-     * @throws IOException
-     */
-    @SuppressWarnings("unchecked")
-    @PostMapping("/checkBin")
-    public CommonResponse checkBin(@Valid @RequestBody CommonRequest<CheckBINRequest> request) throws IOException {
-	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
-		messageUtil.get("success", servletRequest.getLocale()));
+			// Call service to save Destination/ Favorite
+			CommonRequest<DestinationCommonRequest> destinationReq = new CommonRequest<>();
+			destinationReq.setIdentity(identity);
+			destinationReq.setData(dataReq);
+			dataReq.setDestinationType(TRANSACTION_TYPE_POST.concat(codeCc));
 
-	String username = request.getData().getUsername();
+			CommonResponse resSaveFav = Services
+					.create(MasterModuleService.class)
+					.saveToFavouriteCommon(destinationReq).execute().body();
+			if (null != resSaveFav) {
+				if (!SUCCESS_CODE.equals(resSaveFav.getCode())) {
+					log.error("Save to favourite Failed");
+					response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR
+							.getCode());
+					response.setMessage(messageUtil.get(
+							"error.internal.server", servletRequest.getLocale()));
+				} else {
+					ObjectMapper oMapper = new ObjectMapper();
+					Transaction transaction = oMapper.convertValue(
+							resSaveFav.getData(), Transaction.class);
+					log.debug("create");
 
-	String codeCc = request.getData().getCodeCc();
+					CreditCard cc = new CreditCard();
+					cc.setAmount(res.getAmount());
+					cc.setBilledAmount(res.getBilledAmount());
+					cc.setMinimumAmount(res.getMinimumPayment());
+					cc.setType(res.getName());
+					cc.setTransaction(transaction);
 
-	ObjectMapper mapper = new ObjectMapper();
-	// Validate Token and Phone Owner
-	CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
-	VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
-	phoneReqData.setUsername(username);
-	phoneReqData.setToken(servletRequest.getHeader(HttpHeaders.AUTHORIZATION));
-	phoneReqData.setPhoneIdentity(servletRequest.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
-	phoneReq.setData(phoneReqData);
-	CommonResponse resPhone = Services.create(UserModuleService.class).verifyPhoneOwner(phoneReq).execute().body();
+					if (!codeCc.equalsIgnoreCase(CODE_CC_BKP)) {
+						cc.setBilledAmount(new BigDecimal("0"));
+						cc.setMinimumAmount(new BigDecimal("0"));
+					}
 
-	if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
-	    log.error("Validate Token and Phone owner error..");
-	    return resPhone;
-	}
+					log.debug("save Payment to Credit Card");
+					creditCardService.saveCreditCard(cc);
 
-	Map<String, String> resPhoneData = mapper.convertValue(resPhone.getData(), Map.class);
-	String valid = String.valueOf(resPhoneData.get("valid"));
+					log.debug("save OK.");
+					response.setData(cc.getTransaction().getDestination()
+							.getId());
 
-	if (valid.equalsIgnoreCase(ISFALSE)) {
-	    log.error("Token owner is not match...");
-	    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
-	    response.setMessage(messageUtil.get("error.data.not.match", servletRequest.getLocale()));
+				}
+			}
+		} catch (IOException e) {
+			log.error(e.getMessage(), e);
+			response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
+			response.setMessage(messageUtil.get("error.internal.server",
+					servletRequest.getLocale()));
+		}
 
-	    return response;
-	}
-
-	String subsNum = request.getData().getSubscriberNumber();
-
-	String subscriberNum = subsNum.substring(0, 8);
-
-	CommonResponse prefixCheck = Services.create(MasterModuleService.class).findOneByPrefixNo(subscriberNum)
-		.execute().body();
-
-	// check 8 digit subscriber number
-	if (prefixCheck.getData() != null) {
-	    List<String> prefix = mapper.convertValue(prefixCheck.getData(), ArrayList.class);
-	    if (codeCc.equalsIgnoreCase(prefix.get(0))) {
-		response.setData(request.getData());
 		return response;
 
-	    } else {
-		log.error("Prefix not found for subscriber number: " + subscriberNum);
-		response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
-		response.setMessage(messageUtil.get("error.data.not.match", servletRequest.getLocale()));
-	    }
-	} else {
-	    // check 6 digit subscriber number
-	    String digit6 = subscriberNum.substring(0, 6);
+	}
 
-	    prefixCheck = Services.create(MasterModuleService.class).findOneByPrefixNo(digit6).execute().body();
-	    if (prefixCheck.getData() != null) {
-		List<String> prefix6 = mapper.convertValue(prefixCheck.getData(), ArrayList.class);
-		if (codeCc.equalsIgnoreCase(prefix6.get(0))) {
-		    response.setData(request.getData());
-		    return response;
+	/**
+	 * Check BIN Service
+	 * 
+	 * @param request
+	 * @return
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	@PostMapping("/checkBin")
+	public CommonResponse checkBin(
+			@Valid @RequestBody CommonRequest<CheckBINRequest> request)
+			throws IOException {
+		CommonResponse response = new CommonResponse(
+				ResponseMessage.SUCCESS.getCode(), messageUtil.get("success",
+						servletRequest.getLocale()));
 
-		} else {
-		    log.error("Prefix not found for subscriber number: " + subscriberNum);
-		    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
-		    response.setMessage(messageUtil.get("error.data.not.match", servletRequest.getLocale()));
+		String username = request.getData().getUsername();
+
+		String codeCc = request.getData().getCodeCc();
+
+		ObjectMapper mapper = new ObjectMapper();
+		// Validate Token and Phone Owner
+		CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
+		VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
+		phoneReqData.setUsername(username);
+		phoneReqData.setToken(servletRequest
+				.getHeader(HttpHeaders.AUTHORIZATION));
+		phoneReqData.setPhoneIdentity(servletRequest
+				.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
+		phoneReq.setData(phoneReqData);
+		CommonResponse resPhone = Services.create(UserModuleService.class)
+				.verifyPhoneOwner(phoneReq).execute().body();
+
+		if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
+			log.error("Validate Token and Phone owner error..");
+			return resPhone;
 		}
-	    } else {
-		log.error("Prefix not found for subscriber number: " + subscriberNum);
-		response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
-		response.setMessage(messageUtil.get("error.data.not.match", servletRequest.getLocale()));
-	    }
+
+		Map<String, String> resPhoneData = mapper.convertValue(
+				resPhone.getData(), Map.class);
+		String valid = String.valueOf(resPhoneData.get("valid"));
+
+		if (valid.equalsIgnoreCase(ISFALSE)) {
+			log.error("Token owner is not match...");
+			response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+			response.setMessage(messageUtil.get("error.data.not.match",
+					servletRequest.getLocale()));
+
+			return response;
+		}
+
+		String subsNum = request.getData().getSubscriberNumber();
+
+		String subscriberNum = subsNum.substring(0, 8);
+
+		CommonResponse prefixCheck = Services.create(MasterModuleService.class)
+				.findOneByPrefixNo(subscriberNum).execute().body();
+
+		// check 8 digit subscriber number
+		if (prefixCheck.getData() != null) {
+			List<String> prefix = mapper.convertValue(prefixCheck.getData(),
+					ArrayList.class);
+			if (codeCc.equalsIgnoreCase(prefix.get(0))) {
+				response.setData(request.getData());
+				return response;
+
+			} else {
+				log.error("Prefix not found for subscriber number: "
+						+ subscriberNum);
+				response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+				response.setMessage(messageUtil.get("error.data.not.match",
+						servletRequest.getLocale()));
+			}
+		} else {
+			// check 6 digit subscriber number
+			String digit6 = subscriberNum.substring(0, 6);
+
+			prefixCheck = Services.create(MasterModuleService.class)
+					.findOneByPrefixNo(digit6).execute().body();
+			if (prefixCheck.getData() != null) {
+				List<String> prefix6 = mapper.convertValue(
+						prefixCheck.getData(), ArrayList.class);
+				if (codeCc.equalsIgnoreCase(prefix6.get(0))) {
+					response.setData(request.getData());
+					return response;
+
+				} else {
+					log.error("Prefix not found for subscriber number: "
+							+ subscriberNum);
+					response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+					response.setMessage(messageUtil.get("error.data.not.match",
+							servletRequest.getLocale()));
+				}
+			} else {
+				log.error("Prefix not found for subscriber number: "
+						+ subscriberNum);
+				response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+				response.setMessage(messageUtil.get("error.data.not.match",
+						servletRequest.getLocale()));
+			}
+
+		}
+
+		return response;
 
 	}
 
-	return response;
+	/**
+	 * List Credit Service
+	 * 
+	 * @param username
+	 * @return
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	@GetMapping("/findListCredit/{username}")
+	@ResponseStatus(HttpStatus.OK)
+	public CommonResponse findCreditByCode(@PathVariable String username)
+			throws IOException {
+		log.debug("Find List Credit...");
+		CommonResponse response = new CommonResponse(
+				ResponseMessage.SUCCESS.getCode(), messageUtil.get("success",
+						servletRequest.getLocale()));
 
-    }
+		String decryptedUsername = CryptoUtil.decryptAESHex(username);
 
-    /**
-     * List Credit Service
-     * 
-     * @param username
-     * @return
-     * @throws IOException
-     */
-    @SuppressWarnings("unchecked")
-    @GetMapping("/findListCredit/{username}")
-    @ResponseStatus(HttpStatus.OK)
-    public CommonResponse findCreditByCode(@PathVariable String username) throws IOException {
-	log.debug("Find List Credit...");
-	CommonResponse response = new CommonResponse(ResponseMessage.SUCCESS.getCode(),
-		messageUtil.get("success", servletRequest.getLocale()));
+		ObjectMapper omapper = new ObjectMapper();
 
-	String decryptedUsername = CryptoUtil.decryptAESHex(username);
+		// Validate Token and Phone Owner
+		CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
+		VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
+		phoneReqData.setUsername(decryptedUsername);
+		phoneReqData.setToken(servletRequest
+				.getHeader(HttpHeaders.AUTHORIZATION));
+		phoneReqData.setPhoneIdentity(servletRequest
+				.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
+		phoneReq.setData(phoneReqData);
+		CommonResponse resPhone = Services.create(UserModuleService.class)
+				.verifyPhoneOwner(phoneReq).execute().body();
 
-	ObjectMapper omapper = new ObjectMapper();
+		if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
+			log.error("Validate Token and Phone owner error..");
+			return resPhone;
+		}
 
-	// Validate Token and Phone Owner
-	CommonRequest<VerifyPhoneOwnerRequest> phoneReq = new CommonRequest<>();
-	VerifyPhoneOwnerRequest phoneReqData = new VerifyPhoneOwnerRequest();
-	phoneReqData.setUsername(decryptedUsername);
-	phoneReqData.setToken(servletRequest.getHeader(HttpHeaders.AUTHORIZATION));
-	phoneReqData.setPhoneIdentity(servletRequest.getHeader(BkpmConstants.HTTP_HEADER_DEVICE_ID));
-	phoneReq.setData(phoneReqData);
-	CommonResponse resPhone = Services.create(UserModuleService.class).verifyPhoneOwner(phoneReq).execute().body();
+		Map<String, String> resPhoneData = omapper.convertValue(
+				resPhone.getData(), Map.class);
+		String valid = String.valueOf(resPhoneData.get("valid"));
 
-	if (!ResponseMessage.SUCCESS.getCode().equals(resPhone.getCode())) {
-	    log.error("Validate Token and Phone owner error..");
-	    return resPhone;
+		if (valid.equalsIgnoreCase(ISFALSE)) {
+			log.error("Token owner is not match...");
+			response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
+			response.setMessage(messageUtil.get("error.data.not.match",
+					servletRequest.getLocale()));
+
+			return response;
+		}
+
+		List<ListCredit> listCredit = listCreditService.findAll();
+		if (listCredit.isEmpty()) {
+			log.error("List Credit Not Found.");
+			response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+			response.setMessage(messageUtil.get("error.data.not.found",
+					servletRequest.getLocale()));
+			return response;
+		}
+
+		log.debug("Data List Credit {}" + BkpmUtil.convertToJson(listCredit));
+		response.setData(listCredit);
+		return response;
 	}
 
-	Map<String, String> resPhoneData = omapper.convertValue(resPhone.getData(), Map.class);
-	String valid = String.valueOf(resPhoneData.get("valid"));
-
-	if (valid.equalsIgnoreCase(ISFALSE)) {
-	    log.error("Token owner is not match...");
-	    response.setCode(ResponseMessage.DATA_NOT_MATCH.getCode());
-	    response.setMessage(messageUtil.get("error.data.not.match", servletRequest.getLocale()));
-
-	    return response;
-	}
-
-	List<ListCredit> listCredit = listCreditService.findAll();
-	if (listCredit.isEmpty()) {
-	    log.error("List Credit Not Found.");
-	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
-	    response.setMessage(messageUtil.get("error.data.not.found", servletRequest.getLocale()));
-	    return response;
-	}
-
-	log.debug("Data List Credit {}" + BkpmUtil.convertToJson(listCredit));
-	response.setData(listCredit);
-	return response;
-    }
-
-    /* Overrides: */
+	/* Overrides: */
 }

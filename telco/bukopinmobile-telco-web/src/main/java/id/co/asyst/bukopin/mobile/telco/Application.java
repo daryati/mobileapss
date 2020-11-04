@@ -34,6 +34,7 @@ import id.co.asyst.bukopin.mobile.telco.model.entity.PrefixTelco;*/
 	"id.co.asyst.bukopin.mobile.common.core.service"})
 @EntityScan(basePackages = { "id.co.asyst.bukopin.mobile.telco.model.entity", 
 	"id.co.asyst.bukopin.mobile.master.model.entity",
+	"id.co.asyst.bukopin.mobile.transfer.model.entity",
 	"id.co.asyst.bukopin.mobile.user.model.entity"})
 @EnableAsync
 public class Application {

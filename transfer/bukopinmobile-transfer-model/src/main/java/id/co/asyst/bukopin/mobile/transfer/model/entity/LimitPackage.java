@@ -72,7 +72,76 @@ public class LimitPackage  extends IdBasedObject implements Serializable {
     @Column(name="LIMIT_FT_GIRO")
     private BigDecimal limitFtGiro;
     
+    @Column(name="DAILY_LIMIT_FT")
+    private BigDecimal dailylimitft;
+    
+    @Column(name="DAILY_LIMIT_OB")
+    private BigDecimal dailylimitob;
+    
+    @Column(name="DAILY_LIMIT_PURCHASE")
+    private BigDecimal dailylimitpurchase;
+    
+    @Column(name="DAILY_LIMIT_PAYMENT")
+    private BigDecimal dailylimitpayment;
+
+    
     /**
+	 * @return the dailylimitft
+	 */
+	public BigDecimal getDailylimitft() {
+		return dailylimitft;
+	}
+
+	/**
+	 * @param dailylimitft the dailylimitft to set
+	 */
+	public void setDailylimitft(BigDecimal dailylimitft) {
+		this.dailylimitft = dailylimitft;
+	}
+
+	/**
+	 * @return the dailylimitob
+	 */
+	public BigDecimal getDailylimitob() {
+		return dailylimitob;
+	}
+
+	/**
+	 * @param dailylimitob the dailylimitob to set
+	 */
+	public void setDailylimitob(BigDecimal dailylimitob) {
+		this.dailylimitob = dailylimitob;
+	}
+
+	/**
+	 * @return the dailylimitpurchase
+	 */
+	public BigDecimal getDailylimitpurchase() {
+		return dailylimitpurchase;
+	}
+
+	/**
+	 * @param dailylimitpurchase the dailylimitpurchase to set
+	 */
+	public void setDailylimitpurchase(BigDecimal dailylimitpurchase) {
+		this.dailylimitpurchase = dailylimitpurchase;
+	}
+
+	/**
+	 * @return the dailylimitpayment
+	 */
+	public BigDecimal getDailylimitpayment() {
+		return dailylimitpayment;
+	}
+
+	/**
+	 * @param dailylimitpayment the dailylimitpayment to set
+	 */
+	public void setDailylimitpayment(BigDecimal dailylimitpayment) {
+		this.dailylimitpayment = dailylimitpayment;
+	}
+
+	/**
      * is default limit package
      */
     @Type(type = "yes_no")
@@ -187,6 +256,20 @@ public class LimitPackage  extends IdBasedObject implements Serializable {
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "LimitPackage [profileName=" + profileName + ", limitObSaving="
+				+ limitObSaving + ", limitObGiro=" + limitObGiro
+				+ ", limitFtSaving=" + limitFtSaving + ", limitFtGiro="
+				+ limitFtGiro + ", dailylimitft=" + dailylimitft
+				+ ", dailylimitob=" + dailylimitob + ", dailylimitpurchase="
+				+ dailylimitpurchase + ", dailylimitpayment="
+				+ dailylimitpayment + ", isDefault=" + isDefault + "]";
+	}
     
     /* Getters & setters for transient attributes: */
 
@@ -196,11 +279,6 @@ public class LimitPackage  extends IdBasedObject implements Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
-    @Override
-    public String toString() {
-	return "LimitPackage [profileName=" + profileName + ", limitObSaving=" + limitObSaving + ", limitObGiro="
-		+ limitObGiro + ", limitFtSaving=" + limitFtSaving + ", limitFtGiro=" + limitFtGiro + ", isDefault="
-		+ isDefault + "]";
-    }
+   
 
 }
