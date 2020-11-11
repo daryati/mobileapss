@@ -670,13 +670,13 @@ public class PrepaidTelcoController {
 					response = new CommonResponse();
 					response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 					response.setMessage(messageUtil.get("error.id.emoney.not.found", httpServletRequest.getLocale()));
-					// save limit harian
+				    }
+				    	// save limit harian
 					log.debug("param save limit " + resLmtDL.getData());
 					CommonResponse prosesLimit = Services
 							.create(TransferModuleService.class)
 							.prosesdailyLimit(resLmtDL.getData()).execute().body();
 					log.debug("log dari proses simpan limit " + prosesLimit);
-				    }
 				} else if (INVALID_AMOUNT.equals(codeRes)) {
 				    log.error("payment prepaid telco Invalid Amount");
 				    response = new CommonResponse();
