@@ -1,4 +1,21 @@
 ===============================================================================
+   Bukopin-Mobile-User 1.6.GA2 Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-User - Version 1.6.GA2
+** Notes
+	* Release for Indosat Data and Transfer Daily Limit
+
+** Story
+	* 
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 	
+	
+
+===============================================================================
    Bukopin-Mobile-User 1.6.GA1 Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-User - Version 1.6.GA1

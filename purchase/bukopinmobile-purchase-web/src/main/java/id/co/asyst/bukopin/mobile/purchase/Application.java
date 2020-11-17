@@ -29,6 +29,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 	"id.co.asyst.bukopin.mobile.common.core.util",
 	"id.co.asyst.bukopin.mobile.common.core.service"})
 @EntityScan(basePackages = { "id.co.asyst.bukopin.mobile.purchase.model.entity", "id.co.asyst.bukopin.mobile.master.model.entity", 
+"id.co.asyst.bukopin.mobile.transfer.model.entity",
 	"id.co.asyst.bukopin.mobile.user.model.entity" })
 @EnableAsync
 public class Application {

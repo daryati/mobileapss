@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>id.co.asyst.bukopin.mobile</groupId>
 		<artifactId>bukopinmobile-telco</artifactId>
-		<version>1.6.GA1</version>
+		<version>1.6.GA2</version>
 	</parent>
 	
 	<build>
@@ -83,6 +83,11 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>bukopinmobile-user-model</artifactId>
 			<version>${bukopin.user.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bukopinmobile-transfer-model</artifactId>
+			<version>${bukopin.common.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>id.co.asyst.bukopin.mobile</groupId>

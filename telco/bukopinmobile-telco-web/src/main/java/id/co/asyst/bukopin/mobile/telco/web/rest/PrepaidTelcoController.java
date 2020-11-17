@@ -56,6 +56,7 @@ import id.co.asyst.bukopin.mobile.master.model.payload.DestinationCommonRequest;
 import id.co.asyst.bukopin.mobile.master.model.payload.InstitutionRequest;
 import id.co.asyst.bukopin.mobile.service.core.MasterModuleService;
 import id.co.asyst.bukopin.mobile.service.core.TelcoModuleService;
+import id.co.asyst.bukopin.mobile.service.core.TransferModuleService;
 import id.co.asyst.bukopin.mobile.service.core.UserModuleService;
 import id.co.asyst.bukopin.mobile.service.model.payload.pln.GetVerifyPINRequest;
 import id.co.asyst.bukopin.mobile.service.model.payload.telco.prepaid.PrepaidTelcoInquiryPaketRequest;
@@ -86,6 +87,7 @@ import id.co.asyst.bukopin.mobile.telco.model.payload.PrefixTelcoDetailMapper;
 import id.co.asyst.bukopin.mobile.telco.model.payload.PrefixTelcoMapper;
 import id.co.asyst.bukopin.mobile.telco.model.payload.PrefixTelcoRequest;
 import id.co.asyst.bukopin.mobile.telco.model.payload.PulsaSelectionResponse;
+import id.co.asyst.bukopin.mobile.transfer.model.limitUserDailyClass;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyAccountOwnerRequest;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyAccountOwnerResponse;
 import id.co.asyst.bukopin.mobile.user.model.payload.VerifyPhoneOwnerRequest;
@@ -557,188 +559,231 @@ public class PrepaidTelcoController {
 	String forwardInsCode = env.getProperty("config.forwarding-institution-code");
 	Identity identity = PrepaidTelcoUtils.generateIdentity();
 	String accType = resAccount.getAccountInfo().getAccountType().name();
+	
+	// cek limit harian
+			CommonRequest<limitUserDailyClass> lmtDl = new CommonRequest<>();
+			limitUserDailyClass lmtDLClass = new limitUserDailyClass();
+			lmtDLClass.setAccNo(req.getData().getAccountNumber());
+			lmtDLClass.setUsername(req.getData().getUsername());
+			lmtDLClass.setAmount(new BigDecimal(req.getData().getAmount() + ""));
+			lmtDLClass.setJenis("purchase");
+			lmtDl.setData(lmtDLClass);
+			lmtDl.setIdentity(req.getIdentity());
+			CommonResponse resLmtDL = Services.create(TransferModuleService.class)
+					.verifydailylimit(lmtDl).execute().body();
+			log.debug("log dari limit harian prepaid telco " + lmtDl + " response "
+					+ resLmtDL);
+			if (resLmtDL.getCode().equals("000")) {
+				// generate purchase request
+				PrepaidTelcoPurchaseRequest reqPurchaseTelkomselAranet = PrepaidTelcoUtils
+					.generatePurchasePrepaidTelcoReq(req.getData(), forwardInsCode, req.getData().getpGroup(), accType);
+				log.debug("request to tibco : " + BkpmUtil.convertToJson(reqPurchaseTelkomselAranet));
 
-	// generate purchase request
-	PrepaidTelcoPurchaseRequest reqPurchaseTelkomselAranet = PrepaidTelcoUtils
-		.generatePurchasePrepaidTelcoReq(req.getData(), forwardInsCode, req.getData().getpGroup(), accType);
-	log.debug("request to tibco : " + BkpmUtil.convertToJson(reqPurchaseTelkomselAranet));
+				PrepaidTelcoPurchaseResponse resPurchaseTelkomselAranet = new PrepaidTelcoPurchaseResponse();
+				resPurchaseTelkomselAranet = Services.create(TelcoModuleService.class)
+					.purchasePrepaidTelco(reqPurchaseTelkomselAranet).execute().body();
+				log.debug("response from tibco: " + BkpmUtil.convertToJson(resPurchaseTelkomselAranet));
 
-	PrepaidTelcoPurchaseResponse resPurchaseTelkomselAranet = new PrepaidTelcoPurchaseResponse();
-	resPurchaseTelkomselAranet = Services.create(TelcoModuleService.class)
-		.purchasePrepaidTelco(reqPurchaseTelkomselAranet).execute().body();
-	log.debug("response from tibco: " + BkpmUtil.convertToJson(resPurchaseTelkomselAranet));
+				String codeRes = resPurchaseTelkomselAranet.getRespayment().getResult().getElement39();
+				// String postRes =
+				// resPurchaseEMoneyAranet.getRespayment().getResult().getElement121().substring(0,
+				// 3);
 
-	String codeRes = resPurchaseTelkomselAranet.getRespayment().getResult().getElement39();
-	// String postRes =
-	// resPurchaseEMoneyAranet.getRespayment().getResult().getElement121().substring(0,
-	// 3);
+				PaymentPrepaidTelcoResponse purchaseTelkomselRes = new PaymentPrepaidTelcoResponse();
+				if (SUCCESS_CODE.equals(codeRes)) {
+				    log.info("Purchase Prepaid Telco Success");
+				    // String dataResp =
+				    // resPurchaseEMoneyAranet.getRespayment().getResult().getElement48();
+				    // String footNote =
+				    // resPurchaseEMoneyAranet.getRespayment().getResult().getElement63();
+				    String element61 = resPurchaseTelkomselAranet.getRespayment().getResult().getElement61();
+				    String elmFee = resPurchaseTelkomselAranet.getRespayment().getResult().getElement28();
+				    String elmAmt = resPurchaseTelkomselAranet.getRespayment().getResult().getElement4();
+				    String element122 = resPurchaseTelkomselAranet.getRespayment().getResult().getElement122();
 
-	PaymentPrepaidTelcoResponse purchaseTelkomselRes = new PaymentPrepaidTelcoResponse();
-	if (SUCCESS_CODE.equals(codeRes)) {
-	    log.info("Purchase Prepaid Telco Success");
-	    // String dataResp =
-	    // resPurchaseEMoneyAranet.getRespayment().getResult().getElement48();
-	    // String footNote =
-	    // resPurchaseEMoneyAranet.getRespayment().getResult().getElement63();
-	    String element61 = resPurchaseTelkomselAranet.getRespayment().getResult().getElement61();
-	    String elmFee = resPurchaseTelkomselAranet.getRespayment().getResult().getElement28();
-	    String elmAmt = resPurchaseTelkomselAranet.getRespayment().getResult().getElement4();
-	    String element122 = resPurchaseTelkomselAranet.getRespayment().getResult().getElement122();
+				    Integer fee = Integer.valueOf(elmFee.substring(0, elmFee.length() - 2));
+				    Integer amt = Integer.valueOf(elmAmt.substring(0, elmAmt.length() - 2));
 
-	    Integer fee = Integer.valueOf(elmFee.substring(0, elmFee.length() - 2));
-	    Integer amt = Integer.valueOf(elmAmt.substring(0, elmAmt.length() - 2));
+				    purchaseTelkomselRes.setAccountNumber(req.getData().getAccountNumber());
+				    purchaseTelkomselRes.setAdminFee(new BigDecimal(fee.toString()));
+				    purchaseTelkomselRes.setAmount(new BigDecimal(amt.toString()));
 
-	    purchaseTelkomselRes.setAccountNumber(req.getData().getAccountNumber());
-	    purchaseTelkomselRes.setAdminFee(new BigDecimal(fee.toString()));
-	    purchaseTelkomselRes.setAmount(new BigDecimal(amt.toString()));
+				    StringBuilder time = new StringBuilder(
+					    resPurchaseTelkomselAranet.getRespayment().getResult().getElement12().substring(0, 4));
+				    time.insert(2, ":");
 
-	    StringBuilder time = new StringBuilder(
-		    resPurchaseTelkomselAranet.getRespayment().getResult().getElement12().substring(0, 4));
-	    time.insert(2, ":");
+				    String date = paymentTelkomselDate.format(new Date());
+				    purchaseTelkomselRes.setDateTime(date.concat(" - ").concat(time.toString()));
 
-	    String date = paymentTelkomselDate.format(new Date());
-	    purchaseTelkomselRes.setDateTime(date.concat(" - ").concat(time.toString()));
+				    purchaseTelkomselRes.setpGroup(req.getData().getpGroup());
+				    purchaseTelkomselRes.setPhoneNumber(element61.substring(0, 13).trim());
+				    purchaseTelkomselRes.setReferenceNumber(element122.substring(144, 159).trim());
 
-	    purchaseTelkomselRes.setpGroup(req.getData().getpGroup());
-	    purchaseTelkomselRes.setPhoneNumber(element61.substring(0, 13).trim());
-	    purchaseTelkomselRes.setReferenceNumber(element122.substring(144, 159).trim());
+				    String fullName = "";
+				    String middleName = resAccount.getUser().getMiddleName() != null ? resAccount.getUser().getMiddleName()
+					    : "";
+				    String lastName = resAccount.getUser().getLastName() != null ? resAccount.getUser().getLastName() : "";
+				    fullName = resAccount.getUser().getFirstName() + " " + middleName + " " + lastName;
 
-	    String fullName = "";
-	    String middleName = resAccount.getUser().getMiddleName() != null ? resAccount.getUser().getMiddleName()
-		    : "";
-	    String lastName = resAccount.getUser().getLastName() != null ? resAccount.getUser().getLastName() : "";
-	    fullName = resAccount.getUser().getFirstName() + " " + middleName + " " + lastName;
+				    purchaseTelkomselRes.setSubscriberName(fullName);
 
-	    purchaseTelkomselRes.setSubscriberName(fullName);
+				    purchaseTelkomselRes
+					    .setTotalAmount(purchaseTelkomselRes.getAmount().add(purchaseTelkomselRes.getAdminFee()));
+				    purchaseTelkomselRes.setUsername(req.getData().getUsername());
+				    purchaseTelkomselRes.setProvider(req.getData().getProvider());
+				    purchaseTelkomselRes.setInstitutionType(req.getData().getInstitutionType());
+				    purchaseTelkomselRes.setTitle(req.getData().getTitle());
 
-	    purchaseTelkomselRes
-		    .setTotalAmount(purchaseTelkomselRes.getAmount().add(purchaseTelkomselRes.getAdminFee()));
-	    purchaseTelkomselRes.setUsername(req.getData().getUsername());
-	    purchaseTelkomselRes.setProvider(req.getData().getProvider());
-	    purchaseTelkomselRes.setInstitutionType(req.getData().getInstitutionType());
-	    purchaseTelkomselRes.setTitle(req.getData().getTitle());
+				    // resAccount.getUser().getFirstName()
 
-	    // resAccount.getUser().getFirstName()
+				    response.setCode(ResponseMessage.SUCCESS.getCode());
+				    response.setMessage(messageUtil.get("success", httpServletRequest.getLocale()));
+				    response.setData(purchaseTelkomselRes);
 
-	    response.setCode(ResponseMessage.SUCCESS.getCode());
-	    response.setMessage(messageUtil.get("success", httpServletRequest.getLocale()));
-	    response.setData(purchaseTelkomselRes);
+				    // send email receipt and save to favorite
+				    CommonResponse getUser = Services.create(UserModuleService.class)
+					    .getUserByUsername(req.getData().getUsername()).execute().body();
+				    if (null != getUser && (SUCCESS_CODE.equals(codeRes))) {
+					log.debug("Send Email Prepaid Telco.. ");
+					oMapper = new ObjectMapper();
+					Map<String, Object> res = oMapper.convertValue(getUser.getData(), Map.class);
+					Map<String, String> resUser = oMapper.convertValue(res.get("user"), Map.class);
+					log.debug("email : " + resUser.get("email"));
+					telcoService.sendEmailReceiptPrepaidTelco(purchaseTelkomselRes, resUser,
+						httpServletRequest.getLocale());
+					// log.debug("responseeeee "+response);
 
-	    // send email receipt and save to favorite
-	    CommonResponse getUser = Services.create(UserModuleService.class)
-		    .getUserByUsername(req.getData().getUsername()).execute().body();
-	    if (null != getUser && (SUCCESS_CODE.equals(codeRes))) {
-		log.debug("Send Email Prepaid Telco.. ");
-		oMapper = new ObjectMapper();
-		Map<String, Object> res = oMapper.convertValue(getUser.getData(), Map.class);
-		Map<String, String> resUser = oMapper.convertValue(res.get("user"), Map.class);
-		log.debug("email : " + resUser.get("email"));
-		telcoService.sendEmailReceiptPrepaidTelco(purchaseTelkomselRes, resUser,
-			httpServletRequest.getLocale());
-		// log.debug("responseeeee "+response);
+					// if(SUCCESS_CODE.equals(response.getCode())){
+					// response.setData(purchaseEMoneyRes);
+					// }
 
-		// if(SUCCESS_CODE.equals(response.getCode())){
-		// response.setData(purchaseEMoneyRes);
-		// }
+					// save prepaid telco
+					CommonResponse saveRes = savePurchaseTelcoPrepaid(identity, purchaseTelkomselRes);
+					// log.debug("save RES EMoney.... "+saveRes.toString());
+					if (SUCCESS_CODE.equals(saveRes.getCode())) {
+					    // log.debug("ID DESTINATION .... "+saveRes.getData().toString());
+					    purchaseTelkomselRes.setIdDestination(Long.parseLong(saveRes.getData().toString()));
+					    response.setData(purchaseTelkomselRes);
+					}
+				    } else {
+					log.error("SUbscriber not found/invalid");
+					response = new CommonResponse();
+					response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+					response.setMessage(messageUtil.get("error.id.emoney.not.found", httpServletRequest.getLocale()));
+				    }
+				    	// save limit harian
+					log.debug("param save limit " + resLmtDL.getData());
+					CommonResponse prosesLimit = Services
+							.create(TransferModuleService.class)
+							.prosesdailyLimit(resLmtDL.getData()).execute().body();
+					log.debug("log dari proses simpan limit " + prosesLimit);
+				} else if (INVALID_AMOUNT.equals(codeRes)) {
+				    log.error("payment prepaid telco Invalid Amount");
+				    response = new CommonResponse();
+				    response.setCode(ResponseMessage.INVALID_AMOUNT.getCode());
+				    response.setMessage(messageUtil.get("error.invalid.amount", httpServletRequest.getLocale()));
+				} else if (PHONENUMBER_NOT_FOUND.equals(codeRes) || GIRO_USER_NOT_FOUND.equals(codeRes)) {
+				    log.error("prepaid telco - phone number not found");
+				    response = new CommonResponse();
+				    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+				    response.setMessage(messageUtil.get("error.number.not.found", httpServletRequest.getLocale()));
+				} else if (VOUCHER_OUT_OF_STOCK.equals(codeRes)) {
+				    log.error("prepaid telco - Voucher out of stock");
+				    response = new CommonResponse();
+				    response.setCode(ResponseMessage.ERROR_VOUCHER_OUT_OF_STOCK.getCode());
+				    response.setMessage(messageUtil.get("error.voucher.out.of.stock", httpServletRequest.getLocale()));
+				} else if (GIRO_ACCOUNT_BLOCKED.equals(codeRes)
+					|| GIRO_ACCOUNT_WAS_BLOCKED.equals(codeRes)) {
+				    log.error("prepaid telco - blocked account");
+				    response = new CommonResponse();
+				    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
+				    response.setMessage(messageUtil.get("error.account.was.blocked", httpServletRequest.getLocale()));
+				    return response;
+				} else if (ACCOUNT_WAS_BLOCKED.equals(codeRes) ) {
+				    log.error("prepaid telco - blocked phone number");
+				    response = new CommonResponse();
+				    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
+				    response.setMessage(messageUtil.get("error.phone.number.was.blocked", httpServletRequest.getLocale()));
+				    return response;
+				} else if (PHONE_NUMBER_EXPIRED.equalsIgnoreCase(codeRes)) {
+				    log.error("Prepaid telco - phone number expired");
+				    response = new CommonResponse();
+				    response.setCode(ResponseMessage.PHONE_NUMBER_EXPIRED.getCode());
+				    response.setMessage(messageUtil.get("error.phone.number.expired", httpServletRequest.getLocale()));
+				} else if (AMOUNT_NOT_ENOUGH_BALANCE.equals(codeRes) || GIRO_AMOUNT_NOT_ENOUGH_BALANCE.equals(codeRes)
+					|| GIRO_ERROR_VALUTA_CODE.equals(codeRes) || GIRO_LIMITED_BALANCE.equals(codeRes)) {
+				    log.error("not enough balance");
+				    response = new CommonResponse();
+				    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
+				    response.setMessage(messageUtil.get("error.amount.not.enough", httpServletRequest.getLocale()));
+				} else if (PASSIVE_ACCOUNT.equals(codeRes) || GIRO_INACTIVE_ACCOUNT.equals(codeRes)
+					|| GIRO_ACCOUNT_NOT_ACCEPTED.equals(codeRes) || GIRO_CLOSED_ACCOUNT.equals(codeRes)) {
+				    log.error("passive account");
+				    response = new CommonResponse();
+				    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
+				    response.setMessage(messageUtil.get("error.inactive.bank.account", httpServletRequest.getLocale()));
+				} else if (GIRO_LIMIT_TRANSFER.equals(codeRes) || GIRO_OVER_LIMIT.equals(codeRes)) {
+				    log.error("exceed limit");
+				    response = new CommonResponse();
+				    response.setCode(ResponseMessage.LIMIT_TRANSFER_DAY.getCode());
+				    response.setMessage(messageUtil.get("error.exceed.limit", httpServletRequest.getLocale()));
+				} else if (GIRO_CUT_OFF.equals(codeRes)) {
+				    log.error("Giro cut off");
+				    response = new CommonResponse();
+				    response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
+				    response.setMessage(messageUtil.get("error.cutoff", httpServletRequest.getLocale()));
+				} else if (GIRO_DUPLICATE_DATA.equals(codeRes)) {
+				    log.error("Giro Duplicate Data");
+				    response = new CommonResponse();
+				    response.setCode(ResponseMessage.DUPLICATE_DATA.getCode());
+				    response.setMessage(messageUtil.get("error.duplicate.data", httpServletRequest.getLocale()));
+				} else if (INVALID_TRANSACTION.equals(codeRes)) {
+				    log.error("Invalid Transaction");
+				    response = new CommonResponse();
+				    response.setCode(ResponseMessage.INVALID_TRANSACTION.getCode());
+				    response.setMessage(messageUtil.get("error.invalid.transaction", httpServletRequest.getLocale()));
+				} else if (SYSTEM_BROKEN_189.equalsIgnoreCase(codeRes) || SYSTEM_BROKEN_196.equalsIgnoreCase(codeRes)) {
+				    log.error("prepaid telco - System failure");
+				    response = new CommonResponse();
+				    response.setCode(ResponseMessage.ERROR_SYSTEM_FAILURE.getCode());
+				    response.setMessage(messageUtil.get("error.system.failure", httpServletRequest.getLocale()));
+				}
+				// else if (SYSTEM_BROKEN_168.equals(codeRes) ||
+				// SYSTEM_BROKEN_169.equals(codeRes)) {
+				// log.error("System was broken");
+				// response.setCode(ResponseMessage.ERROR_ADVICE_FAILED.getCode());
+				// response.setMessage(messageUtil.get("error.internal.server",
+				// servletRequest.getLocale()));
+				// }
+				else {
+				    log.error("Error (result) Payment Prepaid Telco : " + codeRes);
+				    // Throw middleware error
+				    throw new MiddlewareException(codeRes);
+				}
 
-		// save prepaid telco
-		CommonResponse saveRes = savePurchaseTelcoPrepaid(identity, purchaseTelkomselRes);
-		// log.debug("save RES EMoney.... "+saveRes.toString());
-		if (SUCCESS_CODE.equals(saveRes.getCode())) {
-		    // log.debug("ID DESTINATION .... "+saveRes.getData().toString());
-		    purchaseTelkomselRes.setIdDestination(Long.parseLong(saveRes.getData().toString()));
-		    response.setData(purchaseTelkomselRes);
-		}
-	    } else {
-		log.error("SUbscriber not found/invalid");
-		response = new CommonResponse();
-		response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
-		response.setMessage(messageUtil.get("error.id.emoney.not.found", httpServletRequest.getLocale()));
-	    }
-	} else if (INVALID_AMOUNT.equals(codeRes)) {
-	    log.error("payment prepaid telco Invalid Amount");
-	    response = new CommonResponse();
-	    response.setCode(ResponseMessage.INVALID_AMOUNT.getCode());
-	    response.setMessage(messageUtil.get("error.invalid.amount", httpServletRequest.getLocale()));
-	} else if (PHONENUMBER_NOT_FOUND.equals(codeRes) || GIRO_USER_NOT_FOUND.equals(codeRes)) {
-	    log.error("prepaid telco - phone number not found");
-	    response = new CommonResponse();
-	    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
-	    response.setMessage(messageUtil.get("error.number.not.found", httpServletRequest.getLocale()));
-	} else if (VOUCHER_OUT_OF_STOCK.equals(codeRes)) {
-	    log.error("prepaid telco - Voucher out of stock");
-	    response = new CommonResponse();
-	    response.setCode(ResponseMessage.ERROR_VOUCHER_OUT_OF_STOCK.getCode());
-	    response.setMessage(messageUtil.get("error.voucher.out.of.stock", httpServletRequest.getLocale()));
-	} else if (GIRO_ACCOUNT_BLOCKED.equals(codeRes)
-		|| GIRO_ACCOUNT_WAS_BLOCKED.equals(codeRes)) {
-	    log.error("prepaid telco - blocked account");
-	    response = new CommonResponse();
-	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
-	    response.setMessage(messageUtil.get("error.account.was.blocked", httpServletRequest.getLocale()));
-	    return response;
-	} else if (ACCOUNT_WAS_BLOCKED.equals(codeRes) ) {
-	    log.error("prepaid telco - blocked phone number");
-	    response = new CommonResponse();
-	    response.setCode(ResponseMessage.CUST_BLOCKED.getCode());
-	    response.setMessage(messageUtil.get("error.phone.number.was.blocked", httpServletRequest.getLocale()));
-	    return response;
-	} else if (PHONE_NUMBER_EXPIRED.equalsIgnoreCase(codeRes)) {
-	    log.error("Prepaid telco - phone number expired");
-	    response = new CommonResponse();
-	    response.setCode(ResponseMessage.PHONE_NUMBER_EXPIRED.getCode());
-	    response.setMessage(messageUtil.get("error.phone.number.expired", httpServletRequest.getLocale()));
-	} else if (AMOUNT_NOT_ENOUGH_BALANCE.equals(codeRes) || GIRO_AMOUNT_NOT_ENOUGH_BALANCE.equals(codeRes)
-		|| GIRO_ERROR_VALUTA_CODE.equals(codeRes) || GIRO_LIMITED_BALANCE.equals(codeRes)) {
-	    log.error("not enough balance");
-	    response = new CommonResponse();
-	    response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
-	    response.setMessage(messageUtil.get("error.amount.not.enough", httpServletRequest.getLocale()));
-	} else if (PASSIVE_ACCOUNT.equals(codeRes) || GIRO_INACTIVE_ACCOUNT.equals(codeRes)
-		|| GIRO_ACCOUNT_NOT_ACCEPTED.equals(codeRes) || GIRO_CLOSED_ACCOUNT.equals(codeRes)) {
-	    log.error("passive account");
-	    response = new CommonResponse();
-	    response.setCode(ResponseMessage.ERROR_INACTIVE_BANK_ACCOUNT.getCode());
-	    response.setMessage(messageUtil.get("error.inactive.bank.account", httpServletRequest.getLocale()));
-	} else if (GIRO_LIMIT_TRANSFER.equals(codeRes) || GIRO_OVER_LIMIT.equals(codeRes)) {
-	    log.error("exceed limit");
-	    response = new CommonResponse();
-	    response.setCode(ResponseMessage.LIMIT_TRANSFER_DAY.getCode());
-	    response.setMessage(messageUtil.get("error.exceed.limit", httpServletRequest.getLocale()));
-	} else if (GIRO_CUT_OFF.equals(codeRes)) {
-	    log.error("Giro cut off");
-	    response = new CommonResponse();
-	    response.setCode(ResponseMessage.ERROR_CUT_OFF_PLN.getCode());
-	    response.setMessage(messageUtil.get("error.cutoff", httpServletRequest.getLocale()));
-	} else if (GIRO_DUPLICATE_DATA.equals(codeRes)) {
-	    log.error("Giro Duplicate Data");
-	    response = new CommonResponse();
-	    response.setCode(ResponseMessage.DUPLICATE_DATA.getCode());
-	    response.setMessage(messageUtil.get("error.duplicate.data", httpServletRequest.getLocale()));
-	} else if (INVALID_TRANSACTION.equals(codeRes)) {
-	    log.error("Invalid Transaction");
-	    response = new CommonResponse();
-	    response.setCode(ResponseMessage.INVALID_TRANSACTION.getCode());
-	    response.setMessage(messageUtil.get("error.invalid.transaction", httpServletRequest.getLocale()));
-	} else if (SYSTEM_BROKEN_189.equalsIgnoreCase(codeRes) || SYSTEM_BROKEN_196.equalsIgnoreCase(codeRes)) {
-	    log.error("prepaid telco - System failure");
-	    response = new CommonResponse();
-	    response.setCode(ResponseMessage.ERROR_SYSTEM_FAILURE.getCode());
-	    response.setMessage(messageUtil.get("error.system.failure", httpServletRequest.getLocale()));
-	}
-	// else if (SYSTEM_BROKEN_168.equals(codeRes) ||
-	// SYSTEM_BROKEN_169.equals(codeRes)) {
-	// log.error("System was broken");
-	// response.setCode(ResponseMessage.ERROR_ADVICE_FAILED.getCode());
-	// response.setMessage(messageUtil.get("error.internal.server",
-	// servletRequest.getLocale()));
-	// }
-	else {
-	    log.error("Error (result) Payment Prepaid Telco : " + codeRes);
-	    // Throw middleware error
-	    throw new MiddlewareException(codeRes);
-	}
+			}else {
+				if (resLmtDL.getMessage().equals("Limit user not set")) {
+					response.setCode(resLmtDL.getCode());
+					response.setMessage(messageUtil.get("error.limit.unset",
+							httpServletRequest.getLocale()));
 
+				} else if (resLmtDL.getMessage().equals(
+						"amount more than daily limit user")) {
+					response.setCode(resLmtDL.getCode());
+					response.setMessage(messageUtil.get("error.limit.exceed",
+							httpServletRequest.getLocale()));
+				} else if (resLmtDL.getMessage().equals(
+						"transactions exceed daily limit")) {
+					response.setCode(resLmtDL.getCode());
+					response.setMessage(messageUtil.get("error.limit.exceed",
+							httpServletRequest.getLocale()));
+				} else {
+					response.setCode(resLmtDL.getCode());
+					response.setMessage(resLmtDL.getMessage());
+				}
+			}
+
+	
 	return response;
     }
 
