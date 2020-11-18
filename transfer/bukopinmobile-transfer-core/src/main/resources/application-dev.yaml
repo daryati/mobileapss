@@ -46,6 +46,12 @@ spring:
                writeout: 60000
                starttls:
                   enable: true
+## ELASTIC
+   data:
+      elasticsearch:
+         cluster-name: elasticsearch
+         cluster-nodes: 192.168.1.9:9200 #10.2.62.119:9200
+         
 ## LIQUIBASE (LiquibaseProperties)
 # spring.liquibase.enabled=false
 

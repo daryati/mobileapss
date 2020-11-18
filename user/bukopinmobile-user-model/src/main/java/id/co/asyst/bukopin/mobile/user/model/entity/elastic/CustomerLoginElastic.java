@@ -15,7 +15,6 @@ import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.springframework.stereotype.Component;
 
 import id.co.asyst.bukopin.mobile.user.model.entity.CustomerLogin;
 
@@ -26,7 +25,6 @@ import id.co.asyst.bukopin.mobile.user.model.entity.CustomerLogin;
  * @version $Revision$, Nov 18, 2020
  * @since 1.4.Alpha1
  */
-@Component
 @Document(indexName= "bkpm-login")
 public class CustomerLoginElastic {
 

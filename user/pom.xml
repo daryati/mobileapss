@@ -111,12 +111,10 @@
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
-			<version>${elastic.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.elasticsearch.client</groupId>
 			<artifactId>elasticsearch-rest-high-level-client</artifactId>
-			<version>${elastic.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.springframework.data</groupId>
@@ -163,6 +161,7 @@
         <springfox.version>2.9.2</springfox.version>
         <elastic.version>7.9.2</elastic.version>
         
+        <!-- new version spring boot need it for i18n -->
         <hibernate.validator.version>6.1.6.Final</hibernate.validator.version>
 	</properties>
 

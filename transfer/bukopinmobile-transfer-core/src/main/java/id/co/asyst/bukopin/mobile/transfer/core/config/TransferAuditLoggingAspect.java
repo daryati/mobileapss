@@ -42,7 +42,9 @@ import id.co.asyst.bukopin.mobile.common.model.payload.Identity;
 import id.co.asyst.bukopin.mobile.service.core.NonFinancialService;
 import id.co.asyst.bukopin.mobile.service.core.UserModuleService;
 import id.co.asyst.bukopin.mobile.transfer.core.service.FundTransferService;
+import id.co.asyst.bukopin.mobile.transfer.core.service.elastic.FundTransferElasticService;
 import id.co.asyst.bukopin.mobile.transfer.model.entity.FundTransfer;
+import id.co.asyst.bukopin.mobile.transfer.model.entity.elastic.FundTransferElastic;
 import id.co.asyst.bukopin.mobile.user.model.entity.NonFinancial;
 import id.co.asyst.bukopin.mobile.user.model.entity.User;
 import id.co.asyst.foundation.service.connector.Services;
@@ -70,6 +72,12 @@ public class TransferAuditLoggingAspect {
 
 	@Autowired
 	private FundTransferService fundTransferService;
+	
+	/**
+	 * Elasticsearch Service for FT/ OB
+	 */
+	@Autowired
+	private FundTransferElasticService elasticService;
 
 	@Autowired
 	private GetConfiguration config;
@@ -177,6 +185,9 @@ public class TransferAuditLoggingAspect {
 
 		ft.setStatus(BkpmConstants.STATUS_FAILED);
 		ft.setReason("code: " + code + " - message: " + message);
+		
+		// save to elastic
+		elasticService.saveTransaction(new FundTransferElastic(ft));
 
 		fundTransferService.saveFundTransfer(ft);
 
@@ -327,6 +338,9 @@ public class TransferAuditLoggingAspect {
 						ft.setStatus(BkpmConstants.STATUS_FAILED);
 						ft.setReason("code: " + res.getCode() + " - message: " + res.getMessage());
 
+						// save to elastic
+						elasticService.saveTransaction(new FundTransferElastic(ft));
+						
 						fundTransferService.saveFundTransfer(ft);
 
 					}

@@ -77,16 +77,9 @@
 			<version>${project.version}</version>
 		</dependency> 
 		
-		<!-- FOR WHAT ??? -->
-		<!-- <dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>bukopinmobile-user-model</artifactId>
-            <version>${project.version}</version>
-		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>bukopinmobile-user-core</artifactId>
-            <version>${project.version}</version>
-		</dependency> -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
 	</dependencies>
 </project>
