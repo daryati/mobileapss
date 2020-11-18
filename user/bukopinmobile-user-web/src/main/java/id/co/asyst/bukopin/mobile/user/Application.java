@@ -26,7 +26,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  */
 @SpringBootApplication(scanBasePackages = {"id.co.asyst.bukopin.mobile.user",
 	"id.co.asyst.bukopin.mobile.common.core.util",
-	"id.co.asyst.bukopin.mobile.common.core.service"})
+	"id.co.asyst.bukopin.mobile.common.core.service",
+	"id.co.asyst.bukopin.mobile.common.core.service.elastic"})
 @EnableAsync
 public class Application {
     

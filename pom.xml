@@ -66,6 +66,54 @@
 				<artifactId>commons-lang3</artifactId>
 				<version>${commons-lang3.version}</version>
 			</dependency>
+			
+			<!-- elastic
+			<dependency>
+	            <groupId>org.springframework.boot</groupId>
+	            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+	        </dependency>
+	        <dependency>
+			    <groupId>org.elasticsearch</groupId>
+			    <artifactId>elasticsearch</artifactId>
+			    <version>${elastic.version}</version>
+	        </dependency>
+	        <dependency>
+			  <groupId>org.springframework.data</groupId>
+			  <artifactId>spring-data-elasticsearch</artifactId>
+			  <version>${spring-data-elastic-new.version}</version>
+			</dependency>
+			<dependency>
+			    <groupId>org.elasticsearch.client</groupId>
+			    <artifactId>elasticsearch-rest-high-level-client</artifactId>
+			    <version>${elastic.version}</version>
+			</dependency> -->
+			
+		
+			<!-- elastic -->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>org.elasticsearch</groupId>
+				<artifactId>elasticsearch</artifactId>
+				<version>${elastic.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.elasticsearch.client</groupId>
+				<artifactId>elasticsearch-rest-high-level-client</artifactId>
+				<version>${elastic.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.elasticsearch.client</groupId>
+				<artifactId>elasticsearch-rest-client</artifactId>
+				<version>${elastic.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.elasticsearch.client</groupId>
+				<artifactId>elasticsearch-rest-client-sniffer</artifactId>
+				<version>${elastic.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -102,28 +150,6 @@
 			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
-		<!-- elastic -->
-		<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
-        </dependency>
-		<dependency>
-			<groupId>org.elasticsearch</groupId>
-			<artifactId>elasticsearch</artifactId>
-			<version>${elastic.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>elasticsearch-rest-high-level-client</artifactId>
-			<version>${elastic.version}</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.springframework.data</groupId>
-		    <artifactId>spring-data-elasticsearch</artifactId>
-		</dependency>
-		
-        
 	</dependencies>
 
 	<properties>
@@ -142,10 +168,9 @@
         <bukopin.service.version>1.6.GA2</bukopin.service.version>
 		<java.version>1.8</java.version>
 		<liquibase.version>3.6.3</liquibase.version>
-		<!-- <spring-boot.version>2.1.3.RELEASE</spring-boot.version> -->
-		<spring-boot.version>2.3.5.RELEASE</spring-boot.version>
+		<spring-boot.version>2.1.3.RELEASE</spring-boot.version>
 		<validation.api.version>2.0.1.Final</validation.api.version>
-		<jackson-core.version>2.11.3</jackson-core.version>
+		<jackson-core.version>2.9.5</jackson-core.version>
 		<commons-lang3.version>3.8.1</commons-lang3.version>
 
 		<!-- Plug-ins dependency versions: -->
@@ -161,9 +186,15 @@
 		<univocity.version>2.8.1</univocity.version>
         <junit.version>4.12</junit.version>
         <springfox.version>2.9.2</springfox.version>
-        <elastic.version>7.9.2</elastic.version>
         
-        <hibernate.validator.version>6.1.6.Final</hibernate.validator.version>
+        <!-- centralized logging
+        <ecs-logging-java.version>0.5.2</ecs-logging-java.version> -->
+        
+        <!-- <elastic.version>7.9.2</elastic.version>
+        <spring-data-elastic.version>3.1.5.RELEASE</spring-data-elastic.version>
+        <spring-data-elastic-new.version>4.0.5.RELEASE</spring-data-elastic-new.version> -->
+        
+        <elastic.version>6.4.3</elastic.version>
 	</properties>
 
 	<!-- Build Settings: -->

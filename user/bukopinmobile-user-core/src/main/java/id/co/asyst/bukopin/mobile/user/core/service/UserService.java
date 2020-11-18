@@ -31,10 +31,12 @@ import id.co.asyst.bukopin.mobile.service.model.payload.CentagateCommonResponse;
 import id.co.asyst.bukopin.mobile.service.model.payload.LogoutCentagateRequest;
 import id.co.asyst.bukopin.mobile.user.core.config.GetConfiguration;
 import id.co.asyst.bukopin.mobile.user.core.repository.UserRepository;
+import id.co.asyst.bukopin.mobile.user.core.service.elastic.ElasticLoginService;
 import id.co.asyst.bukopin.mobile.user.core.util.AuthUtil;
 import id.co.asyst.bukopin.mobile.user.model.centagate.LoginResultData;
 import id.co.asyst.bukopin.mobile.user.model.entity.CustomerLogin;
 import id.co.asyst.bukopin.mobile.user.model.entity.User;
+import id.co.asyst.bukopin.mobile.user.model.entity.elastic.CustomerLoginElastic;
 import id.co.asyst.bukopin.mobile.user.model.security.UserToken;
 import id.co.asyst.foundation.service.connector.Services;
 import retrofit2.Response;
@@ -55,7 +57,7 @@ public class UserService {
     /**
      * Logger
      */
-    private final Logger log = LoggerFactory.getLogger(User.class);
+    private final Logger log = LoggerFactory.getLogger(UserService.class);
 
     /**
      * User Repository
@@ -84,6 +86,12 @@ public class UserService {
      */
     @Autowired
     private CustomerLoginService customerLoginService;
+    
+    /**
+     * Elasticsearch Service
+     */
+    @Autowired
+    private ElasticLoginService elasticLoginService;
     
     /* Attributes: */
 
@@ -229,6 +237,9 @@ public class UserService {
 	custLogin.setUsername(user.getUsername());
 	custLogin.setLoginAt(now);
 	customerLoginService.save(custLogin);
+	
+	// Save Customer Login into Elasticsearch
+	elasticLoginService.saveCustomerLogin(new CustomerLoginElastic(custLogin));
 	
 	return uToken;
     }

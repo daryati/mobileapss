@@ -9,6 +9,8 @@
  */
 package id.co.asyst.bukopin.mobile.user.core.service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -75,6 +77,10 @@ public class CustomerLoginService {
     public CustomerLogin findTopUsernameByLoginAtDesc(String username) {
 	log.debug("Find Top Customer Login with username : {} "+ username);
 	return custLoginRepository.findTopByUsernameOrderByLoginAtDesc(username);
+    }
+    
+    public List<CustomerLogin> findAll() {
+	return custLoginRepository.findAll();
     }
 
     /* Overrides: */

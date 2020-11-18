@@ -19,8 +19,8 @@
 			maxSize (LOG_FILE_MAX_SIZE): 10MB 
 			maxHistory (LOG_FILE_MAX_HISTORY): 7; 
 			totalSizeCap (LOG_FILE_TOTAL_SIZE_CAP): 0 -->
-	<!-- archived file pattern -->
-	<property name="ROLLING_FILE_NAME_PATTERN" value="${LOG_PATH}/${MODULE}.json.%d{yyyy-MM-dd}.%i.zip" />
+	<!-- archived file pattern 
+	<property name="ROLLING_FILE_NAME_PATTERN" value="${LOG_PATH}/${MODULE}.json.%d{yyyy-MM-dd}.%i.zip" />-->
 	
 	
     <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/${MODULE}.log}"/>

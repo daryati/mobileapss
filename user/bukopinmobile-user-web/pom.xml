@@ -108,12 +108,11 @@
 		  <version>1.1.1</version>
 		</dependency>
 		
-		<!-- centralized logging
-        <dependency>
-		    <groupId>co.elastic.logging</groupId>
-		    <artifactId>logback-ecs-encoder</artifactId>
-		    <version>${ecs-logging-java.version}</version>
-		</dependency> -->
+		<dependency>
+		    <groupId>org.hibernate.validator</groupId>
+		    <artifactId>hibernate-validator</artifactId>
+		</dependency>
+        
     </dependencies>
 
 	<properties>

@@ -12,8 +12,6 @@ server:
 ## Database configuration:
 #spring.jpa.hibernate.ddl-auto=create
 spring:
-   application:
-      name: bkpm-user
    datasource:
       url: jdbc:sqlserver://10.2.62.51:1433;databaseName=DB_MBANKING 
       username: sa
@@ -43,6 +41,15 @@ spring:
                writeout: 5000
                starttls:
                   enable: true
+## ELASTIC
+   data:
+      elasticsearch:
+         cluster-name: elasticsearch
+         cluster-nodes: 10.2.62.119:9200
+         
+
+##spring.data.elasticsearch.cluster-name=elasticsearch
+##spring.data.elasticsearch.cluster-nodes=elasticsearch
 
 ## BUKOPIN INTERNAL DATABASE
 bukopin:
@@ -62,8 +69,10 @@ bukopin:
 # spring.liquibase.enabled=false
 
 ## LOGGING
-#logging:
-#   file: /home/asyst/BKPM-LOGS/user/user.log
+logging:
+   level:
+      root: ERROR
+      id.co.asyst: TRACE
 
 jwt:
    header: Authorization
