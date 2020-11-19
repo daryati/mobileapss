@@ -12,6 +12,8 @@ server:
 ## Database configuration:
 #spring.jpa.hibernate.ddl-auto=create
 spring:
+   application:
+      name: bkpm-user
    datasource:
       url: jdbc:sqlserver://10.2.62.51:1433;databaseName=DB_MBANKING 
       username: sa
