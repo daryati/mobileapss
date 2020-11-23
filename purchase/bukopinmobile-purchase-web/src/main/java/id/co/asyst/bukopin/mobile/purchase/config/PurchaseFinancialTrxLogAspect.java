@@ -105,109 +105,113 @@ public class PurchaseFinancialTrxLogAspect {
 		log.error("Exception in {}.{}() with cause = {}", joinPoint.getSignature().getDeclaringTypeName(),
 				joinPoint.getSignature().getName(), e.getCause() != null ? e.getCause() : "NULL");
 		
-		// save report Failed
-		String code = "";
-		String message = "";
-		String msg = e.getMessage();
-		
-		if(e.getCause() instanceof MiddlewareException) {
-			code = ResponseMessage.ERROR_EXTERNAL.getCode();
-			message = "External error : " + msg;
-		} else {
-			
-			code = ResponseMessage.INTERNAL_SERVER_ERROR.getCode();
-			message = "Internal Service Error : " + msg;
-		}
-		
 		String method = joinPoint.getSignature().getName();
 		
-		ObjectMapper mapper = new ObjectMapper();
+		if ("purchaseOVO".equals(method) || "purchaseGoPayResult".equals(method) 
+			|| "purchase".equals(method) || "purchaseResult".equals(method)) {
 		
-		Object[] rq = joinPoint.getArgs();
-
-		Map<String, String> reqs = mapper.convertValue(rq[0], Map.class);
-		Map<String, String> param = mapper.convertValue(reqs.get("parameter"), Map.class);
-		Map<String, BigDecimal> amt = mapper.convertValue(reqs.get("parameter"), Map.class);
-
-		TransactionCommonRequest transaction = new TransactionCommonRequest();
-
-		transaction.setUsername(param.get("username"));
-		transaction.setAccountNumber(param.get("accountNo"));
-
-		transaction.setType(TransactionTypeEnum.EMONEY.name());
-		transaction.setMenu(EMONEY_TRX_MENU);
-		transaction.setBillerProduct(param.get("type"));
-
-		if ("purchaseOVO".equals(method)) {
-			// total amount
-			BigDecimal bill = amt.get("amount");
-			String adminfee = param.get("element61").substring(78, 89);
-
-			BigDecimal total = bill.add(new BigDecimal(adminfee));
-			transaction.setNoteId(NOTE_ID_EMONEY.concat(param.get("custNo")));
-			transaction.setNoteEn(NOTE_EN_EMONEY.concat(param.get("custNo")));
-
-			transaction.setTotalAmount(total);
-
-		} else if ("purchaseGoPayResult".equals(method)) {
-			// total amount
-			BigDecimal bill = amt.get("amount");
-			String adminfee = param.get("element61").substring(78, 89);
-
-			BigDecimal total = bill.add(new BigDecimal(adminfee));
-			transaction.setNoteId(NOTE_ID_EMONEY.concat(param.get("custNo")));
-			transaction.setNoteEn(NOTE_EN_EMONEY.concat(param.get("custNo")));
-
-			transaction.setTotalAmount(total);
-		} else if ("purchase".equals(method)) {
-			// total amount
-			BigDecimal bill = amt.get("amount");
-
-			String[] el48 = param.get("element48").split("\\|", -1);
-			String adm = el48[6];
-			//String adminFee = adm.substring(0, 7).concat("00");
-			
-			BigDecimal total = bill.add(new BigDecimal(adm));
-			transaction.setNoteId(NOTE_ID_EMONEY.concat(param.get("custNo")));
-			transaction.setNoteEn(NOTE_EN_EMONEY.concat(param.get("custNo")));
-
-			transaction.setTotalAmount(total);
-
-		} else if ("purchaseResult".equals(method)) {
-			String subNumber = param.get("element48").substring(8, 18);
-			if (param.get("flag").equals("1")) {
-				subNumber = param.get("element48").substring(19, 30);
-			}
-
-			BigDecimal bill = new BigDecimal(param.get("nominal"));
-			BigDecimal adminfee = new BigDecimal(param.get("adminCharge"));
-
-			BigDecimal total = bill.add(adminfee);
-
-			transaction.setTotalAmount(total);
-
-			transaction.setType(TransactionTypeEnum.PLNPRE.name());
-			transaction.setNoteId(NOTE_ID_PLNPRE.concat(subNumber));
-			transaction.setNoteEn(NOTE_EN_PLNPRE.concat(subNumber));
-			transaction.setBillerProduct(PLN_BILLER_PRODUCT);
-			transaction.setMenu(PLN_PREPAID_TRX_MENU);
-
-		}
-		// dataReq.setSubscriberName();
-		// dataReq.setReference(res.getReferenceNumber());
-
-		transaction.setReason("code : " + code + " - message: " + message);
-		transaction.setStatus(BkpmConstants.STATUS_FAILED);
-
-		CommonRequest<TransactionCommonRequest> req = new CommonRequest<>();
-		req.setIdentity(generateIdentity());
-		req.setData(transaction);
-
-		try {
-			Services.create(MasterModuleService.class).saveTransaction(req).execute().body();
-		} catch (IOException ex) {
-			// TODO Auto-generated catch block
-			ex.printStackTrace();
+        		// save report Failed
+        		String code = "";
+        		String message = "";
+        		String msg = e.getMessage();
+        		
+        		if(e.getCause() instanceof MiddlewareException) {
+        			code = ResponseMessage.ERROR_EXTERNAL.getCode();
+        			message = "External error : " + msg;
+        		} else {
+        			
+        			code = ResponseMessage.INTERNAL_SERVER_ERROR.getCode();
+        			message = "Internal Service Error : " + msg;
+        		}
+        		
+        		ObjectMapper mapper = new ObjectMapper();
+        		
+        		Object[] rq = joinPoint.getArgs();
+        
+        		Map<String, String> reqs = mapper.convertValue(rq[0], Map.class);
+        		Map<String, String> param = mapper.convertValue(reqs.get("parameter"), Map.class);
+        		Map<String, BigDecimal> amt = mapper.convertValue(reqs.get("parameter"), Map.class);
+        
+        		TransactionCommonRequest transaction = new TransactionCommonRequest();
+        
+        		transaction.setUsername(param.get("username"));
+        		transaction.setAccountNumber(param.get("accountNo"));
+        
+        		transaction.setType(TransactionTypeEnum.EMONEY.name());
+        		transaction.setMenu(EMONEY_TRX_MENU);
+        		transaction.setBillerProduct(param.get("type"));
+        
+        		if ("purchaseOVO".equals(method)) {
+        			// total amount
+        			BigDecimal bill = amt.get("amount");
+        			String adminfee = param.get("element61").substring(78, 89);
+        
+        			BigDecimal total = bill.add(new BigDecimal(adminfee));
+        			transaction.setNoteId(NOTE_ID_EMONEY.concat(param.get("custNo")));
+        			transaction.setNoteEn(NOTE_EN_EMONEY.concat(param.get("custNo")));
+        
+        			transaction.setTotalAmount(total);
+        
+        		} else if ("purchaseGoPayResult".equals(method)) {
+        			// total amount
+        			BigDecimal bill = amt.get("amount");
+        			String adminfee = param.get("element61").substring(78, 89);
+        
+        			BigDecimal total = bill.add(new BigDecimal(adminfee));
+        			transaction.setNoteId(NOTE_ID_EMONEY.concat(param.get("custNo")));
+        			transaction.setNoteEn(NOTE_EN_EMONEY.concat(param.get("custNo")));
+        
+        			transaction.setTotalAmount(total);
+        		} else if ("purchase".equals(method)) {
+        			// total amount
+        			BigDecimal bill = amt.get("amount");
+        
+        			String[] el48 = param.get("element48").split("\\|", -1);
+        			String adm = el48[6];
+        			//String adminFee = adm.substring(0, 7).concat("00");
+        			
+        			BigDecimal total = bill.add(new BigDecimal(adm));
+        			transaction.setNoteId(NOTE_ID_EMONEY.concat(param.get("custNo")));
+        			transaction.setNoteEn(NOTE_EN_EMONEY.concat(param.get("custNo")));
+        
+        			transaction.setTotalAmount(total);
+        
+        		} else if ("purchaseResult".equals(method)) {
+        			String subNumber = param.get("element48").substring(8, 18);
+        			if (param.get("flag").equals("1")) {
+        				subNumber = param.get("element48").substring(19, 30);
+        			}
+        
+        			BigDecimal bill = new BigDecimal(param.get("nominal"));
+        			BigDecimal adminfee = new BigDecimal(param.get("adminCharge"));
+        
+        			BigDecimal total = bill.add(adminfee);
+        
+        			transaction.setTotalAmount(total);
+        
+        			transaction.setType(TransactionTypeEnum.PLNPRE.name());
+        			transaction.setNoteId(NOTE_ID_PLNPRE.concat(subNumber));
+        			transaction.setNoteEn(NOTE_EN_PLNPRE.concat(subNumber));
+        			transaction.setBillerProduct(PLN_BILLER_PRODUCT);
+        			transaction.setMenu(PLN_PREPAID_TRX_MENU);
+        
+        		}
+        		// dataReq.setSubscriberName();
+        		// dataReq.setReference(res.getReferenceNumber());
+        
+        		transaction.setReason("code : " + code + " - message: " + message);
+        		transaction.setStatus(BkpmConstants.STATUS_FAILED);
+        
+        		CommonRequest<TransactionCommonRequest> req = new CommonRequest<>();
+        		req.setIdentity(generateIdentity());
+        		req.setData(transaction);
+        
+        		try {
+        			Services.create(MasterModuleService.class).saveTransaction(req).execute().body();
+        		} catch (IOException ex) {
+        			// TODO Auto-generated catch block
+        			ex.printStackTrace();
+        		}
 		}
 	}
 

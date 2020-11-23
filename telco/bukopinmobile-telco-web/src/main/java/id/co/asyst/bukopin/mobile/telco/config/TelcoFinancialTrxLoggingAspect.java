@@ -121,110 +121,110 @@ public class TelcoFinancialTrxLoggingAspect {
 		log.error("Exception in {}.{}() with cause = {}", joinPoint.getSignature().getDeclaringTypeName(),
 				joinPoint.getSignature().getName(), e.getCause() != null ? e.getCause() : "NULL");
 		
-		String code = "";
-		String message = "";
-		String msg = e.getMessage();
-		
-		if(e.getCause() instanceof MiddlewareException) {
-			code = ResponseMessage.ERROR_EXTERNAL.getCode();
-			message = "External error : " + msg;
-		} else {
-			
-			code = ResponseMessage.INTERNAL_SERVER_ERROR.getCode();
-			message = "Internal Service Error : " + msg;
-		}
-		
-		Object[] rq = joinPoint.getArgs();
-		
-		
-		
 		String method = joinPoint.getSignature().getName();
 		
-		ObjectMapper mapper = new ObjectMapper();
-
-		Map<String, String> reqs = mapper.convertValue(rq[0], Map.class);
-		Map<String, String> param = mapper.convertValue(reqs.get("parameter"), Map.class);
-
-		DestinationCommonRequest dataReq = new DestinationCommonRequest();
-		
-		// dataReq.setSubscriberName();
-
-		// dataReq.setReference(res.getReferenceNumber());
-
-		// dataReq.setTotalAmount(res.getAmount());
-
-		TransactionCommonRequest transaction = new TransactionCommonRequest();
-		
-		transaction.setUsername(param.get("username"));
-		transaction.setType(TransactionTypeEnum.TELCOPOST.name());
-		transaction.setAccountNumber(param.get("accountNo"));
-
-		if ("purchaseTelkomPostpaid".equals(method)) {
-			
-			String bill = param.get("element61").substring(78, 89);
-			String adminfee = param.get("element61").substring(160, 167);
-			
-			BigDecimal total = new BigDecimal(bill).add(new BigDecimal(adminfee));
-			
-			transaction.setTotalAmount(total);
-			transaction.setNoteId(NOTE_ID_TELCOPOST.concat(param.get("custNo")));
-			transaction.setNoteEn(NOTE_EN_TELCOPOST.concat(param.get("custNo")));
-			transaction.setMenu(TELKOM_PSTN_TRX_MENU);
-			transaction.setBillerProduct(param.get("type"));
-			
-
-		} else if ("paymentPostpaidTelco".equals(method)) {
-			String bill = param.get("element61").substring(115, 126);
-			String adminfee = param.get("element61").substring(127, 134);
-			
-			BigDecimal total = new BigDecimal(bill).add(new BigDecimal(adminfee));
-			
-			transaction.setTotalAmount(total);
-			
-			transaction.setNoteId(NOTE_ID_TELCOPOST.concat(param.get("custNo")));
-			transaction.setNoteEn(NOTE_EN_TELCOPOST.concat(param.get("custNo")));
-			transaction.setBillerProduct(param.get("productName"));
-			transaction.setMenu(TELCO_POSTPAID_TRX_MENU);
-
-		} else if ("purchasePrepaidTelcoResult".equals(method)) {
-			
-			Map<String, BigDecimal> amt = mapper.convertValue(reqs.get("parameter"), Map.class);
-			
-			BigDecimal  bill = amt.get("amount");
-			BigDecimal adminfee = amt.get("adminFee");
-			
-			BigDecimal total = bill.add(adminfee);
-			
-			transaction.setTotalAmount(total);
-
-			transaction.setAccountNumber(param.get("accountNumber"));
-			transaction.setType(TransactionTypeEnum.TELCOPRE.name());
-			
-			transaction.setNoteId(NOTE_ID_TELCOPRE.concat(param.get("phoneNumber")));
-			transaction.setNoteEn(NOTE_EN_TELCOPRE.concat(param.get("phoneNumber")));
-			
-			if(param.get("institutionType").equalsIgnoreCase("PAKET DATA")) {
-				transaction.setNoteId(NOTE_ID_TELCODATA.concat(param.get("phoneNumber")));
-				transaction.setNoteEn(NOTE_EN_TELCODATA.concat(param.get("phoneNumber")));
-				transaction.setType(TransactionTypeEnum.TELCODATA.name());
-			}
-			
-			transaction.setBillerProduct(param.get("pGroup"));
-			transaction.setMenu(TELCO_PREPAID_TRX_MENU);
-		}
-
-		transaction.setReason("code : " + code + " - message: " + message);
-		transaction.setStatus(BkpmConstants.STATUS_FAILED);
-
-		CommonRequest<TransactionCommonRequest> req = new CommonRequest<>();
-		req.setIdentity(generateIdentity());
-		req.setData(transaction);
-
-		try {
-			Services.create(MasterModuleService.class).saveTransaction(req).execute().body();
-		} catch (IOException ex) {
-			// TODO Auto-generated catch block
-			ex.printStackTrace();
+		if ("purchaseTelkomPostpaid".equals(method) || "paymentPostpaidTelco".equals(method)
+			|| "purchasePrepaidTelcoResult".equals(method)) {
+        		String code = "";
+        		String message = "";
+        		String msg = e.getMessage();
+        		
+        		if(e.getCause() instanceof MiddlewareException) {
+        			code = ResponseMessage.ERROR_EXTERNAL.getCode();
+        			message = "External error : " + msg;
+        		} else {
+        			
+        			code = ResponseMessage.INTERNAL_SERVER_ERROR.getCode();
+        			message = "Internal Service Error : " + msg;
+        		}
+        		
+        		Object[] rq = joinPoint.getArgs();
+        		ObjectMapper mapper = new ObjectMapper();
+        
+        		Map<String, String> reqs = mapper.convertValue(rq[0], Map.class);
+        		Map<String, String> param = mapper.convertValue(reqs.get("parameter"), Map.class);
+        
+        		DestinationCommonRequest dataReq = new DestinationCommonRequest();
+        		
+        		// dataReq.setSubscriberName();
+        
+        		// dataReq.setReference(res.getReferenceNumber());
+        
+        		// dataReq.setTotalAmount(res.getAmount());
+        
+        		TransactionCommonRequest transaction = new TransactionCommonRequest();
+        		
+        		transaction.setUsername(param.get("username"));
+        		transaction.setType(TransactionTypeEnum.TELCOPOST.name());
+        		transaction.setAccountNumber(param.get("accountNo"));
+        
+        		if ("purchaseTelkomPostpaid".equals(method)) {
+        			
+        			String bill = param.get("element61").substring(78, 89);
+        			String adminfee = param.get("element61").substring(160, 167);
+        			
+        			BigDecimal total = new BigDecimal(bill).add(new BigDecimal(adminfee));
+        			
+        			transaction.setTotalAmount(total);
+        			transaction.setNoteId(NOTE_ID_TELCOPOST.concat(param.get("custNo")));
+        			transaction.setNoteEn(NOTE_EN_TELCOPOST.concat(param.get("custNo")));
+        			transaction.setMenu(TELKOM_PSTN_TRX_MENU);
+        			transaction.setBillerProduct(param.get("type"));
+        			
+        
+        		} else if ("paymentPostpaidTelco".equals(method)) {
+        			String bill = param.get("element61").substring(115, 126);
+        			String adminfee = param.get("element61").substring(127, 134);
+        			
+        			BigDecimal total = new BigDecimal(bill).add(new BigDecimal(adminfee));
+        			
+        			transaction.setTotalAmount(total);
+        			
+        			transaction.setNoteId(NOTE_ID_TELCOPOST.concat(param.get("custNo")));
+        			transaction.setNoteEn(NOTE_EN_TELCOPOST.concat(param.get("custNo")));
+        			transaction.setBillerProduct(param.get("productName"));
+        			transaction.setMenu(TELCO_POSTPAID_TRX_MENU);
+        
+        		} else if ("purchasePrepaidTelcoResult".equals(method)) {
+        			
+        			Map<String, BigDecimal> amt = mapper.convertValue(reqs.get("parameter"), Map.class);
+        			
+        			BigDecimal  bill = amt.get("amount");
+        			BigDecimal adminfee = amt.get("adminFee");
+        			
+        			BigDecimal total = bill.add(adminfee);
+        			
+        			transaction.setTotalAmount(total);
+        
+        			transaction.setAccountNumber(param.get("accountNumber"));
+        			transaction.setType(TransactionTypeEnum.TELCOPRE.name());
+        			
+        			transaction.setNoteId(NOTE_ID_TELCOPRE.concat(param.get("phoneNumber")));
+        			transaction.setNoteEn(NOTE_EN_TELCOPRE.concat(param.get("phoneNumber")));
+        			
+        			if(param.get("institutionType").equalsIgnoreCase("PAKET DATA")) {
+        				transaction.setNoteId(NOTE_ID_TELCODATA.concat(param.get("phoneNumber")));
+        				transaction.setNoteEn(NOTE_EN_TELCODATA.concat(param.get("phoneNumber")));
+        				transaction.setType(TransactionTypeEnum.TELCODATA.name());
+        			}
+        			
+        			transaction.setBillerProduct(param.get("pGroup"));
+        			transaction.setMenu(TELCO_PREPAID_TRX_MENU);
+        		}
+        
+        		transaction.setReason("code : " + code + " - message: " + message);
+        		transaction.setStatus(BkpmConstants.STATUS_FAILED);
+        
+        		CommonRequest<TransactionCommonRequest> req = new CommonRequest<>();
+        		req.setIdentity(generateIdentity());
+        		req.setData(transaction);
+        
+        		try {
+        			Services.create(MasterModuleService.class).saveTransaction(req).execute().body();
+        		} catch (IOException ex) {
+        			// TODO Auto-generated catch block
+        			ex.printStackTrace();
+        		}
 		}
 
 	}

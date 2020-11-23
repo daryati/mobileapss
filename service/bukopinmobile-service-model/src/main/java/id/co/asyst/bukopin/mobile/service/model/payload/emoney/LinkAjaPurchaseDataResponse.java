@@ -12,6 +12,8 @@
  */
 package id.co.asyst.bukopin.mobile.service.model.payload.emoney;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * 
  * 
@@ -19,6 +21,7 @@ package id.co.asyst.bukopin.mobile.service.model.payload.emoney;
  * @version $Revision$, Jan 31, 2020
  * @since 2.0
  */
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class LinkAjaPurchaseDataResponse {
     /* Constants: */
 

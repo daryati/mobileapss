@@ -10,7 +10,10 @@
 package id.co.asyst.bukopin.mobile.purchase.web.rest.errors;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.NoRouteToHostException;
+import java.net.PortUnreachableException;
+import java.net.SocketException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +34,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
 import id.co.asyst.bukopin.mobile.common.core.exception.DataNotMatchException;
 import id.co.asyst.bukopin.mobile.common.core.exception.ForbiddenAccessException;
@@ -109,13 +114,27 @@ public class PurchaseExceptionHandler extends ResponseEntityExceptionHandler {
     }
     
     // 500 - Connection Exception
-    @ExceptionHandler({ IOException.class })
+    @ExceptionHandler({ BindException.class, SocketException.class, 
+	NoRouteToHostException.class, PortUnreachableException.class })
     protected ResponseEntity<Object> handleTimeout(Exception ex) {
 	log.error("Connection Timeout Exception: " + ex.getMessage(), ex);
 	
 	CommonResponse response = new CommonResponse();
 	response.setCode(ResponseMessage.ERROR_EXTERNAL.getCode());
-	response.setMessage(messageUtil.get("error.connection",new Object[] {ex.getMessage()},
+	response.setMessage(messageUtil.get("error.connection",
+		servletRequest.getLocale()));
+
+	return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    
+    // 500 - IO Exception
+    @ExceptionHandler({ IOException.class })
+    protected ResponseEntity<Object> handleIo(IOException ex) {
+	log.error("IO Exception: " + ex.getMessage(), ex);
+	
+	CommonResponse response = new CommonResponse();
+	response.setCode(ResponseMessage.ERROR_EXTERNAL.getCode());
+	response.setMessage(messageUtil.get("error.internal.server",
 		servletRequest.getLocale()));
 
 	return new ResponseEntity<>(response, HttpStatus.OK);
@@ -136,7 +155,7 @@ public class PurchaseExceptionHandler extends ResponseEntityExceptionHandler {
     
     // 500 - Null Pointer, Entity Not Found.
     @ExceptionHandler({ NullPointerException.class, EntityNotFoundException.class, 
-	NoRouteToHostException.class, JDBCConnectionException.class, IllegalArgumentException.class,
+	JDBCConnectionException.class, IllegalArgumentException.class,
 	DataLengthException.class, StringIndexOutOfBoundsException.class, ConstraintViolationException.class })
     protected ResponseEntity<Object> handleInternal(final RuntimeException ex, final WebRequest request) {
 	log.error("Internal Error, caused by: " + ex.getCause(), ex);

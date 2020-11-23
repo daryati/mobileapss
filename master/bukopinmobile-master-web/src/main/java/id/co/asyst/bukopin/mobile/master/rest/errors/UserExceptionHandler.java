@@ -9,7 +9,11 @@
  */
 package id.co.asyst.bukopin.mobile.master.rest.errors;
 
+import java.io.IOException;
+import java.net.BindException;
 import java.net.NoRouteToHostException;
+import java.net.PortUnreachableException;
+import java.net.SocketException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
@@ -110,6 +114,33 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
 	response.setMessage(message);
 
 	return handleExceptionInternal(ex, response, new HttpHeaders(), HttpStatus.OK, request);
+    }
+    
+    // 500 - Connection Exception
+    @ExceptionHandler({ BindException.class, SocketException.class, 
+	NoRouteToHostException.class, PortUnreachableException.class })
+    protected ResponseEntity<Object> handleTimeout(Exception ex) {
+	log.error("Connection Timeout Exception: " + ex.getMessage(), ex);
+	
+	CommonResponse response = new CommonResponse();
+	response.setCode(ResponseMessage.ERROR_EXTERNAL.getCode());
+	response.setMessage(messageUtil.get("error.connection",
+		servletRequest.getLocale()));
+
+	return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    
+    // 500 - IO Exception
+    @ExceptionHandler({ IOException.class })
+    protected ResponseEntity<Object> handleIo(IOException ex) {
+	log.error("IO Exception: " + ex.getMessage(), ex);
+	
+	CommonResponse response = new CommonResponse();
+	response.setCode(ResponseMessage.ERROR_EXTERNAL.getCode());
+	response.setMessage(messageUtil.get("error.internal.server",
+		servletRequest.getLocale()));
+
+	return new ResponseEntity<>(response, HttpStatus.OK);
     }
     
     // 200 - Data Not Found Exception

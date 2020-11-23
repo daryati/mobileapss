@@ -128,102 +128,104 @@ public class PaymentFinancialTrxLoggingAspect {
 		log.error("Exception in {}.{}() with cause = {}", joinPoint.getSignature().getDeclaringTypeName(),
 				joinPoint.getSignature().getName(), e.getCause() != null ? e.getCause() : "NULL");
 		
-		String code = "";
-		String message = "";
-		String msg = e.getMessage();
-		
-		if(e.getCause() instanceof MiddlewareException) {
-			code = ResponseMessage.ERROR_EXTERNAL.getCode();
-			message = "External error : " + msg;
-		} else {
-			
-			code = ResponseMessage.INTERNAL_SERVER_ERROR.getCode();
-			message = "Internal Service Error : " + msg;
-		}
-		
 		String method = joinPoint.getSignature().getName();
-		
-		ObjectMapper mapper = new ObjectMapper();
-		
-		Object[] rq = joinPoint.getArgs();
-
-		Map<String, String> reqs = mapper.convertValue(rq[0], Map.class);
-		Map<String, String> param = mapper.convertValue(reqs.get("parameter"), Map.class);
-		Map<String, BigDecimal> amt = mapper.convertValue(reqs.get("parameter"), Map.class);
-
-		TransactionCommonRequest transaction = new TransactionCommonRequest();
-
-		transaction.setUsername(param.get("username"));
-
-		if ("purchaseInsurance".equals(method)) {
-
-			transaction.setType(TransactionTypeEnum.INSURANCE.name());
-			transaction.setTotalAmount(amt.get("totalAmount"));
-			transaction.setAccountNumber(param.get("accountNumber"));
-			transaction.setNoteId(NOTE_ID_INSURANCEPOST.concat(param.get("subscriberNumber")));
-			transaction.setNoteEn(NOTE_EN_INSURANCEPOST.concat(param.get("subscriberNumber")));
-			transaction.setBillerProduct(INHEALTH_INSURANCE_BILLER_PRODUCT);
-			
-			if(param.get("codeIns").equalsIgnoreCase("BPJSKES")){
-				transaction.setBillerProduct(INSURANCE_BILLER_PRODUCT);
-			}
-			
-			transaction.setMenu(INSURANCE_TRX_MENU);
-
-		} else if ("paymentPLN".equals(method)) {
-
-			transaction.setType(TransactionTypeEnum.PLNPOST.name());
-			transaction.setTotalAmount(amt.get("totalAmount"));
-			transaction.setAccountNumber(param.get("accountNo"));
-			transaction.setNoteId(NOTE_ID_PLNPOST.concat(param.get("subscriberNumber")));
-			transaction.setNoteEn(NOTE_EN_PLNPOST.concat(param.get("subscriberNumber")));
-			transaction.setBillerProduct(PLN_BILLER_PRODUCT);
-			transaction.setMenu(PLN_POSTPAID_TRX_MENU);
-
-		} else if ("paymentSamolnas".equals(method)) {
-
-			BigDecimal total = amt.get("amount")
-					.add(amt.get("adminFee"));
-
-			transaction.setTotalAmount(total);
-			transaction.setType(TransactionTypeEnum.SAMOLNAS.name());
-			transaction.setAccountNumber(param.get("accountNumber"));
-			transaction.setNoteId(NOTE_ID_SAMOLNAS.concat(param.get("payCode")));
-			transaction.setNoteEn(NOTE_EN_SAMOLNAS.concat(param.get("payCode")));
-			transaction.setBillerProduct(SAMOLNAS_BILLER_PRODUCT);
-			transaction.setMenu(SAMOLNAS_TRX_MENU);
-
-		} else if ("paymentCreditCard".equals(method)) {
-
-			transaction.setTotalAmount(new BigDecimal(param.get("amount")));
-			transaction.setType(TransactionTypeEnum.CREDITCARD.name());
-			transaction.setAccountNumber(param.get("accountNumber"));
-			transaction.setNoteId(NOTE_ID_CREDITCARDPOST.concat(param.get("subscriberNumber")));
-			transaction.setNoteEn(NOTE_EN_CREDITCARDPOST.concat(param.get("subscriberNumber")));
-			transaction.setBillerProduct(param.get("name"));
-			transaction.setMenu(CC_NONBKP_TRX_MENU);
-
-			if (param.get("codeCc").equalsIgnoreCase(CCBKP)) {
-
-				transaction.setMenu(CC_BKP_TRX_MENU);
-			}
-
-		}
-		// dataReq.setSubscriberName();
-		// dataReq.setReference(res.getReferenceNumber());
-
-		transaction.setReason("code : " + code + " - message: " + message);
-		transaction.setStatus(BkpmConstants.STATUS_FAILED);
-
-		CommonRequest<TransactionCommonRequest> req = new CommonRequest<>();
-		req.setIdentity(generateIdentity());
-		req.setData(transaction);
-
-		try {
-			Services.create(MasterModuleService.class).saveTransaction(req).execute().body();
-		} catch (IOException ex) {
-			// TODO Auto-generated catch block
-			ex.printStackTrace();
+		if ("purchaseInsurance".equals(method) || "paymentPLN".equals(method) 
+			|| "paymentSamolnas".equals(method) || "paymentCreditCard".equals(method)) {
+        		String code = "";
+        		String message = "";
+        		String msg = e.getMessage();
+        		
+        		if(e.getCause() instanceof MiddlewareException) {
+        			code = ResponseMessage.ERROR_EXTERNAL.getCode();
+        			message = "External error : " + msg;
+        		} else {
+        			
+        			code = ResponseMessage.INTERNAL_SERVER_ERROR.getCode();
+        			message = "Internal Service Error : " + msg;
+        		}
+        		
+        		ObjectMapper mapper = new ObjectMapper();
+        		
+        		Object[] rq = joinPoint.getArgs();
+        
+        		Map<String, String> reqs = mapper.convertValue(rq[0], Map.class);
+        		Map<String, String> param = mapper.convertValue(reqs.get("parameter"), Map.class);
+        		Map<String, BigDecimal> amt = mapper.convertValue(reqs.get("parameter"), Map.class);
+        
+        		TransactionCommonRequest transaction = new TransactionCommonRequest();
+        
+        		transaction.setUsername(param.get("username"));
+        
+        		if ("purchaseInsurance".equals(method)) {
+        
+        			transaction.setType(TransactionTypeEnum.INSURANCE.name());
+        			transaction.setTotalAmount(amt.get("totalAmount"));
+        			transaction.setAccountNumber(param.get("accountNumber"));
+        			transaction.setNoteId(NOTE_ID_INSURANCEPOST.concat(param.get("subscriberNumber")));
+        			transaction.setNoteEn(NOTE_EN_INSURANCEPOST.concat(param.get("subscriberNumber")));
+        			transaction.setBillerProduct(INHEALTH_INSURANCE_BILLER_PRODUCT);
+        			
+        			if(param.get("codeIns").equalsIgnoreCase("BPJSKES")){
+        				transaction.setBillerProduct(INSURANCE_BILLER_PRODUCT);
+        			}
+        			
+        			transaction.setMenu(INSURANCE_TRX_MENU);
+        
+        		} else if ("paymentPLN".equals(method)) {
+        
+        			transaction.setType(TransactionTypeEnum.PLNPOST.name());
+        			transaction.setTotalAmount(amt.get("totalAmount"));
+        			transaction.setAccountNumber(param.get("accountNo"));
+        			transaction.setNoteId(NOTE_ID_PLNPOST.concat(param.get("subscriberNumber")));
+        			transaction.setNoteEn(NOTE_EN_PLNPOST.concat(param.get("subscriberNumber")));
+        			transaction.setBillerProduct(PLN_BILLER_PRODUCT);
+        			transaction.setMenu(PLN_POSTPAID_TRX_MENU);
+        
+        		} else if ("paymentSamolnas".equals(method)) {
+        
+        			BigDecimal total = amt.get("amount")
+        					.add(amt.get("adminFee"));
+        
+        			transaction.setTotalAmount(total);
+        			transaction.setType(TransactionTypeEnum.SAMOLNAS.name());
+        			transaction.setAccountNumber(param.get("accountNumber"));
+        			transaction.setNoteId(NOTE_ID_SAMOLNAS.concat(param.get("payCode")));
+        			transaction.setNoteEn(NOTE_EN_SAMOLNAS.concat(param.get("payCode")));
+        			transaction.setBillerProduct(SAMOLNAS_BILLER_PRODUCT);
+        			transaction.setMenu(SAMOLNAS_TRX_MENU);
+        
+        		} else if ("paymentCreditCard".equals(method)) {
+        
+        			transaction.setTotalAmount(new BigDecimal(param.get("amount")));
+        			transaction.setType(TransactionTypeEnum.CREDITCARD.name());
+        			transaction.setAccountNumber(param.get("accountNumber"));
+        			transaction.setNoteId(NOTE_ID_CREDITCARDPOST.concat(param.get("subscriberNumber")));
+        			transaction.setNoteEn(NOTE_EN_CREDITCARDPOST.concat(param.get("subscriberNumber")));
+        			transaction.setBillerProduct(param.get("name"));
+        			transaction.setMenu(CC_NONBKP_TRX_MENU);
+        
+        			if (param.get("codeCc").equalsIgnoreCase(CCBKP)) {
+        
+        				transaction.setMenu(CC_BKP_TRX_MENU);
+        			}
+        
+        		}
+        		// dataReq.setSubscriberName();
+        		// dataReq.setReference(res.getReferenceNumber());
+        
+        		transaction.setReason("code : " + code + " - message: " + message);
+        		transaction.setStatus(BkpmConstants.STATUS_FAILED);
+        
+        		CommonRequest<TransactionCommonRequest> req = new CommonRequest<>();
+        		req.setIdentity(generateIdentity());
+        		req.setData(transaction);
+        
+        		try {
+        			Services.create(MasterModuleService.class).saveTransaction(req).execute().body();
+        		} catch (IOException ex) {
+        			// TODO Auto-generated catch block
+        			ex.printStackTrace();
+        		}
 		}
 	}
 
