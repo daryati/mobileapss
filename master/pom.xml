@@ -13,7 +13,7 @@
 
 	<groupId>id.co.asyst.bukopin.mobile</groupId>
 	<artifactId>bukopinmobile-master</artifactId>
-	<version>1.6.GA2</version>
+	<version>1.7.GA</version>
 	<packaging>pom</packaging>
 
 	<name>Bukopin Mobile - Master</name>
@@ -119,9 +119,9 @@
 
 		<!-- Framework dependency versions: -->
 		<foundation.groupId>id.co.asyst.foundation</foundation.groupId>
-		<foundation.version>3.0.Beta1b</foundation.version>
-		<bukopin.common.version>1.6.GA2</bukopin.common.version>
-        <bukopin.service.version>1.6.GA2</bukopin.service.version>
+		<foundation.version>3.0.Beta2b</foundation.version>
+		<bukopin.common.version>1.7.GA</bukopin.common.version>
+        <bukopin.service.version>1.7.GA</bukopin.service.version>
 		<java.version>1.8</java.version>
 		<liquibase.version>3.6.3</liquibase.version>
 		<spring-boot.version>2.3.5.RELEASE</spring-boot.version>

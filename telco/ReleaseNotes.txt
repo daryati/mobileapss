@@ -1,4 +1,24 @@
 ===============================================================================
+   Bukopin-Mobile-Master 1.7.GA Release Notes
+===============================================================================
+Release Notes - Bukopin-Mobile-Master - Version 1.7.GA
+** Notes
+	* Release for Elasticsearch Implementation
+
+** Story
+	* [BKPM-423] - [ELK] Backend Centralized Logging
+	* [BKPM-425] - [ELK] Application Performance Monitoring (APM)
+	* [BKPM-452] - [Elastic] Dashboard
+	* [BKPM-453] - [Backend] Exception Handler Enhanchment
+	
+** Bug Fixed
+	* 
+	
+** Deprecated Service
+	* 	
+	
+
+===============================================================================
    Bukopin-Mobile-Telco 1.6.GA2 Release Notes
 ===============================================================================
 Release Notes - Bukopin-Mobile-Telco - Version 1.6.GA2

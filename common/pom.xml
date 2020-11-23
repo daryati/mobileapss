@@ -12,7 +12,7 @@
 
 	<groupId>id.co.asyst.bukopin.mobile</groupId>
 	<artifactId>bukopinmobile-common</artifactId>
-	<version>1.6.GA2</version>
+	<version>1.7.GA</version>
 
 	<packaging>pom</packaging>
 
@@ -22,7 +22,7 @@
 	</modules>
 
 	<properties>
-		<foundation.version>3.0.Beta1b</foundation.version>
+		<foundation.version>3.0.Beta2b</foundation.version>
 		<foundation.groupId>id.co.asyst.foundation</foundation.groupId>
 		<!-- centralized logging -->
         <ecs-logging-java.version>0.5.2</ecs-logging-java.version>

@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>id.co.asyst.bukopin.mobile</groupId>
 		<artifactId>bukopinmobile-common</artifactId>
-		<version>1.6.GA2</version>
+		<version>1.7.GA</version>
 	</parent>
 
 	<properties>

@@ -13,7 +13,7 @@
 
     <groupId>id.co.asyst.bukopin.mobile</groupId>
     <artifactId>bukopinmobile-service</artifactId>
-    <version>1.6.GA2</version>
+    <version>1.7.GA</version>
 
     <packaging>pom</packaging>
 
@@ -31,7 +31,7 @@
     </dependencies>
     
     <properties>
-    	<foundation.version>3.0.Beta1b</foundation.version>
+    	<foundation.version>3.0.Beta2b</foundation.version>
     </properties>
     
     <!-- More Project Information: -->
