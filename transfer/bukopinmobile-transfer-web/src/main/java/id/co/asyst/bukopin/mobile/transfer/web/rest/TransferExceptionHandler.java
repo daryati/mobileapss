@@ -14,6 +14,7 @@ import java.net.BindException;
 import java.net.NoRouteToHostException;
 import java.net.PortUnreachableException;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.Date;
 
 import javax.persistence.EntityNotFoundException;
@@ -115,7 +116,7 @@ public class TransferExceptionHandler extends ResponseEntityExceptionHandler {
     }
     
     // 500 - Connection Exception
-    @ExceptionHandler({ BindException.class, SocketException.class, 
+    @ExceptionHandler({ BindException.class, SocketException.class, SocketTimeoutException.class, 
 	NoRouteToHostException.class, PortUnreachableException.class })
     protected ResponseEntity<Object> handleTimeout(Exception ex) {
 	log.error("Connection Timeout Exception: " + ex.getMessage(), ex);

@@ -14,6 +14,7 @@ import java.net.BindException;
 import java.net.NoRouteToHostException;
 import java.net.PortUnreachableException;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
@@ -111,7 +112,7 @@ public class TelcoExceptionHandler extends ResponseEntityExceptionHandler {
     }
     
     // 500 - Connection Exception
-    @ExceptionHandler({ BindException.class, SocketException.class, 
+    @ExceptionHandler({ BindException.class, SocketException.class, SocketTimeoutException.class, 
 	NoRouteToHostException.class, PortUnreachableException.class })
     protected ResponseEntity<Object> handleTimeout(Exception ex) {
 	log.error("Connection Timeout Exception: " + ex.getMessage(), ex);
