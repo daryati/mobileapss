@@ -94,6 +94,7 @@ public class PaymentFinancialTrxLoggingAspect {
 	private static final String CC_BKP_TRX_MENU = "Bukopin CC Payment";
 	private static final String CC_NONBKP_TRX_MENU = "Non Bukopin CC Payment";
 
+	
 	/**
 	 * Pointcut that matches all repositories, services and Web REST endpoints.
 	 */
@@ -152,11 +153,12 @@ public class PaymentFinancialTrxLoggingAspect {
 		Map<String, BigDecimal> amt = mapper.convertValue(reqs.get("parameter"), Map.class);
 
 		TransactionCommonRequest transaction = new TransactionCommonRequest();
-
+		
 		transaction.setUsername(param.get("username"));
 
 		if ("purchaseInsurance".equals(method)) {
-
+			transaction.setAdminFee(amt.get("adminFee"));
+			transaction.setAmount(amt.get("amount"));			
 			transaction.setType(TransactionTypeEnum.INSURANCE.name());
 			transaction.setTotalAmount(amt.get("totalAmount"));
 			transaction.setAccountNumber(param.get("accountNumber"));
@@ -172,6 +174,8 @@ public class PaymentFinancialTrxLoggingAspect {
 
 		} else if ("paymentPLN".equals(method)) {
 
+			transaction.setAdminFee(amt.get("adminFee"));
+			transaction.setAmount(amt.get("amount"));	
 			transaction.setType(TransactionTypeEnum.PLNPOST.name());
 			transaction.setTotalAmount(amt.get("totalAmount"));
 			transaction.setAccountNumber(param.get("accountNo"));
@@ -185,6 +189,8 @@ public class PaymentFinancialTrxLoggingAspect {
 			BigDecimal total = amt.get("amount")
 					.add(amt.get("adminFee"));
 
+			transaction.setAdminFee(amt.get("adminFee"));
+			transaction.setAmount(amt.get("amount"));	
 			transaction.setTotalAmount(total);
 			transaction.setType(TransactionTypeEnum.SAMOLNAS.name());
 			transaction.setAccountNumber(param.get("accountNumber"));
@@ -195,6 +201,8 @@ public class PaymentFinancialTrxLoggingAspect {
 
 		} else if ("paymentCreditCard".equals(method)) {
 
+			transaction.setAdminFee(new BigDecimal('0'));
+			transaction.setAmount(new BigDecimal(param.get("amount")));	
 			transaction.setTotalAmount(new BigDecimal(param.get("amount")));
 			transaction.setType(TransactionTypeEnum.CREDITCARD.name());
 			transaction.setAccountNumber(param.get("accountNumber"));
@@ -218,7 +226,7 @@ public class PaymentFinancialTrxLoggingAspect {
 		CommonRequest<TransactionCommonRequest> req = new CommonRequest<>();
 		req.setIdentity(generateIdentity());
 		req.setData(transaction);
-
+				
 		try {
 			Services.create(MasterModuleService.class).saveTransaction(req).execute().body();
 		} catch (IOException ex) {
@@ -238,7 +246,7 @@ public class PaymentFinancialTrxLoggingAspect {
 	@Around("applicationPackagePointcut() && springBeanPointcut()")
 	public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
 		if (log.isDebugEnabled()) {
-			log.debug("Purchase Start AOP: {}.{}() with argument[s] = {}",
+			log.debug("Payment Start AOP: {}.{}() with argument[s] = {}",
 					joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName(),
 					Arrays.toString(joinPoint.getArgs()));
 
@@ -267,15 +275,33 @@ public class PaymentFinancialTrxLoggingAspect {
 
 					if (BkpmConstants.CODE_SOAP_SUCCESS.equalsIgnoreCase(res.getCode())) {
 						// save report SUCCESS
-						Map<String, String> resp = mapper.convertValue(res.getData(), Map.class);
-
+						Map<String, Object> resp = mapper.convertValue(res.getData(), Map.class);
 						TransactionCommonRequest trxReq = new TransactionCommonRequest();
+						
+						//set admin fee and amount for transaction elastic
+						if ("purchaseInsurance".equals(method)) {
+							trxReq.setAdminFee((BigDecimal) (resp.get("adminFee")));
+							trxReq.setAmount((BigDecimal) (resp.get("amount")));	
+						} else if ("paymentPLN".equals(method)) {
+
+							trxReq.setAdminFee((BigDecimal) (resp.get("adminFee")));
+							trxReq.setAmount((BigDecimal) (resp.get("amount")));	
+						} else if ("paymentSamolnas".equals(method)) {
+
+							trxReq.setAdminFee((BigDecimal) (resp.get("adminFee")));
+							trxReq.setAmount((BigDecimal) (resp.get("amount")));	
+						}  else if ("paymentCreditCard".equals(method)) {
+
+							trxReq.setAdminFee(new BigDecimal('0'));
+							trxReq.setAmount((BigDecimal)(resp.get("amount")));	
+						}
+						
 						trxReq.setReason("code : " + res.getCode() + " - message: " + res.getMessage());
 						trxReq.setStatus(BkpmConstants.STATUS_SUCCESS);
 						
-						String reference = resp.get("referenceNumber");
+						String reference = (String) resp.get("referenceNumber");
 						if(reference == null) {
-							reference = resp.get("reference");
+							reference = (String) resp.get("reference");
 							
 						}
 						trxReq.setReferenceNumber(reference);
@@ -312,6 +338,8 @@ public class PaymentFinancialTrxLoggingAspect {
 
 						if ("purchaseInsurance".equals(method)) {
 
+							transaction.setAdminFee(amt.get("adminFee"));
+							transaction.setAmount(amt.get("amount"));	
 							transaction.setType(TransactionTypeEnum.INSURANCE.name());
 							transaction.setTotalAmount(amt.get("totalAmount"));
 							transaction.setAccountNumber(param.get("accountNumber"));
@@ -327,6 +355,8 @@ public class PaymentFinancialTrxLoggingAspect {
 
 						} else if ("paymentPLN".equals(method)) {
 
+							transaction.setAdminFee(amt.get("adminFee"));
+							transaction.setAmount(amt.get("amount"));	
 							transaction.setType(TransactionTypeEnum.PLNPOST.name());
 							transaction.setTotalAmount(amt.get("totalAmount"));
 							transaction.setAccountNumber(param.get("accountNo"));
@@ -340,6 +370,8 @@ public class PaymentFinancialTrxLoggingAspect {
 							BigDecimal total = amt.get("amount")
 									.add(amt.get("adminFee"));
 
+							transaction.setAdminFee(amt.get("adminFee"));
+							transaction.setAmount(amt.get("amount"));	
 							transaction.setTotalAmount(total);
 							transaction.setType(TransactionTypeEnum.SAMOLNAS.name());
 							transaction.setAccountNumber(param.get("accountNumber"));
@@ -350,6 +382,8 @@ public class PaymentFinancialTrxLoggingAspect {
 
 						} else if ("paymentCreditCard".equals(method)) {
 
+							transaction.setAdminFee(new BigDecimal('0'));
+							transaction.setAmount(new BigDecimal(param.get("amount")));	
 							transaction.setTotalAmount(new BigDecimal(param.get("amount")));
 							transaction.setType(TransactionTypeEnum.CREDITCARD.name());
 							transaction.setAccountNumber(param.get("accountNumber"));
@@ -384,7 +418,7 @@ public class PaymentFinancialTrxLoggingAspect {
 					}
 				}
 
-				log.debug("Telco End AOP: {}.{}() with result = {}", joinPoint.getSignature().getDeclaringTypeName(),
+				log.debug("Payment End AOP: {}.{}() with result = {}", joinPoint.getSignature().getDeclaringTypeName(),
 						joinPoint.getSignature().getName(), result);
 
 			}

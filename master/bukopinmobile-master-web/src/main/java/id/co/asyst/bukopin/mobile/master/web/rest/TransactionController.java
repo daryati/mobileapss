@@ -38,6 +38,8 @@ import id.co.asyst.bukopin.mobile.common.model.ResponseMessage;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonRequest;
 import id.co.asyst.bukopin.mobile.common.model.payload.CommonResponse;
 import id.co.asyst.bukopin.mobile.master.core.service.TransactionService;
+import id.co.asyst.bukopin.mobile.master.core.service.elastic.TransactionElasticService;
+import id.co.asyst.bukopin.mobile.master.model.elastic.TransactionElastic;
 import id.co.asyst.bukopin.mobile.master.model.entity.Transaction;
 import id.co.asyst.bukopin.mobile.master.model.payload.TransactionCommonRequest;
 import id.co.asyst.bukopin.mobile.service.core.UserModuleService;
@@ -62,6 +64,9 @@ public class TransactionController {
 	/* Attributes: */
 	@Autowired
 	private TransactionService transactionService;
+	
+	@Autowired
+	private TransactionElasticService elasticService;
 
 	@Autowired
 	private MessageUtil messageUtil;
@@ -116,6 +121,18 @@ public class TransactionController {
 
 		theTransaction.setStatus(request.getData().getStatus());
 
+		//save to elastic
+		TransactionElastic trxElastic = new TransactionElastic();
+		trxElastic.setAdminFee(request.getData().getAdminFee());
+		trxElastic.setAmount(request.getData().getAmount());
+		trxElastic.setStatus(request.getData().getStatus());
+		trxElastic.setTotalAmount(theTransaction.getTotalAmount());
+		trxElastic.setDateTime(theTransaction.getCreatedDate());
+		trxElastic.setType(theTransaction.getType());
+		trxElastic.setUsername(theTransaction.getUser().getUsername());
+		elasticService.saveTransaction(trxElastic);
+		
+		//save to db
 		transactionService.save(theTransaction);
 
 		return response;
@@ -163,6 +180,19 @@ public class TransactionController {
 		transaction.setStatus(request.getData().getStatus());
 		transaction.setReason(request.getData().getReason());
 		
+		
+		//save to elastic 
+		TransactionElastic trxElastic = new TransactionElastic();
+		trxElastic.setAdminFee(request.getData().getAdminFee());
+		trxElastic.setAmount(request.getData().getAmount());
+		trxElastic.setStatus(request.getData().getStatus());
+		trxElastic.setTotalAmount(request.getData().getTotalAmount());
+		trxElastic.setDateTime(transaction.getCreatedDate());
+		trxElastic.setType(request.getData().getType());
+		trxElastic.setUsername(request.getData().getUsername());
+		elasticService.saveTransaction(trxElastic);
+		
+		//save to db
 		transactionService.save(transaction);
 		
 		response.setData(transaction);

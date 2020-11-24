@@ -9,6 +9,7 @@
  */
 package id.co.asyst.bukopin.mobile.transfer.core.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,5 +105,8 @@ public class FundTransferService {
 	 this.fundTransferRepository.deleteById(id);
     }
     
+    public List<FundTransfer> findAllFundTransfer() {
+    	return fundTransferRepository.findAll();
+        }
 
 }

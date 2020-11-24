@@ -10,7 +10,7 @@
 /*
  * Copyright (c) 2020 Lufthansa Systems Indonesia, PT. All rights reserved.
  */
-package id.co.asyst.bukopin.mobile.transfer.core.service.elastic;
+package id.co.asyst.bukopin.mobile.master.core.service.elastic;
 
 import java.util.List;
 
@@ -20,22 +20,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import id.co.asyst.bukopin.mobile.transfer.core.repository.elastic.FundTransferElasticRepository;
-import id.co.asyst.bukopin.mobile.transfer.model.entity.elastic.FundTransferElastic;
+import id.co.asyst.bukopin.mobile.master.core.repository.elastic.TransactionElasticRepository;
+import id.co.asyst.bukopin.mobile.master.model.elastic.TransactionElastic;
+
 
 /**
- * Elasticsearch Service for Overbook & Fund Transfer
+ * Elasticsearch Service for Transaction
  * 
- * @author Eka Ariyansyah
+ * @author Kartika Dwi H
  * @version $Revision$, Nov 19, 2020
  * @since 1.4.Alpha1
  */
 @Service
-public class FundTransferElasticService {
+public class TransactionElasticService {
     /**
      * Logger
      */
-    private final Logger log = LoggerFactory.getLogger(FundTransferElasticService.class);
+    private final Logger log = LoggerFactory.getLogger(TransactionElasticService.class);
     
     /* Constants: */
 
@@ -44,7 +45,7 @@ public class FundTransferElasticService {
      * Elasticsearch Login Repository
      */
     @Autowired
-    private FundTransferElasticRepository elasticRepository;
+    private TransactionElasticRepository elasticRepository;
 
     /* Transient Attributes: */
 
@@ -60,14 +61,29 @@ public class FundTransferElasticService {
      * 
      * @param transaction The Transaction to Save
      */
-    @Async("transferAsyncExecutor")
-    public void saveTransaction(FundTransferElastic transaction) {
+    @Async("masterAsyncExecutor")
+    public void saveTransaction(TransactionElastic transaction) {
 	elasticRepository.save(transaction);
     }
     
-    @Async("transferAsyncExecutor")
-    public void saveAllTransaction(List<FundTransferElastic> transaction) {
+    @Async("masterAsyncExecutor")
+    public void saveAllTransaction(List<TransactionElastic> transaction) {
 	elasticRepository.saveAll(transaction);
+    }
+    
+    @Async("masterAsyncExecutor")
+    public void deleteTransaction(TransactionElastic transaction) {
+	elasticRepository.delete(transaction);
+    }
+    
+    @Async("masterAsyncExecutor")
+    public void deleteAllTransaction() {
+	elasticRepository.deleteAll();
+    }
+    
+    
+    public Iterable<TransactionElastic> findAllTransaction() {
+	return elasticRepository.findAll();
     }
 
     /* Overrides: */

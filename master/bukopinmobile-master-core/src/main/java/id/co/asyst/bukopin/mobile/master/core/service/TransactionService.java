@@ -9,12 +9,15 @@
  */
 package id.co.asyst.bukopin.mobile.master.core.service;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import id.co.asyst.bukopin.mobile.master.core.repository.TransactionRepository;
+import id.co.asyst.bukopin.mobile.master.model.entity.ListEMoney;
 import id.co.asyst.bukopin.mobile.master.model.entity.Transaction;
 
 /**
@@ -59,6 +62,15 @@ public class TransactionService {
     @Transactional
     public Transaction findByReffNumberAndDestinationId(String refNumber, Long id) {
     	return transactionRepository.findByRefandDestinationId(refNumber, id);
+    }
+    
+    /**
+     * findAll Transaction data
+     * @return List of Transaction data
+     */
+    @Transactional()
+    public List<Transaction> findAll() {
+	return transactionRepository.findAll();
     }
     /* Overrides: */
 }

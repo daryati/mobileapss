@@ -73,6 +73,12 @@ public class TransactionCommonRequest {
 
     @JsonProperty("noteId")
     private String noteId;
+    
+    @JsonProperty("adminFee")
+	private BigDecimal adminFee;
+    
+    @JsonProperty("amount")
+	private BigDecimal amount;
 	/* Transient Attributes: */
 
 	/* Constructors: */
@@ -273,21 +279,36 @@ public class TransactionCommonRequest {
 		this.totalAmount = totalAmount;
 	}
 
+	public BigDecimal getAdminFee() {
+		return adminFee;
+	}
+
+	public void setAdminFee(BigDecimal adminFee) {
+		this.adminFee = adminFee;
+	}
+
+	public BigDecimal getAmount() {
+		return amount;
+	}
+
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
+	}
+	
 
 	/* Getters & setters for transient attributes: */
 
 	/* Functionalities: */
 
-	/* Overrides: */
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+	
+
 	@Override
 	public String toString() {
 		return "TransactionCommonRequest [username=" + username + ", type=" + type + ", accountNumber=" + accountNumber
 				+ ", referenceNumber=" + referenceNumber + ", totalAmount=" + totalAmount + ", destinationId="
 				+ destinationId + ", billerProduct=" + billerProduct + ", menu=" + menu + ", status=" + status
-				+ ", reason=" + reason + ", noteEn=" + noteEn + ", noteId=" + noteId + "]";
+				+ ", reason=" + reason + ", noteEn=" + noteEn + ", noteId=" + noteId + ", adminFee=" + adminFee
+				+ ", amount=" + amount + "]";
 	}
 	
 

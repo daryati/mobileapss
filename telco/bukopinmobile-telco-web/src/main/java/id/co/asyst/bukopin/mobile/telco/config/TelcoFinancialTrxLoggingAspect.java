@@ -172,6 +172,10 @@ public class TelcoFinancialTrxLoggingAspect {
 			transaction.setMenu(TELKOM_PSTN_TRX_MENU);
 			transaction.setBillerProduct(param.get("type"));
 			
+			
+			transaction.setAdminFee(new BigDecimal(adminfee));
+			transaction.setAmount(new BigDecimal(bill));	
+			
 
 		} else if ("paymentPostpaidTelco".equals(method)) {
 			String bill = param.get("element61").substring(115, 126);
@@ -185,6 +189,9 @@ public class TelcoFinancialTrxLoggingAspect {
 			transaction.setNoteEn(NOTE_EN_TELCOPOST.concat(param.get("custNo")));
 			transaction.setBillerProduct(param.get("productName"));
 			transaction.setMenu(TELCO_POSTPAID_TRX_MENU);
+			
+			transaction.setAdminFee(new BigDecimal(adminfee));
+			transaction.setAmount(new BigDecimal(bill));
 
 		} else if ("purchasePrepaidTelcoResult".equals(method)) {
 			
@@ -211,6 +218,9 @@ public class TelcoFinancialTrxLoggingAspect {
 			
 			transaction.setBillerProduct(param.get("pGroup"));
 			transaction.setMenu(TELCO_PREPAID_TRX_MENU);
+			
+			transaction.setAdminFee(adminfee);
+			transaction.setAmount(bill);
 		}
 
 		transaction.setReason("code : " + code + " - message: " + message);
@@ -269,14 +279,30 @@ public class TelcoFinancialTrxLoggingAspect {
 
 					if (BkpmConstants.CODE_SOAP_SUCCESS.equalsIgnoreCase(res.getCode())) {
 						// save report SUCCESS
-						Map<String, String> resp = mapper.convertValue(res.getData(), Map.class);
+						Map<String, Object> resp = mapper.convertValue(res.getData(), Map.class);
 
 						TransactionCommonRequest trxReq = new TransactionCommonRequest();
+						
+						//set admin fee and amount for transaction elastic
+						if ("purchaseTelkomPostpaid".equals(method)) {
+							trxReq.setAdminFee((BigDecimal)(resp.get("amountFee")));
+							trxReq.setAmount((BigDecimal) (resp.get("amount")));	
+							
+						} else if ("paymentPostpaidTelco".equals(method)) {
+							trxReq.setAdminFee((BigDecimal) (resp.get("amountFee")));
+							trxReq.setAmount((BigDecimal) (resp.get("amount")));	
+							
+						} else if ("purchasePrepaidTelcoResult".equals(method)) {
+							trxReq.setAdminFee((BigDecimal) (resp.get("adminFee")));
+							trxReq.setAmount((BigDecimal) (resp.get("amount")));	
+						}
+						
+						
 						trxReq.setReason("code : " + res.getCode() + " - message: " + res.getMessage());
 						trxReq.setStatus(BkpmConstants.STATUS_SUCCESS);
-						String reference = resp.get("referenceNumber");
+						String reference = (String) resp.get("referenceNumber");
 						if(reference == null) {
-							reference = resp.get("referensi");
+							reference = (String) resp.get("referensi");
 							
 						}
 						trxReq.setReferenceNumber(reference);
@@ -332,6 +358,8 @@ public class TelcoFinancialTrxLoggingAspect {
 							transaction.setMenu(TELKOM_PSTN_TRX_MENU);
 							transaction.setBillerProduct(param.get("type"));
 							
+							transaction.setAdminFee(new BigDecimal(adminfee));
+							transaction.setAmount(new BigDecimal(bill));	
 
 						} else if ("paymentPostpaidTelco".equals(method)) {
 							String bill = param.get("element61").substring(115, 126);
@@ -345,6 +373,9 @@ public class TelcoFinancialTrxLoggingAspect {
 							transaction.setNoteEn(NOTE_EN_TELCOPOST.concat(param.get("custNo")));
 							transaction.setBillerProduct(param.get("productName"));
 							transaction.setMenu(TELCO_POSTPAID_TRX_MENU);
+							
+							transaction.setAdminFee(new BigDecimal(adminfee));
+							transaction.setAmount(new BigDecimal(bill));	
 
 						} else if ("purchasePrepaidTelcoResult".equals(method)) {
 							
@@ -371,6 +402,9 @@ public class TelcoFinancialTrxLoggingAspect {
 							
 							transaction.setBillerProduct(param.get("pGroup"));
 							transaction.setMenu(TELCO_PREPAID_TRX_MENU);
+							
+							transaction.setAdminFee(adminfee);
+							transaction.setAmount(bill);	
 						}
 
 						transaction.setReason("code : " + res.getCode() + " - message: " + res.getMessage());
