@@ -30,6 +30,13 @@ spring:
          hibernate.dialect: org.hibernate.dialect.SQLServerDialect
          #hibernate.jdbc.lob.non_contextual_creation: true
 
+## ELASTIC
+   data:
+      elasticsearch:
+         cluster-name: elasticsearch
+         cluster-nodes: 10.2.62.119:9200
+         ##cluster-nodes: localhost:9200
+         
 ## LIQUIBASE (LiquibaseProperties)
 # spring.liquibase.enabled=false
 

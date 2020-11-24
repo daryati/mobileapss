@@ -30,7 +30,7 @@ import id.co.asyst.bukopin.mobile.transfer.model.entity.FundTransfer;
  * @version $Revision$, Nov 19, 2020
  * @since 1.4.Alpha1
  */
-@Document(indexName="bkpm-transfer")
+@Document(indexName="bkpm-trx")
 public class FundTransferElastic {
     /* Constants: */
 
@@ -62,6 +62,11 @@ public class FundTransferElastic {
     private BigDecimal adminFee;
     
     /**
+     * Total Amount
+     */
+    private BigDecimal totalAmount;
+    
+    /**
      * Transaction type ("FUND_TRANSFER" or "OVERBOOK")
      */
     private String type;
@@ -89,6 +94,7 @@ public class FundTransferElastic {
 	this.adminFee = trx.getAdminFee();
 	this.type = trx.getMethod();
 	this.status = trx.getStatus();
+	this.totalAmount = trx.getAmount().add(trx.getAdminFee());
     }
 
     /* Getters & setters for attributes: */
@@ -204,17 +210,22 @@ public class FundTransferElastic {
         this.status = status;
     }
 
+    public BigDecimal getTotalAmount() {
+		return totalAmount;
+	}
+
+	public void setTotalAmount(BigDecimal totalAmount) {
+		this.totalAmount = totalAmount;
+	}
+    
     /* Getters & setters for transient attributes: */
 
     /* Functionalities: */
 
-    /* Overrides: */
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-	return "FundTransferElastic [id=" + id + ", username=" + username + ", dateTime=" + dateTime + ", amount="
-		+ amount + ", adminFee=" + adminFee + ", type=" + type + ", status=" + status + "]";
-    }
+	@Override
+	public String toString() {
+		return "FundTransferElastic [id=" + id + ", username=" + username + ", dateTime=" + dateTime + ", amount="
+				+ amount + ", adminFee=" + adminFee + ", totalAmount=" + totalAmount + ", type=" + type + ", status="
+				+ status + "]";
+	}
 }

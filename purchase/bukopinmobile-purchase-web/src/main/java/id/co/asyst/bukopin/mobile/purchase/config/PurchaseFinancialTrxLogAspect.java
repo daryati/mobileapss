@@ -126,92 +126,102 @@ public class PurchaseFinancialTrxLogAspect {
         		
         		ObjectMapper mapper = new ObjectMapper();
         		
-        		Object[] rq = joinPoint.getArgs();
-        
-        		Map<String, String> reqs = mapper.convertValue(rq[0], Map.class);
-        		Map<String, String> param = mapper.convertValue(reqs.get("parameter"), Map.class);
-        		Map<String, BigDecimal> amt = mapper.convertValue(reqs.get("parameter"), Map.class);
-        
-        		TransactionCommonRequest transaction = new TransactionCommonRequest();
-        
-        		transaction.setUsername(param.get("username"));
-        		transaction.setAccountNumber(param.get("accountNo"));
-        
-        		transaction.setType(TransactionTypeEnum.EMONEY.name());
-        		transaction.setMenu(EMONEY_TRX_MENU);
-        		transaction.setBillerProduct(param.get("type"));
-        
-        		if ("purchaseOVO".equals(method)) {
-        			// total amount
-        			BigDecimal bill = amt.get("amount");
-        			String adminfee = param.get("element61").substring(78, 89);
-        
-        			BigDecimal total = bill.add(new BigDecimal(adminfee));
-        			transaction.setNoteId(NOTE_ID_EMONEY.concat(param.get("custNo")));
-        			transaction.setNoteEn(NOTE_EN_EMONEY.concat(param.get("custNo")));
-        
-        			transaction.setTotalAmount(total);
-        
-        		} else if ("purchaseGoPayResult".equals(method)) {
-        			// total amount
-        			BigDecimal bill = amt.get("amount");
-        			String adminfee = param.get("element61").substring(78, 89);
-        
-        			BigDecimal total = bill.add(new BigDecimal(adminfee));
-        			transaction.setNoteId(NOTE_ID_EMONEY.concat(param.get("custNo")));
-        			transaction.setNoteEn(NOTE_EN_EMONEY.concat(param.get("custNo")));
-        
-        			transaction.setTotalAmount(total);
-        		} else if ("purchase".equals(method)) {
-        			// total amount
-        			BigDecimal bill = amt.get("amount");
-        
-        			String[] el48 = param.get("element48").split("\\|", -1);
-        			String adm = el48[6];
-        			//String adminFee = adm.substring(0, 7).concat("00");
-        			
-        			BigDecimal total = bill.add(new BigDecimal(adm));
-        			transaction.setNoteId(NOTE_ID_EMONEY.concat(param.get("custNo")));
-        			transaction.setNoteEn(NOTE_EN_EMONEY.concat(param.get("custNo")));
-        
-        			transaction.setTotalAmount(total);
-        
-        		} else if ("purchaseResult".equals(method)) {
-        			String subNumber = param.get("element48").substring(8, 18);
-        			if (param.get("flag").equals("1")) {
-        				subNumber = param.get("element48").substring(19, 30);
-        			}
-        
-        			BigDecimal bill = new BigDecimal(param.get("nominal"));
-        			BigDecimal adminfee = new BigDecimal(param.get("adminCharge"));
-        
-        			BigDecimal total = bill.add(adminfee);
-        
-        			transaction.setTotalAmount(total);
-        
-        			transaction.setType(TransactionTypeEnum.PLNPRE.name());
-        			transaction.setNoteId(NOTE_ID_PLNPRE.concat(subNumber));
-        			transaction.setNoteEn(NOTE_EN_PLNPRE.concat(subNumber));
-        			transaction.setBillerProduct(PLN_BILLER_PRODUCT);
-        			transaction.setMenu(PLN_PREPAID_TRX_MENU);
-        
-        		}
-        		// dataReq.setSubscriberName();
-        		// dataReq.setReference(res.getReferenceNumber());
-        
-        		transaction.setReason("code : " + code + " - message: " + message);
-        		transaction.setStatus(BkpmConstants.STATUS_FAILED);
-        
-        		CommonRequest<TransactionCommonRequest> req = new CommonRequest<>();
-        		req.setIdentity(generateIdentity());
-        		req.setData(transaction);
-        
-        		try {
-        			Services.create(MasterModuleService.class).saveTransaction(req).execute().body();
-        		} catch (IOException ex) {
-        			// TODO Auto-generated catch block
-        			ex.printStackTrace();
-        		}
+        		
+				Object[] rq = joinPoint.getArgs();
+		
+				Map<String, String> reqs = mapper.convertValue(rq[0], Map.class);
+				Map<String, String> param = mapper.convertValue(reqs.get("parameter"), Map.class);
+				Map<String, BigDecimal> amt = mapper.convertValue(reqs.get("parameter"), Map.class);
+		
+				TransactionCommonRequest transaction = new TransactionCommonRequest();
+		
+				transaction.setUsername(param.get("username"));
+				transaction.setAccountNumber(param.get("accountNo"));
+		
+				transaction.setType(TransactionTypeEnum.EMONEY.name());
+				transaction.setMenu(EMONEY_TRX_MENU);
+				transaction.setBillerProduct(param.get("type"));
+		
+				if ("purchaseOVO".equals(method)) {
+					// total amount
+					BigDecimal bill = amt.get("amount");
+					String adminfee = param.get("element61").substring(78, 89);
+		
+					BigDecimal total = bill.add(new BigDecimal(adminfee));
+					transaction.setNoteId(NOTE_ID_EMONEY.concat(param.get("custNo")));
+					transaction.setNoteEn(NOTE_EN_EMONEY.concat(param.get("custNo")));
+		
+					transaction.setTotalAmount(total);
+					transaction.setAdminFee(new BigDecimal(adminfee));
+					transaction.setAmount(bill);	
+		
+				} else if ("purchaseGoPayResult".equals(method)) {
+					// total amount
+					BigDecimal bill = amt.get("amount");
+					String adminfee = param.get("element61").substring(78, 89);
+		
+					BigDecimal total = bill.add(new BigDecimal(adminfee));
+					transaction.setNoteId(NOTE_ID_EMONEY.concat(param.get("custNo")));
+					transaction.setNoteEn(NOTE_EN_EMONEY.concat(param.get("custNo")));
+					transaction.setAdminFee(new BigDecimal(adminfee));
+					transaction.setAmount(bill);	
+		
+					transaction.setTotalAmount(total);
+				} else if ("purchase".equals(method)) {
+					// total amount
+					BigDecimal bill = amt.get("amount");
+		
+					String[] el48 = param.get("element48").split("\\|", -1);
+					String adm = el48[6];
+					//String adminFee = adm.substring(0, 7).concat("00");
+					
+					BigDecimal total = bill.add(new BigDecimal(adm));
+					transaction.setNoteId(NOTE_ID_EMONEY.concat(param.get("custNo")));
+					transaction.setNoteEn(NOTE_EN_EMONEY.concat(param.get("custNo")));
+		
+					transaction.setTotalAmount(total);
+					transaction.setAdminFee(new BigDecimal(adm));
+					transaction.setAmount(bill);	
+		
+				} else if ("purchaseResult".equals(method)) {
+					String subNumber = param.get("element48").substring(8, 18);
+					if (param.get("flag").equals("1")) {
+						subNumber = param.get("element48").substring(19, 30);
+					}
+		
+					BigDecimal bill = new BigDecimal(param.get("nominal"));
+					BigDecimal adminfee = new BigDecimal(param.get("adminCharge"));
+		
+					BigDecimal total = bill.add(adminfee);
+		
+					transaction.setTotalAmount(total);
+					transaction.setAdminFee(adminfee);
+					transaction.setAmount(bill);
+		
+					transaction.setType(TransactionTypeEnum.PLNPRE.name());
+					transaction.setNoteId(NOTE_ID_PLNPRE.concat(subNumber));
+					transaction.setNoteEn(NOTE_EN_PLNPRE.concat(subNumber));
+					transaction.setBillerProduct(PLN_BILLER_PRODUCT);
+					transaction.setMenu(PLN_PREPAID_TRX_MENU);
+						
+		
+				}
+				// dataReq.setSubscriberName();
+				// dataReq.setReference(res.getReferenceNumber());
+		
+				transaction.setReason("code : " + code + " - message: " + message);
+				transaction.setStatus(BkpmConstants.STATUS_FAILED);
+		
+				CommonRequest<TransactionCommonRequest> req = new CommonRequest<>();
+				req.setIdentity(generateIdentity());
+				req.setData(transaction);
+		
+				try {
+					Services.create(MasterModuleService.class).saveTransaction(req).execute().body();
+				} catch (IOException ex) {
+					// TODO Auto-generated catch block
+					ex.printStackTrace();
+				}
 		}
 	}
 
@@ -259,15 +269,36 @@ public class PurchaseFinancialTrxLogAspect {
 
 						Map<String, String> reqs = mapper.convertValue(rq[0], Map.class);
 						Map<String, String> param = mapper.convertValue(reqs.get("parameter"), Map.class);
-						Map<String, String> resp = mapper.convertValue(res.getData(), Map.class);
+						Map<String, Object> resp = mapper.convertValue(res.getData(), Map.class);
 
+						
 						TransactionCommonRequest trxReq = new TransactionCommonRequest();
+						//set admin fee and amount for transaction elastic
+						if ("purchaseOVO".equals(method)) {
+							trxReq.setAdminFee((BigDecimal) (resp.get("amountFee")));
+							trxReq.setAmount((BigDecimal) (resp.get("amount")));	
+							
+						} else if ("purchaseGoPayResult".equals(method)) {
+							trxReq.setAdminFee((BigDecimal) (resp.get("amountFee")));
+							trxReq.setAmount((BigDecimal) (resp.get("amount")));	
+							
+						} else if ("purchase".equals(method)) {
+							trxReq.setAdminFee((BigDecimal)(resp.get("amountFee")));
+							trxReq.setAmount((BigDecimal) (resp.get("amount")));	
+							
+						}  else if ("purchaseResult".equals(method)) {
+							trxReq.setAdminFee((BigDecimal)(resp.get("adminCharge")));
+							trxReq.setAmount((BigDecimal)(resp.get("nominal")));	
+						}
+						
+						
+						
 						trxReq.setReason("code : " + res.getCode() + " - message: " + res.getMessage());
 						trxReq.setStatus(BkpmConstants.STATUS_SUCCESS);
-						String reference = resp.get("reference");
+						String reference = (String) resp.get("reference");
 						trxReq.setReferenceNumber(reference);
 						if(reference == null) {
-							trxReq.setReferenceNumber(resp.get("referensi"));
+							trxReq.setReferenceNumber((String)resp.get("referensi"));
 						}
 						trxReq.setDestinationId(String.valueOf(resp.get("destinationId")));
 
@@ -309,6 +340,8 @@ public class PurchaseFinancialTrxLogAspect {
 							transaction.setNoteEn(NOTE_EN_EMONEY.concat(param.get("custNo")));
 
 							transaction.setTotalAmount(total);
+							transaction.setAdminFee(new BigDecimal(adminfee));
+							transaction.setAmount(bill);
 
 						} else if ("purchaseGoPayResult".equals(method)) {
 							// total amount
@@ -320,6 +353,9 @@ public class PurchaseFinancialTrxLogAspect {
 							transaction.setNoteEn(NOTE_EN_EMONEY.concat(param.get("custNo")));
 
 							transaction.setTotalAmount(total);
+							transaction.setAdminFee(new BigDecimal(adminfee));
+							transaction.setAmount(bill);
+							
 						} else if ("purchase".equals(method)) {
 							// total amount
 							BigDecimal bill = amt.get("amount");
@@ -333,6 +369,8 @@ public class PurchaseFinancialTrxLogAspect {
 							transaction.setNoteEn(NOTE_EN_EMONEY.concat(param.get("custNo")));
 
 							transaction.setTotalAmount(total);
+							transaction.setAdminFee(new BigDecimal(adm));
+							transaction.setAmount(bill);
 
 						} else if ("purchaseResult".equals(method)) {
 							String subNumber = param.get("element48").substring(8, 18);
@@ -346,6 +384,8 @@ public class PurchaseFinancialTrxLogAspect {
 							BigDecimal total = bill.add(adminfee);
 
 							transaction.setTotalAmount(total);
+							transaction.setAdminFee(adminfee);
+							transaction.setAmount(bill);
 
 							transaction.setType(TransactionTypeEnum.PLNPRE.name());
 							transaction.setNoteId(NOTE_ID_PLNPRE.concat(subNumber));
@@ -374,7 +414,7 @@ public class PurchaseFinancialTrxLogAspect {
 
 				}
 
-				log.debug("Telco End AOP: {}.{}() with result = {}", joinPoint.getSignature().getDeclaringTypeName(),
+				log.debug("Purchase End AOP: {}.{}() with result = {}", joinPoint.getSignature().getDeclaringTypeName(),
 						joinPoint.getSignature().getName(), result);
 
 			}

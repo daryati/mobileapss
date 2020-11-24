@@ -13,8 +13,13 @@
 package id.co.asyst.bukopin.mobile.transfer.web.rest;
 
 import java.math.BigDecimal;
+import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +29,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import id.co.asyst.bukopin.mobile.common.model.BkpmConstants;
+import id.co.asyst.bukopin.mobile.transfer.core.service.FundTransferService;
 import id.co.asyst.bukopin.mobile.transfer.core.service.elastic.FundTransferElasticService;
+import id.co.asyst.bukopin.mobile.transfer.model.entity.FundTransfer;
 import id.co.asyst.bukopin.mobile.transfer.model.entity.elastic.FundTransferElastic;
 
 /**
@@ -38,10 +45,13 @@ import id.co.asyst.bukopin.mobile.transfer.model.entity.elastic.FundTransferElas
 @RequestMapping("/elastic")
 public class FundTransferElasticController {
     /* Constants: */
-
+	private final Logger log = LoggerFactory.getLogger(FundTransferElasticController.class);
     /* Attributes: */
     @Autowired
     private FundTransferElasticService elasticService;
+    
+    @Autowired
+    private FundTransferService ftService;
 
     /* Transient Attributes: */
 
@@ -73,6 +83,41 @@ public class FundTransferElasticController {
 	
 	elasticService.saveTransaction(transaction);
     }
+    
+    @GetMapping(value= "/storeTransactionData")
+	public String storeTransaction() {
+		log.debug("Store transfer transaction to elastic...");
+		//ObjectMapper oMapper = new ObjectMapper();
+		//get alll insurance data's form db
+		List<FundTransfer> tfs = ftService.findAllFundTransfer();
+		log.debug("size transaction: "+tfs.size());
+		List<FundTransferElastic> trxElastic = new ArrayList<>();
+		for(FundTransfer tf : tfs) {
+			if( null != tf) {
+				if(null != tf.getStatus()) {
+					if(!"FAIL".equalsIgnoreCase(tf.getStatus())) {
+						FundTransferElastic trx = new FundTransferElastic();
+						trx.setAdminFee(tf.getAdminFee());
+						trx.setAmount(tf.getAmount());
+						trx.setStatus(tf.getStatus());
+						trx.setTotalAmount(tf.getAdminFee().add(tf.getAmount()));
+						Date dt = Date.from(tf.getCreatedOn().atZone(ZoneId.systemDefault()).toInstant());
+						trx.setDateTime(dt);
+						trx.setType(tf.getMethod());
+						trx.setUsername(tf.getUsername().getUsername());
+						trxElastic.add(trx);						
+					}
+					
+				}
+			}
+		}
+		// delete old customer login elastic data
+		//transactionElasticService.deleteTransaction();
+		
+		//store new customer login elastic data
+		elasticService.saveAllTransaction(trxElastic);
+		return "Records saved in the db.... "+trxElastic.size();
+	}
 
     /* Overrides: */
 }
