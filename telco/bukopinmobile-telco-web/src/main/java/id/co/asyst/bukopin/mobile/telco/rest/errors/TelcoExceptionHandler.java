@@ -157,7 +157,7 @@ public class TelcoExceptionHandler extends ResponseEntityExceptionHandler {
     
     // 500 - Null Pointer, Entity Not Found.
     @ExceptionHandler({NullPointerException.class, EntityNotFoundException.class, 
-	NoRouteToHostException.class, JDBCConnectionException.class, IllegalArgumentException.class,
+	JDBCConnectionException.class, IllegalArgumentException.class,
 	DataLengthException.class, StringIndexOutOfBoundsException.class, ConstraintViolationException.class})
     protected ResponseEntity<Object> handleInternal(final RuntimeException ex, final WebRequest request) {
 	log.error("Internal Error, caused by: " + ex.getCause(), ex);
