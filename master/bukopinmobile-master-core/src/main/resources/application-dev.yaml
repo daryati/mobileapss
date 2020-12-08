@@ -35,6 +35,8 @@ spring:
       elasticsearch:
          cluster-name: elasticsearch
          cluster-nodes: 10.2.62.119:9200
+         username: elastic
+         password: elastic
          ##cluster-nodes: localhost:9200
          
 ## LIQUIBASE (LiquibaseProperties)

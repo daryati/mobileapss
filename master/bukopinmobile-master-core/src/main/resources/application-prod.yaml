@@ -28,6 +28,14 @@ spring:
 ## LIQUIBASE (LiquibaseProperties)
 # spring.liquibase.enabled=false
 
+## ELASTIC
+   data:
+      elasticsearch:
+         cluster-name: elasticsearch
+         cluster-nodes: 10.2.62.119:9200
+         username: elastic
+         password: elastic
+
 ## LOGGING
 logging:
    level:

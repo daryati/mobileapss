@@ -22,11 +22,16 @@ public class ElasticConfiguration extends AbstractElasticsearchConfiguration {
     private String clusterNodes;
     @Value("${spring.data.elasticsearch.cluster-name}")
     private String clusterName;
+    @Value("${spring.data.elasticsearch.username}")
+    private String username;
+    @Value("${spring.data.elasticsearch.password}")
+    private String password;
     
     @Override
     public RestHighLevelClient elasticsearchClient() {
 	final ClientConfiguration clientConfiguration = ClientConfiguration.builder()
 		.connectedTo(clusterNodes)
+		.withBasicAuth(username,password)
 		.build();
 
 	return RestClients.create(clientConfiguration).rest();

@@ -38,6 +38,14 @@ spring:
                writeout: 5000
                starttls:
                   enable: true
+                  
+## ELASTIC
+   data:
+      elasticsearch:
+         cluster-name: elasticsearch
+         cluster-nodes: 10.2.62.119:9200
+         username: elastic
+         password: elastic
 
 ## BUKOPIN INTERNAL DATABASE
 bukopin:
