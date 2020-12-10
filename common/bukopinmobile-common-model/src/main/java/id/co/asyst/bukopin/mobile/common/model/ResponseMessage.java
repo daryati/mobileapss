@@ -90,7 +90,10 @@ public enum ResponseMessage {
     ERROR_TIBCO("602"),
     ERROR_ARANET("603"),
     
-    INTERNAL_SERVER_ERROR("500");
+    INTERNAL_SERVER_ERROR("500"),
+	
+	//destination account balance limit
+	DESTINATION_ACCOUNT_BALANCE("265");
     
     private String code;
     

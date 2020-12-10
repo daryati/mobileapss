@@ -82,6 +82,9 @@ public class OverbookController {
     // Prefix Wokee Account Number
     public static final String WOKEE_ACCNO_PREFIX = "89";
     public static final String WOKEE_ERROR_CODE = "16";
+	
+	// Destination account balance limit handling
+	private static final String DESTINATION_ACCOUNT_LIMIT = "265";
 
     /* Attributes: */
 
@@ -269,9 +272,26 @@ public class OverbookController {
 		}
 		// response.setData(res);
 	    } else if (TRANSFER_NOT_ENOUGH_BALANCE.equalsIgnoreCase(res.getStatusCode())) {
-		log.debug("not enough balance");
-		response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
-		response.setMessage(messageUtil.get("error.amount.not.enough", servletRequest.getLocale()));
+		log.debug("not enough balance"
+						+ ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
+				log.debug("des tibco " + res.getStatusDesc());
+				if (res.getStatusDesc().equals(
+						"Overbook gagal => 0647: LIMIT SALDO REK TUJUAN")) {
+					log.error("Destination account balance limit");
+					response.setCode(ResponseMessage.DESTINATION_ACCOUNT_BALANCE
+							.getCode());
+					response.setMessage(messageUtil.get(
+							"error.destination.account.limit",
+							servletRequest.getLocale()));
+
+				} else {
+					response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH
+							.getCode());
+					response.setMessage(messageUtil.get(
+							"error.amount.not.enough",
+							servletRequest.getLocale()));
+				}
+
 	    } else if (TRANSFER_NOT_ENOUGH_BALANCE_FUNDS.equalsIgnoreCase(res.getStatusCode())) {
 		log.debug("not enough balance");
 		response.setCode(ResponseMessage.AMOUNT_NOT_ENOUGH.getCode());
