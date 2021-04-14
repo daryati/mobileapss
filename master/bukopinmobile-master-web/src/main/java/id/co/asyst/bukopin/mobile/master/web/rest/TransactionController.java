@@ -118,7 +118,20 @@ public class TransactionController {
 			response.setMessage(messageUtil.get("error.data.not.found", servletRequest.getLocale()));
 			return response;
 		}
-
+		
+		String menu ="";
+		if(theTransaction.getType().equals("CREDITCARD")){
+			if(request.getData().getBillerProduct().equalsIgnoreCase("Bukopin")){
+				menu="Bukopin CC Payment";
+			}else{
+				menu="Non Bukopin CC Payment";
+			}
+			theTransaction.setMenu(menu);
+			theTransaction.setBillerProduct(request.getData().getBillerProduct());
+			
+		}
+		
+		
 		theTransaction.setStatus(request.getData().getStatus());
 
 		//save to elastic
@@ -168,6 +181,23 @@ public class TransactionController {
 		Map<String, Object> res = oMapper.convertValue(findUser.getData(), Map.class);
 		User userMap = oMapper.convertValue(res.get("user"), User.class);
 		
+		String menu ="";
+		//String rrn="",refBayar="",prodCode="";
+		log.debug("type dari transaksi"+request.getData().getType());
+		if(request.getData().getType().equalsIgnoreCase("CREDITCARD")){
+			if(request.getData().getBillerProduct().equalsIgnoreCase("Bukopin")){
+				menu="Bukopin CC Payment";
+			}else{
+				menu="Non Bukopin CC Payment";
+			}
+		}
+		
+		else{
+			menu = request.getData().getMenu();
+		}
+		
+		
+		
 		transaction.setUser(userMap);
 		transaction.setAccountNumber(request.getData().getAccountNumber());
 		transaction.setCreatedDate(new Date());
@@ -176,7 +206,7 @@ public class TransactionController {
 		transaction.setNoteEn(request.getData().getNoteEn());
 		transaction.setNoteId(request.getData().getNoteId());
 		transaction.setBillerProduct(request.getData().getBillerProduct());
-		transaction.setMenu(request.getData().getMenu());
+		transaction.setMenu(menu);
 		transaction.setStatus(request.getData().getStatus());
 		transaction.setReason(request.getData().getReason());
 		

@@ -399,8 +399,8 @@
 			<id>DEV</id>
 			<properties>
 				<!-- JDBC Config: -->
-				<jdbc.type>postgresql</jdbc.type>
-				<jdbc.version>7.4.1.jre8</jdbc.version>
+				<jdbc.type>mssql</jdbc.type>
+				<jdbc.version>9.2.0.jre8</jdbc.version>
 				<jdbc.groupId>com.microsoft.sqlserver</jdbc.groupId>
 				<jdbc.artifactId>mssql-jdbc</jdbc.artifactId>
 				
@@ -422,8 +422,8 @@
 			<id>PRD</id>
 			<properties>
 				<!-- JDBC Config: -->
-				<jdbc.type>postgresql</jdbc.type>
-				<jdbc.version>7.4.1.jre8</jdbc.version>
+				<jdbc.type>mssql</jdbc.type>
+				<jdbc.version>9.2.0.jre8</jdbc.version>
 				<jdbc.groupId>com.microsoft.sqlserver</jdbc.groupId>
 				<jdbc.artifactId>mssql-jdbc</jdbc.artifactId>
 				

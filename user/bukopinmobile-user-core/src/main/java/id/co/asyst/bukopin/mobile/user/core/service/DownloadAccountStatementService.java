@@ -63,7 +63,7 @@ public class DownloadAccountStatementService {
     private final Logger log = LoggerFactory.getLogger(DownloadAccountStatementService.class);
     
     private static final String LINK_BUKOPIN = "www.bukopin.co.id";
-    private static final String HALO_BUKOPIN = "Halo Bukopin 14005";
+    private static final String HALO_BUKOPIN = "Halo KB Bukopin 14005";
     
     //DEV repository
     //private static final String TEMPLATE_PATH = "/home/dev/apps/spring-boot/bkpm-user/jasper-reports/Account_Statement_Template.jrxml";

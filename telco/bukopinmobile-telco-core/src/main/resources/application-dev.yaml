@@ -54,7 +54,8 @@ spring:
 #   file: /home/dev/BKPM-LOGS/telco/telco.log
       
 config:
-   forwarding-institution-code: 4411338
+   forwarding-institution-code: 4390003
+   
    ## IP CONFIG
    ip:
       passtrough: # client ip no need token

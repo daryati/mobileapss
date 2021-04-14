@@ -266,7 +266,7 @@ public class PaymentFinancialTrxLoggingAspect {
 		try {
 			Object result = joinPoint.proceed();
 			if (log.isDebugEnabled()) {
-				log.debug("Function " + joinPoint.getSignature().getName());
+				log.debug("Functione " + joinPoint.getSignature().getName());
 				String method = joinPoint.getSignature().getName();
 				// get response
 				CommonResponse res = (CommonResponse) result;
@@ -278,6 +278,7 @@ public class PaymentFinancialTrxLoggingAspect {
 					if (BkpmConstants.CODE_SOAP_SUCCESS.equalsIgnoreCase(res.getCode())) {
 						// save report SUCCESS
 						Map<String, Object> resp = mapper.convertValue(res.getData(), Map.class);
+						
 						TransactionCommonRequest trxReq = new TransactionCommonRequest();
 						
 						//set admin fee and amount for transaction elastic
@@ -293,9 +294,22 @@ public class PaymentFinancialTrxLoggingAspect {
 							trxReq.setAdminFee((BigDecimal) (resp.get("adminFee")));
 							trxReq.setAmount((BigDecimal) (resp.get("amount")));	
 						}  else if ("paymentCreditCard".equals(method)) {
-
 							trxReq.setAdminFee(new BigDecimal('0'));
 							trxReq.setAmount((BigDecimal)(resp.get("amount")));	
+							trxReq.setType(TransactionTypeEnum.CREDITCARD.name());
+							log.debug("type transaksi "+TransactionTypeEnum.CREDITCARD.name());
+							trxReq.setMenu(CC_NONBKP_TRX_MENU);
+							Object[] rq = joinPoint.getArgs();
+
+							Map<String, String> reqs = mapper.convertValue(rq[0], Map.class);
+							Map<String, String> param = mapper.convertValue(reqs.get("parameter"), Map.class);
+							trxReq.setBillerProduct(param.get("name"));
+							log.debug("test disini "+param.get("codeCc"));
+							if (param.get("codeCc").equalsIgnoreCase(CCBKP)) {
+
+								trxReq.setMenu(CC_BKP_TRX_MENU);
+							}
+							
 						}
 						
 						trxReq.setReason("code : " + res.getCode() + " - message: " + res.getMessage());

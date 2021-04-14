@@ -32,9 +32,9 @@ spring:
    data:
       elasticsearch:
          cluster-name: elasticsearch
-         cluster-nodes: 10.2.62.119:9200
+         cluster-nodes: 10.0.14.123:9200
          username: elastic
-         password: elastic
+         password: Bukopin2020
 
 ## LOGGING
 logging:

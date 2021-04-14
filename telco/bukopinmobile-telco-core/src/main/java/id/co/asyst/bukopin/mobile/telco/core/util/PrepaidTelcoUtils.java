@@ -241,7 +241,9 @@ public class PrepaidTelcoUtils {
     		String paddingTitle= new String(new char[30 - request.getTitle().length()]).replace('\0', ' ');    		
     		String leftpaddingamount= new String(new char[12 - amount.length()]).replace('\0', '0');    		
     		String leftpadAdminFee = new String(new char[8 - adminFee.length()]).replace('\0', '0');
-    		String desc61 = "PPOB BANK BUKOPIN     JAKARTA      JKTID";
+    		//String desc61 = "PPOB BANK BUKOPIN     JAKARTA      JKTID";
+    		String desc61=StringUtils.rightPad("MB BANK KB BUKOPIN    JAKARTA      JKTID", 40);
+    	
     		
     		elmt61 = element61.concat(paddingPhoneNumber).concat(request.getPackageCode()).concat(paddingPackagecode).
     				concat(request.getTitle()).concat(paddingTitle).concat(leftpaddingamount).concat(amount)

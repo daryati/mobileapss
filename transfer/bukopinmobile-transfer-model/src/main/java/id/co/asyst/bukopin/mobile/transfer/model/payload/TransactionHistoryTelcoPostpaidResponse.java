@@ -47,6 +47,7 @@ public class TransactionHistoryTelcoPostpaidResponse {
     private String alias;
     
     private String npwp;
+    
 
     /* Transient Attributes: */
 

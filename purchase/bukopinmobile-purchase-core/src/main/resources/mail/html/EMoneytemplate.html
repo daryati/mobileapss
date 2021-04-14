@@ -4,21 +4,40 @@
         <title th:remove="all">Bukopin email template</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<style>
-		div.outset {
-			border-style: outset;
-			border-radius: 15px
+		*{
+			color: #333333;
 		}
 		
-		#table1, #table2 {
-			width: 100%;
+		@font-face{
+			font-family: 'Roboto';
+			src: url('Roboto-Regular.ttf') format('truetype');
+		}
+		
+		tr.alignTop {
+			vertical-align: top;
+			display: inline-block;
+		}
+		
+		div.outset {
+			box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+			border-radius: 8px
+		}
+		
+		#table1 tr {
+			border-bottom: 1px solid #B3B3B3;
 		}
 		
 		#table1 td{
 			font-family: Arial;
-			font-size: 10px;
+			font-size: 9px;
 			text-align: left;
-			border-bottom: 1px solid black;
 			width: 50%;
+			padding: 4px 1px 5px 1px;
+		}
+		
+		#table1 td span{
+			font-weight: bold;
+			padding: 4px 5px 5px 5px;
 		}
 		
 		#table2 td{
@@ -27,118 +46,101 @@
 			font-size: 11px;
 			text-align: left;
 			width: 50%;
+			padding: 10px 1px 1px 1px;
+			font-weight: bold;
 		}
 		
-		#innerbox {
-		   	width:250px; /* or whatever width you want. */
-		   	max-width:250px; /* or whatever width you want. */
-		   	display: inline-block;
+		#table2 td span{
+			font-weight: bold;
+			padding: 4px 5px 5px 5px;
 		}
 		
-		div.header{
-			padding: 25px;
-			background-image: url(cid:header);
-			background-repeat: no-repeat;
-		    background-position: center; 
-		    background-size: 100% 100%;
-		    height:50px;
-		}
-		
-		div.footer{
-			padding: 25px;
-			background-image: url(cid:footer);
-			background-repeat: no-repeat;
-		    background-position: center; 
-		    background-size: 100% 100%;
-		    height:50px;
+		#table1, #table2{
+			border-collapse: collapse;
+			width: 100%;
 		}
 		</style>
 	</head>
     <body>    
-    <table width="400">
-	    <tr>
+    <table width="360" align="center">
+	    <tr class="alignTop">
 	    	<td>
 	    		<div align="center">
-					<img src="cid:header" />
+					<img width="360px" height="103px" src="cid:header" />
 				</div>
 	    	</td>
-	    </tr>
-	    <tr>
-	    	<td align="center" bgcolor="white" style="padding: 40px 30px 10px 30px;">
+    	</tr>
+    	<tr>
+			<td align="center" bgcolor="white" style="padding: 12px 20px;">
 	    		<div class="outset" style="padding: 10px 10px">
-                	<p align="right" style="font-family:Arial; font-size:10px">E-Money <span th:text ="${subject}"></span></p>
-					<p align="left" style="font-family:Arial; font-size:12px">Hai <span style="font-weight:bold" th:text ="${fullname}"></span>,</p>
-					<br>
+                	<p align="right" style="font-family:Arial; font-size:10px; margin: -1px 1px -12px 0px "><span th:text ="${subject}"></span></p>
+					<p align="left" style="font-family:Arial; font-size:12px; padding: 5px 1px 0px 0px; margin: 0px">Hai <span style="font-weight:bold" th:text ="${fullname}"></span>,</p>
+					
+					<div style="margin-top: 16px;"></div>
+					
 					<table id="table1">
-                    <tr>
-                    <td>Tanggal & Waktu</td>
-                    <td><span style="font-weight:bold" th:text ="${date}"></span>, <span style="font-weight:bold" th:text ="${time}"></span></td>
-                    </tr>
-                    <tr>
-                    <td>Referensi</td>
-                    <td><span style="font-weight:bold" th:text ="${reference}"></span></td>
-                    </tr>
-                    <tr>
-                    <td>Sumber Dana</td>
-                    <td><span style="font-weight:bold" th:text ="${accountNumber}"></span></td>
-                    </tr>
-                    <tr>
-                    <td>Nomor Pelanggan</td>
-                    <td><span style="font-weight:bold" th:text ="${subscriberID}"></span></td>
-                    </tr>
-                    <tr>
-                    <td>Nama Pelanggan</td>
-                    <td><span style="font-weight:bold" th:text ="${subscriberName}"></span></td>
-                    </tr>
-                    <tr>
-                    <td><br></td>
-                    <td><br></td>
-                    </tr>
-                    <tr>
-                    <td>Top Up <span th:text ="${subject}"></span></td>
-                    <td><span style="font-weight:bold" th:text ="${topUpGopay}"></span></td>
-                    </tr>
-                    <tr>
-                    <td>Biaya Admin</td>
-                    <td><span style="font-weight:bold" th:text ="${adminCharge}"></span></td>
-                    </tr>
-                    </table>
-                    <br>                    
+	                    <tr>
+		                    <td>Tanggal & Waktu</td>
+		                    <td><span th:text ="${date}"></span>, <span th:text ="${time}"></span></td>
+	                    </tr>
+	                    <tr>
+		                    <td>Referensi</td>
+		                    <td><span th:text ="${reference}"></span></td>
+	                    </tr>
+	                    <tr>
+		                    <td>Sumber Dana</td>
+		                    <td><span th:text ="${accountNumber}"></span></td>
+	                    </tr>
+	                    <tr>
+		                    <td>Nomor Pelanggan</td>
+		                    <td><span th:text ="${subscriberID}"></span></td>
+	                    </tr>
+	                    <tr>
+		                    <td>Nama Pelanggan</td>
+		                    <td><span th:text ="${subscriberName}"></span></td>
+	                    </tr>
+	                    <tr>
+		                    <td><div style="margin-top: 11px;"></div></td>
+		                    <td><div style="margin-top: 11px;"></div></td>
+	                    </tr>
+	                    <tr>
+		                    <td>Top Up <span style="font-weight: normal;" th:text ="${subject}"></span></td>
+		                    <td><span th:text ="${topUpGopay}"></span></td>
+	                    </tr>
+	                    <tr>
+		                    <td>Biaya Admin</td>
+		                    <td><span th:text ="${adminCharge}"></span></td>
+	                    </tr>
+                    </table>               
                     
                     <table id="table2">
-                    <tr>
-                    <td><b>Total Bayar</b></td>
-                    <td><span style="font-weight:bold" th:text ="${total}"></span></td>
-                    </tr>                    
+	                    <tr>
+		                    <td><b>Total Bayar</b></td>
+		                    <td><span th:text ="${total}"></span></td>
+	                    </tr>                    
                     </table>
-                    <br>
 				</div>
-				<p align="center" style="font-family:Roboto; font-size:10px; line-height:20px; color:#828282;"><span th:text ="${receipField1}"></span></p>
-				<p align="center" style="font-family:Roboto; font-size:10px; line-height:20px; color:#828282;"><span th:text ="${receipField2}"></span></p>
-				<p align="center" style="font-family:Roboto; font-size:10px; line-height:20px; color:#828282;"><span th:text ="${receipField3}"></span></p>
-				<p align="center" style="font-family:Roboto; font-size:10px; line-height:20px; color:#828282;"><span th:text ="${receipField4}"></span></p>
-				<p align="center" style="font-family:Roboto; font-size:10px; line-height:20px; color:#828282;"><span th:text ="${receipField5}"></span></p>
-				<p align="center" style="font-family:Roboto; font-size:10px; line-height:20px; color:#828282;"><span th:text ="${receipField6}"></span></p>
-                <hr size="2px" color="#d3d3d3">
-                <p style="color:#828282; font-family:Arial; font-size:8px">Email ini dibuat secara otomatis. Mohon tidak mengirimkan balasan ke email ini.</p>
-                <p style="background-color:#FFE4E7; font-family:Arial; font-size:8px; padding: 5px 5px	"><b>Perhatian!</b> Kata sandi, verifikasi, kode OTP bersifat rahasia. Dimohon untuk tidak memberikan data keamanan anda kepada pihak yang mengatasnamakan Bukopin.</p>
-			
+				
+				<div style="height: 91px; padding: 6px 0px 5px 0px;">
+					<p align="center" style="font-family:Roboto; font-size:10px; line-height:20px; color:#828282; margin: 3px 0px 3px 0px"><span th:text ="${receipField1}"></span></p>
+					<p align="center" style="font-family:Roboto; font-size:10px; line-height:20px; color:#828282; margin: 3px 0px 3px 0px"><span th:text ="${receipField2}"></span></p>
+					<p align="center" style="font-family:Roboto; font-size:10px; line-height:20px; color:#828282; margin: 3px 0px 3px 0px"><span th:text ="${receipField3}"></span></p>
+					<p align="center" style="font-family:Roboto; font-size:10px; line-height:20px; color:#828282; margin: 3px 0px 3px 0px"><span th:text ="${receipField4}"></span></p>
+					<p align="center" style="font-family:Roboto; font-size:10px; line-height:20px; color:#828282; margin: 3px 0px 3px 0px"><span th:text ="${receipField5}"></span></p>
+					<p align="center" style="font-family:Roboto; font-size:10px; line-height:20px; color:#828282; margin: 3px 0px 3px 0px"><span th:text ="${receipField6}"></span></p>
+				</div>
+				
+                <hr size="3px" width="305px" color="#B3B3B3">
+                <p style="color:#828282; font-size:8px; font-family:Arial; margin: 6px 0px 13px 0px;">Email ini dibuat secara otomatis. Mohon tidak mengirimkan balasan ke email ini.</p>
+                <p style="background-color:#FFEAEC;font-size:8px; font-family: Arial; padding: 5px 0px; margin: 13px 0px 0px 0px;"><b>Perhatian!</b> Kata sandi, verifikasi, kode OTP bersifat rahasia. Dimohon untuk tidak memberikan data keamanan anda kepada pihak yang mengatasnamakan KB Bukopin.</p>
+		    	
 	    	</td>
 	    </tr>
+	    
 	    <tr>
-			<td align="left">
+			<td align="center">
 				<div class="footer">
-					<br />
-					<a href="https://www.facebook.com/bukopinsiaga/">
-						<img src="cid:fb"/>
-					</a>
-					<a href="https://www.instagram.com/bukopinsiaga/">
-						<img src="cid:ig"/>
-					</a>
-					<a href="https://twitter.com/bukopinsiaga">
-						<img src="cid:twitter"/>
-					</a>
-					<img align="right" src="cid:halo"/>
+					<img width="360px" height="103px" src="cid:footer" />
 				</div>
 			</td>
 		</tr>

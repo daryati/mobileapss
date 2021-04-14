@@ -43,7 +43,8 @@ public class TransactionHistoryTelcoPrepaidResponse {
     private BigDecimal totalAmount;
     
     private String alias;
-
+    
+   
     /* Transient Attributes: */
 
     /* Constructors: */
@@ -227,20 +228,27 @@ public class TransactionHistoryTelcoPrepaidResponse {
         this.alias = alias;
     }
 
+    
+    
+    
     /* Getters & setters for transient attributes: */
 
     /* Functionalities: */
 
     /* Overrides: */
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
+  
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	    @Override
+  public String toString() {
 	return "TransactionHistoryTelcoPrepaid [dateTime=" + dateTime + ", referenceNumber=" + referenceNumber
 		+ ", accountNumber=" + accountNumber + ", phoneNumber=" + phoneNumber + ", subscriberName="
 		+ subscriberName + ", pGroup=" + pGroup + ", typeTelco=" + typeTelco + ", adminFee=" + adminFee
 		+ ", amount=" + amount + ", totalAmount=" + totalAmount + ", alias=" + alias + "]";
     }
+	
+	
+	
 }

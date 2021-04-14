@@ -592,15 +592,20 @@ public class PrepaidTelcoController {
 				PaymentPrepaidTelcoResponse purchaseTelkomselRes = new PaymentPrepaidTelcoResponse();
 				if (SUCCESS_CODE.equals(codeRes)) {
 				    log.info("Purchase Prepaid Telco Success");
+				    //nomor resi bit 61 diambil dari index 59 - 89
 				    // String dataResp =
 				    // resPurchaseEMoneyAranet.getRespayment().getResult().getElement48();
 				    // String footNote =
 				    // resPurchaseEMoneyAranet.getRespayment().getResult().getElement63();
+				    String refbayar=null;
 				    String element61 = resPurchaseTelkomselAranet.getRespayment().getResult().getElement61();
 				    String elmFee = resPurchaseTelkomselAranet.getRespayment().getResult().getElement28();
 				    String elmAmt = resPurchaseTelkomselAranet.getRespayment().getResult().getElement4();
 				    String element122 = resPurchaseTelkomselAranet.getRespayment().getResult().getElement122();
-
+				    String element37 = resPurchaseTelkomselAranet.getRespayment().getResult().getElement37();
+				    
+				    
+				    
 				    Integer fee = Integer.valueOf(elmFee.substring(0, elmFee.length() - 2));
 				    Integer amt = Integer.valueOf(elmAmt.substring(0, elmAmt.length() - 2));
 
@@ -633,12 +638,33 @@ public class PrepaidTelcoController {
 				    purchaseTelkomselRes.setProvider(req.getData().getProvider());
 				    purchaseTelkomselRes.setInstitutionType(req.getData().getInstitutionType());
 				    purchaseTelkomselRes.setTitle(req.getData().getTitle());
+				    if(req.getData().getInstitutionType().equals("Paket Data") && resPurchaseTelkomselAranet.getRespayment().getResult().getElement63().equals("001160")){
+				    	refbayar = element61.substring(59, 89).trim();
+				    	purchaseTelkomselRes.setRefBayar(refbayar);
+					    purchaseTelkomselRes.setRrn(element37);
+					    purchaseTelkomselRes.setProdCode(resPurchaseTelkomselAranet.getRespayment().getResult().getElement63());
+					    log.debug("element 37 "+element37+" ref bayar "+refbayar);
+				    }
+				    
+				    
+				    
+				    
 
 				    // resAccount.getUser().getFirstName()
 
 				    response.setCode(ResponseMessage.SUCCESS.getCode());
 				    response.setMessage(messageUtil.get("success", httpServletRequest.getLocale()));
 				    response.setData(purchaseTelkomselRes);
+				    
+				    
+				    // 	// save limit harian
+					log.debug("param save limit " + resLmtDL.getData());
+					CommonResponse prosesLimit = Services
+							.create(TransferModuleService.class)
+							.prosesdailyLimit(resLmtDL.getData()).execute().body();
+					log.debug("log dari proses simpan limit " + prosesLimit);
+					
+					
 
 				    // send email receipt and save to favorite
 				    CommonResponse getUser = Services.create(UserModuleService.class)
@@ -651,7 +677,7 @@ public class PrepaidTelcoController {
 					log.debug("email : " + resUser.get("email"));
 					telcoService.sendEmailReceiptPrepaidTelco(purchaseTelkomselRes, resUser,
 						httpServletRequest.getLocale());
-					// log.debug("responseeeee "+response);
+					log.debug("responseeeee "+response);
 
 					// if(SUCCESS_CODE.equals(response.getCode())){
 					// response.setData(purchaseEMoneyRes);
@@ -664,6 +690,7 @@ public class PrepaidTelcoController {
 					    // log.debug("ID DESTINATION .... "+saveRes.getData().toString());
 					    purchaseTelkomselRes.setIdDestination(Long.parseLong(saveRes.getData().toString()));
 					    response.setData(purchaseTelkomselRes);
+					    log.debug("cek data res "+purchaseTelkomselRes.getRefBayar()+" "+purchaseTelkomselRes.getRrn());
 					}
 				    } else {
 					log.error("SUbscriber not found/invalid");
@@ -671,12 +698,7 @@ public class PrepaidTelcoController {
 					response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
 					response.setMessage(messageUtil.get("error.id.emoney.not.found", httpServletRequest.getLocale()));
 				    }
-				    	// save limit harian
-					log.debug("param save limit " + resLmtDL.getData());
-					CommonResponse prosesLimit = Services
-							.create(TransferModuleService.class)
-							.prosesdailyLimit(resLmtDL.getData()).execute().body();
-					log.debug("log dari proses simpan limit " + prosesLimit);
+				    
 				} else if (INVALID_AMOUNT.equals(codeRes)) {
 				    log.error("payment prepaid telco Invalid Amount");
 				    response = new CommonResponse();
@@ -685,8 +707,12 @@ public class PrepaidTelcoController {
 				} else if (PHONENUMBER_NOT_FOUND.equals(codeRes) || GIRO_USER_NOT_FOUND.equals(codeRes)) {
 				    log.error("prepaid telco - phone number not found");
 				    response = new CommonResponse();
-				    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
-				    response.setMessage(messageUtil.get("error.number.not.found", httpServletRequest.getLocale()));
+//				    response.setCode(ResponseMessage.DATA_NOT_FOUND.getCode());
+//				    response.setMessage(messageUtil.get("error.number.not.found", httpServletRequest.getLocale()));
+				    response.setCode(ResponseMessage.INVALID_TRANSACTION.getCode());
+				    response.setMessage(messageUtil.get("error.phone.number.not.found", httpServletRequest.getLocale()));
+				
+				
 				} else if (VOUCHER_OUT_OF_STOCK.equals(codeRes)) {
 				    log.error("prepaid telco - Voucher out of stock");
 				    response = new CommonResponse();
@@ -783,7 +809,7 @@ public class PrepaidTelcoController {
 				}
 			}
 
-	
+	//log.debug((String) response.getData());
 	return response;
     }
 
@@ -819,6 +845,7 @@ public class PrepaidTelcoController {
 	    dataReq.setReference(resTelco.getReferenceNumber());
 	    dataReq.setAccountNumber(resTelco.getAccountNumber());
 	    dataReq.setTotalAmount(resTelco.getTotalAmount());
+	    
 
 	    // destination type by provider
 	    if (DestinationTypeEnum.PRESIMPATI.name().equalsIgnoreCase(provider)) {
@@ -924,7 +951,7 @@ public class PrepaidTelcoController {
 	    response.setCode(ResponseMessage.INTERNAL_SERVER_ERROR.getCode());
 	    response.setMessage(messageUtil.get("error.internal.server", httpServletRequest.getLocale()));
 	}
-
+	//log.debug("response bayar paket data "+response.getData());
 	return response;
 
     }

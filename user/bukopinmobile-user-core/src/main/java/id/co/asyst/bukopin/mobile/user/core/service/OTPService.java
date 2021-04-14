@@ -230,7 +230,8 @@ public class OTPService {
 		message.setSubject(subject);
 		message.setFrom(env.getProperty("spring.mail.username"));
 		message.setTo(receiver);
-
+		log.debug("subject "+subject);
+		
 		// Create the HTML body using Thymeleaf
 		final String htmlContent = this.htmlTemplateEngine.process(EMAIL_TEMPLATE_NAME, ctx);
 		message.setText(htmlContent, true); // true = isHtml
@@ -240,7 +241,7 @@ public class OTPService {
 		message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-M.png"));
 		message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-M.png"));
 		message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-M.png"));
-		
+//		
 		// Send mail
 		javaMailSender.send(mimeMessage);
 		log.debug("OTP has been sent successfully");

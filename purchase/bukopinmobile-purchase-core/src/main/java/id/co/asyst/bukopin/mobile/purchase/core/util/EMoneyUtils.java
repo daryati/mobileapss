@@ -201,6 +201,13 @@ public class EMoneyUtils {
 	    param.setElement61(el61);
 	    param.setElement63(PRODUCT_CODE_EMONEY);
 	    param.setElement120(ROUTING_INFO);
+	 // set request for element 4
+	    String amount = reqAmount.toString() + "00";
+	    String padding4 = new String(new char[20 - amount.length()]).replace('\0', '0');
+	    String paddingZeroElm4 = padding4 + amount;
+	    param.setElement4(paddingZeroElm4);
+	    
+	    //param.setElement4("00000000000000000000");
 	} else if (OVO.equalsIgnoreCase(flagEmoney)) {
 	    // padding 20 number + code language
 	    String element61 = StringUtils.rightPad(custNo, 20).concat(lang);

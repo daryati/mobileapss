@@ -41,6 +41,13 @@ public class TransactionHistoryTelcoDataResponse {
     
     private String alias;
     
+ private String rrn;
+    
+    private String refBayar;
+    
+    private String prodCode;
+
+    
     /* Transient Attributes: */
 
     /* Constructors: */
@@ -207,6 +214,9 @@ public class TransactionHistoryTelcoDataResponse {
     public void setAlias(String alias) {
         this.alias = alias;
     }
+    
+    
+    
 
     /* Getters & setters for transient attributes: */
 
@@ -214,13 +224,71 @@ public class TransactionHistoryTelcoDataResponse {
 
     /* Overrides: */
 
-    /* (non-Javadoc)
+    /**
+	 * @return the rrn
+	 */
+	public String getRrn() {
+		return rrn;
+	}
+
+	/**
+	 * @param rrn the rrn to set
+	 */
+	public void setRrn(String rrn) {
+		this.rrn = rrn;
+	}
+
+	/**
+	 * @return the refBayar
+	 */
+	public String getRefBayar() {
+		return refBayar;
+	}
+
+	/**
+	 * @param refBayar the refBayar to set
+	 */
+	public void setRefBayar(String refBayar) {
+		this.refBayar = refBayar;
+	}
+
+	/**
+	 * @return the prodCode
+	 */
+	public String getProdCode() {
+		return prodCode;
+	}
+
+	/**
+	 * @param prodCode the prodCode to set
+	 */
+	public void setProdCode(String prodCode) {
+		this.prodCode = prodCode;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "TransactionHistoryTelcoDataResponse [dateTime=" + dateTime
+				+ ", referenceNumber=" + referenceNumber + ", accountNumber="
+				+ accountNumber + ", phoneNumber=" + phoneNumber + ", title="
+				+ title + ", typeData=" + typeData + ", amount=" + amount
+				+ ", adminFee=" + adminFee + ", totalAmount=" + totalAmount
+				+ ", alias=" + alias + ", rrn=" + rrn + ", refBayar="
+				+ refBayar + ", prodCode=" + prodCode + "]";
+	}
+
+	/* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
-    @Override
-    public String toString() {
-	return "TransactionHistoryTelcoPrepaid [dateTime=" + dateTime + ", referenceNumber=" + referenceNumber
-		+ ", accountNumber=" + accountNumber + ", phoneNumber=" + phoneNumber + ", title=" + title + ", typeData=" + typeData + ", adminFee=" + adminFee
-		+ ", amount=" + amount + ", totalAmount=" + totalAmount + ", alias=" + alias + "]";
-    }
+//    @Override
+//    public String toString() {
+//	return "TransactionHistoryTelcoPrepaid [dateTime=" + dateTime + ", referenceNumber=" + referenceNumber
+//		+ ", accountNumber=" + accountNumber + ", phoneNumber=" + phoneNumber + ", title=" + title + ", typeData=" + typeData + ", adminFee=" + adminFee
+//		+ ", amount=" + amount + ", totalAmount=" + totalAmount + ", alias=" + alias + "]";
+//    }
+	
+	
 }

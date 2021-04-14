@@ -87,6 +87,16 @@ public class Transaction extends IdBasedObject {
     
     @Column(name = "REASON", length = 255)
     private String reason;
+    
+    
+    @Column(name = "RRN", length = 100)
+    private String rrn;
+    
+    @Column(name = "REFBAYAR", length = 100)
+    private String refBayar;
+    
+    @Column(name = "PRODCODE", length = 255)
+    private String prodCode;
 
     /* Transient Attributes: */
 
@@ -300,15 +310,80 @@ public class Transaction extends IdBasedObject {
     public void setReason(String reason) {
         this.reason = reason;
     }
+    
+    
+    
 
-    /* (non-Javadoc)
+    /**
+	 * @return the rrn
+	 */
+	public String getRrn() {
+		return rrn;
+	}
+
+	/**
+	 * @param rrn the rrn to set
+	 */
+	public void setRrn(String rrn) {
+		this.rrn = rrn;
+	}
+
+	/**
+	 * @return the refBayar
+	 */
+	public String getRefBayar() {
+		return refBayar;
+	}
+
+	/**
+	 * @param refBayar the refBayar to set
+	 */
+	public void setRefBayar(String refBayar) {
+		this.refBayar = refBayar;
+	}
+
+	/**
+	 * @return the prodCode
+	 */
+	public String getProdCode() {
+		return prodCode;
+	}
+
+	/**
+	 * @param prodCode the prodCode to set
+	 */
+	public void setProdCode(String prodCode) {
+		this.prodCode = prodCode;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Transaction [user=" + user + ", destination=" + destination
+				+ ", createdDate=" + createdDate + ", refNumber=" + refNumber
+				+ ", type=" + type + ", accountNumber=" + accountNumber
+				+ ", totalAmount=" + totalAmount + ", noteId=" + noteId
+				+ ", noteEn=" + noteEn + ", billerProduct=" + billerProduct
+				+ ", menu=" + menu + ", status=" + status + ", reason="
+				+ reason + ", rrn=" + rrn + ", refBayar=" + refBayar
+				+ ", prodCode=" + prodCode + "]";
+	}
+
+	/* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
-    @Override
-    public String toString() {
-	return "Transaction [user=" + user + ", destination=" + destination + ", createdDate=" + createdDate
-		+ ", refNumber=" + refNumber + ", type=" + type + ", accountNumber=" + accountNumber + ", totalAmount="
-		+ totalAmount + ", noteId=" + noteId + ", noteEn=" + noteEn + ", billerProduct=" + billerProduct
-		+ ", menu=" + menu + ", status=" + status + ", reason=" + reason + "]";
-    }
+	
+	
+	
+	
+	
+//    @Override
+//    public String toString() {
+//	return "Transaction [user=" + user + ", destination=" + destination + ", createdDate=" + createdDate
+//		+ ", refNumber=" + refNumber + ", type=" + type + ", accountNumber=" + accountNumber + ", totalAmount="
+//		+ totalAmount + ", noteId=" + noteId + ", noteEn=" + noteEn + ", billerProduct=" + billerProduct
+//		+ ", menu=" + menu + ", status=" + status + ", reason=" + reason + "]";
+//    }
 }

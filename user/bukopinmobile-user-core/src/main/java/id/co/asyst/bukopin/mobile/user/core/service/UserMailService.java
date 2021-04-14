@@ -126,7 +126,9 @@ public class UserMailService {
 		messageUtil.get("success", loc));
 
 	try {
-	    String subject = SUBJECT_REGISTRATION;
+	   
+	   String subject =  SUBJECT_REGISTRATION;
+	   // String frome ="ahmad.andriyanto@bukopin.co.id";
 
 	    final Context ctx = new Context(loc);
 	    // Prepare message using a Spring helper
@@ -135,17 +137,14 @@ public class UserMailService {
 	    message.setSubject(subject);
 	    message.setFrom(env.getProperty("spring.mail.username"));
 	    message.setTo(receiver);
+	    log.debug("subject" + subject);
 
 	    // Create the HTML body using Thymeleaf
 	    final String htmlContent = this.htmlTemplateEngine.process(EMAIL_REGISTRATION_NAME, ctx);
 	    message.setText(htmlContent, true);
-	    message.addInline("reg", new ClassPathResource("/mail/images/il_RegisBerhasil-M.png"));
-	    message.addInline("header", new ClassPathResource("/mail/images/Header-M.png"));
-	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-M.png"));
-	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-M.png"));
-	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-M.png"));
-	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-M.png"));
-	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-M.png"));
+	    message.addInline("reg", new ClassPathResource("/mail/images/il_RegisBerhasil-L.png"));
+	    message.addInline("header", new ClassPathResource("/mail/images/Header-L.png"));
+	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-L.png"));
 
 	    // send email
 	    javaMailSender.send(mimeMessage);
@@ -202,13 +201,9 @@ public class UserMailService {
 	    // Create the HTML body using Thymeleaf
 	    final String htmlContent = this.htmlTemplateEngine.process(EMAIL_BLOCKED_NAME, ctx);
 	    message.setText(htmlContent, true);
-	    message.addInline("blocked", new ClassPathResource("/mail/images/il_BlokirPIN-M.png"));
-	    message.addInline("header", new ClassPathResource("/mail/images/Header-M.png"));
-	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-M.png"));
-	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-M.png"));
-	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-M.png"));
-	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-M.png"));
-	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-M.png"));
+	    message.addInline("blocked", new ClassPathResource("/mail/images/il_BlokirPIN-L.png"));
+	    message.addInline("header", new ClassPathResource("/mail/images/Header-L.png"));
+	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-L.png"));
 
 	    // send mail
 	    javaMailSender.send(mimeMessage);
@@ -273,13 +268,9 @@ public class UserMailService {
 
 	    final String htmlContent = this.htmlTemplateEngine.process(EMAIL_ACTIVATION_NAME, ctx);
 	    message.setText(htmlContent, true);
-	    message.addInline("activate", new ClassPathResource("/mail/images/il_AktivasiNorekBerhasil-M.png"));
-	    message.addInline("header", new ClassPathResource("/mail/images/Header-M.png"));
-	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-M.png"));
-	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-M.png"));
-	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-M.png"));
-	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-M.png"));
-	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-M.png"));
+	    message.addInline("activate", new ClassPathResource("/mail/images/il_AktivasiNorekBerhasil-L.png"));
+	    message.addInline("header", new ClassPathResource("/mail/images/Header-L.png"));
+	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-L.png"));
 
 	    // send mail
 	    javaMailSender.send(mimeMessage);
@@ -330,13 +321,9 @@ public class UserMailService {
 	    // Create the HTML body using Thymeleaf
 	    final String htmlContent = this.htmlTemplateEngine.process(EMAIL_NEW_DEVICE, ctx);
 	    message.setText(htmlContent, true); // true = isHtml
-	    message.addInline("header", new ClassPathResource("/mail/images/Header-M.png"), "image/png");
-	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-M.png"), "image/png");
-	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-M.png"), "image/png");
-	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-M.png"), "image/png");
-	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-M.png"), "image/png");
-	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-M.png"), "image/png");
-	    message.addInline("mainImg", new ClassPathResource("/mail/images/il_BedaDevice-M.png"), "image/png");
+	    message.addInline("header", new ClassPathResource("/mail/images/Header-L.png"), "image/png");
+	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-L.png"), "image/png");
+	    message.addInline("mainImg", new ClassPathResource("/mail/images/il_BedaDevice-L.png"), "image/png");
 
 	    javaMailSender.send(mimeMessage);
 	    log.error("New Device email successfully sent to: " + email);
@@ -383,12 +370,8 @@ public class UserMailService {
 	    // Create the HTML body using Thymeleaf
 	    final String htmlContent = this.htmlTemplateEngine.process(template, ctx);
 	    message.setText(htmlContent, true); // true = isHtml
-	    message.addInline("header", new ClassPathResource("/mail/images/Header-M.png"), "image/png");
-	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-M.png"), "image/png");
-	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-M.png"), "image/png");
-	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-M.png"), "image/png");
-	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-M.png"), "image/png");
-	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-M.png"), "image/png");
+	    message.addInline("header", new ClassPathResource("/mail/images/Header-L.png"), "image/png");
+	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-L.png"), "image/png");
 	    message.addInline("mainImg", new ClassPathResource(mainImage), "image/png");
 	    
 	    javaMailSender.send(mimeMessage);
@@ -435,12 +418,8 @@ public class UserMailService {
 	    // Create the HTML body using Thymeleaf
 	    final String htmlContent = this.htmlTemplateEngine.process(EMAIL_FORGOT_PASSWORD, ctx);
 	    message.setText(htmlContent, true); // true = isHtml
-	    message.addInline("header", new ClassPathResource("/mail/images/Header-M.png"));
-	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-M.png"));
-	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-M.png"));
-	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-M.png"));
-	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-M.png"));
-	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-M.png"));
+	    message.addInline("header", new ClassPathResource("/mail/images/Header-L.png"));
+	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-L.png"));
 
 	    javaMailSender.send(mimeMessage);
 	    log.debug("New Password has been sent successfully to: "+email);

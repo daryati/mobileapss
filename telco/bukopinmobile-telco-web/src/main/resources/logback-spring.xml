@@ -10,7 +10,7 @@
 	<!-- total size of all archive files, if total size > 10GB, it will delete old archived file -->
 	<property name="LOGBACK_ROLLINGPOLICY_TOTAL_SIZE_CAP" value="10GB" />
 	<!-- 150 days to keep -->
-	<property name="LOGBACK_ROLLINGPOLICY_MAX_HISTORY" value="150" />
+	<property name="LOGBACK_ROLLINGPOLICY_MAX_HISTORY" value="30" />
 	<!-- archived file pattern -->
 	<property name="LOGBACK_ROLLINGPOLICY_FILE_NAME_PATTERN" value="${LOG_PATH}/${MODULE}.%d{yyyy-MM-dd}.%i.zip" />
 	

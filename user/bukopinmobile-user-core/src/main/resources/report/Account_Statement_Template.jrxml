@@ -373,25 +373,25 @@
 				<textFieldExpression><![CDATA[$P{footer_description}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="279" y="10" width="296" height="1" forecolor="#FCFC4B" backcolor="#FCFC4B" uuid="2538b6c4-268b-4daf-ac19-6618649c331e"/>
+				<reportElement x="279" y="10" width="279" height="1" forecolor="#60584C" backcolor="#60584C" uuid="2538b6c4-268b-4daf-ac19-6618649c331e"/>
 			</line>
 			<textField hyperlinkType="Reference" hyperlinkTarget="Blank">
-				<reportElement x="444" y="30" width="111" height="15" forecolor="#0000EE" uuid="b92e24ba-c80e-45cd-be34-ffca9f8488c7"/>
+				<reportElement x="444" y="30" width="111" height="15"  forecolor="#333333" uuid="b92e24ba-c80e-45cd-be34-ffca9f8488c7"/>
 				<textElement textAlignment="Right">
-					<font fontName="SansSerif"/>
+					<font fontName="SansSerif" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{linkBukopin}]]></textFieldExpression>
 				<hyperlinkReferenceExpression><![CDATA["https://bukopin.co.id/"]]></hyperlinkReferenceExpression>
 			</textField>
 			<textField hyperlinkType="Reference" hyperlinkTarget="Blank">
-				<reportElement x="300" y="32" width="124" height="15" forecolor="#0000EE" uuid="b92e24ba-c80e-45cd-be34-ffca9f8488c7"/>
+				<reportElement x="280" y="32" width="150" height="15" forecolor="#333333" uuid="b92e24ba-c80e-45cd-be34-ffca9f8488c7"/>
 				<textElement textAlignment="Right">
-					<font fontName="SansSerif"/>
+					<font fontName="SansSerif" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{haloBukopin}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="-20" y="10" width="299" height="1" forecolor="#009A59" backcolor="#009A59" uuid="a8092dc8-33d5-4a00-8600-51b4bbdd13cd">
+				<reportElement x="-20" y="10" width="299" height="1" forecolor="#FFBC00" backcolor="#FFBC00" uuid="a8092dc8-33d5-4a00-8600-51b4bbdd13cd">
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
 				</reportElement>

@@ -115,7 +115,11 @@ public class CreditCardController {
 	private static final String CODE_CC_BKP = "CCBKP";
 	private static final String TRANSACTION_TYPE_POST = "POST";
 	private static final String ISFALSE = "FALSE";
-
+//set menu if success
+	private static final String CC_BKP_TRX_MENU = "Bukopin CC Payment";
+	private static final String CC_NONBKP_TRX_MENU = "Non Bukopin CC Payment";
+	
+	
 	/* Attributes: */
 	@Autowired
 	private MessageUtil messageUtil;

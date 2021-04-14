@@ -44,7 +44,7 @@ spring:
                starttls:
                   enable: true
    pln:
-      forwarding-institution-code: 4411338
+      forwarding-institution-code: 4390003
 
 ## LIQUIBASE (LiquibaseProperties)
 # spring.liquibase.enabled=false
@@ -55,7 +55,7 @@ spring:
       
 config:
    emoney:
-      forwarding-institution-code: 4411338
+      forwarding-institution-code: 4390003
    config:
    ## IP CONFIG
    ip:

@@ -21,6 +21,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @version $Revision$, Feb 14, 2020
  * @since 1.0.Alpha1
  */
+/**
+ * @author 216930237
+ *
+ */
+/**
+ * @author 216930237
+ *
+ */
 public class PaymentPrepaidTelcoResponse {
     /* Constants: */
 	
@@ -109,6 +117,21 @@ public class PaymentPrepaidTelcoResponse {
      */
 	@JsonIgnore
     private String institutionType;
+	
+	/**
+     * rrn
+     */
+	@JsonProperty
+    private String rrn;
+	
+	//	resi
+	@JsonProperty
+    private String refBayar;
+	
+//	prodcode
+	@JsonProperty
+    private String prodCode;
+	
 	
 
 	/* Transient Attributes: */
@@ -341,7 +364,60 @@ public class PaymentPrepaidTelcoResponse {
 	public void setTitle(String title) {
 		this.title = title;
 	}
+	
+	
+	
+	/**
+	 * @return the rrn
+	 */
+	public String getRrn() {
+		return rrn;
+	}
 
+	/**
+	 * @param rrn the rrn to set
+	 */
+	public void setRrn(String rrn) {
+		this.rrn = rrn;
+	}
+	
+	
+	
+
+	/**
+	 * @return the refBayar
+	 */
+	public String getRefBayar() {
+		return refBayar;
+	}
+
+	/**
+	 * @param refBayar the refBayar to set
+	 */
+	public void setRefBayar(String refBayar) {
+		this.refBayar = refBayar;
+	}
+	
+	
+	
+
+	/**
+	 * @return the prodCode
+	 */
+	public String getProdCode() {
+		return prodCode;
+	}
+
+	/**
+	 * @param prodCode the prodCode to set
+	 */
+	public void setProdCode(String prodCode) {
+		this.prodCode = prodCode;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "PaymentPrepaidTelcoResponse [subscriberName=" + subscriberName
@@ -352,8 +428,30 @@ public class PaymentPrepaidTelcoResponse {
 				+ ", totalAmount=" + totalAmount + ", idDestination="
 				+ idDestination + ", username=" + username + ", provider="
 				+ provider + ", title=" + title + ", institutionType="
-				+ institutionType + "]";
+				+ institutionType + ", rrn=" + rrn + ", refBayar=" + refBayar
+				+ ", prodCode=" + prodCode + "]";
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+
+	
+	
+	
+
+//	@Override
+//	public String toString() {
+//		return "PaymentPrepaidTelcoResponse [subscriberName=" + subscriberName
+//				+ ", dateTime=" + dateTime + ", referenceNumber="
+//				+ referenceNumber + ", accountNumber=" + accountNumber
+//				+ ", phoneNumber=" + phoneNumber + ", pGroup=" + pGroup
+//				+ ", adminFee=" + adminFee + ", amount=" + amount
+//				+ ", totalAmount=" + totalAmount + ", idDestination="
+//				+ idDestination + ", username=" + username + ", provider="
+//				+ provider + ", title=" + title + ", institutionType="
+//				+ institutionType + "]";
+//	}
 
 	
 	

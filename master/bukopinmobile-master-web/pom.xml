@@ -109,11 +109,7 @@
 			<artifactId>bukopinmobile-master-model</artifactId>
             <version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>bukopinmobile-master-core</artifactId>
-            <version>${project.version}</version>
-		</dependency>
+		
 		
         <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
         <dependency>

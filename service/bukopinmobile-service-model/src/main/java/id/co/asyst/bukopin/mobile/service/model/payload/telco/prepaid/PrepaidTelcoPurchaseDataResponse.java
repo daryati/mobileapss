@@ -34,6 +34,7 @@ public class PrepaidTelcoPurchaseDataResponse {
     private String element28;
     private String element32;
     private String element33;
+    private String element37;
     private String element39;
     private String element41;
     private String element49;
@@ -179,6 +180,22 @@ public class PrepaidTelcoPurchaseDataResponse {
     public void setElement33(String element33) {
         this.element33 = element33;
     }
+    
+    /**
+     * Gets <code>element37</code>.
+     * @return The <code>element37</code>.
+     */
+    public String getElement37() {
+        return element37;
+    }
+    /**
+     * Sets <code>element37</code>.
+     * @param element37 The <code>element37</code> to set.
+     */
+    public void setElement37(String element37) {
+        this.element37 = element37;
+    }
+    
     /**
      * Gets <code>element39</code>.
      * @return The <code>element39</code>.
@@ -336,6 +353,25 @@ public class PrepaidTelcoPurchaseDataResponse {
 	public void setElement123(String element123) {
 		this.element123 = element123;
 	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "PrepaidTelcoPurchaseDataResponse [mti=" + mti + ", element3="
+				+ element3 + ", element4=" + element4 + ", element7="
+				+ element7 + ", element11=" + element11 + ", element12="
+				+ element12 + ", element13=" + element13 + ", element18="
+				+ element18 + ", element28=" + element28 + ", element32="
+				+ element32 + ", element33=" + element33 + ", element37="
+				+ element37 + ", element39=" + element39 + ", element41="
+				+ element41 + ", element49=" + element49 + ", element54="
+				+ element54 + ", element61=" + element61 + ", element63="
+				+ element63 + ", element100=" + element100 + ", element102="
+				+ element102 + ", element103=" + element103 + ", element120="
+				+ element120 + ", element121=" + element121 + ", element122="
+				+ element122 + ", element123=" + element123 + "]";
+	}
     
     
     
@@ -344,21 +380,23 @@ public class PrepaidTelcoPurchaseDataResponse {
     /* Functionalities: */
 
 	
-	@Override
-	public String toString() {
-		return "EMoneyDataResponse [mti=" + mti + ", element3=" + element3
-				+ ", element4=" + element4 + ", element7=" + element7
-				+ ", element11=" + element11 + ", element12=" + element12
-				+ ", element13=" + element13 + ", element18=" + element18
-				+ ", element28=" + element28 + ", element32=" + element32
-				+ ", element33=" + element33 + ", element39=" + element39
-				+ ", element41=" + element41 + ", element49=" + element49
-				+ ", element54=" + element54 + ", element61=" + element61
-				+ ", element63=" + element63 + ", element100=" + element100
-				+ ", element102=" + element102 + ", element103=" + element103
-				+ ", element120=" + element120 + ", element121=" + element121
-				+ ", element122=" + element122 + ", element123=" + element123
-				+ "]";
-	}
+	
+	
+//	@Override
+//	public String toString() {
+//		return "EMoneyDataResponse [mti=" + mti + ", element3=" + element3
+//				+ ", element4=" + element4 + ", element7=" + element7
+//				+ ", element11=" + element11 + ", element12=" + element12
+//				+ ", element13=" + element13 + ", element18=" + element18
+//				+ ", element28=" + element28 + ", element32=" + element32
+//				+ ", element33=" + element33 +  ",element37=" + element37 +  ", element39=" + element39
+//				+ ", element41=" + element41 + ", element49=" + element49
+//				+ ", element54=" + element54 + ", element61=" + element61
+//				+ ", element63=" + element63 + ", element100=" + element100
+//				+ ", element102=" + element102 + ", element103=" + element103
+//				+ ", element120=" + element120 + ", element121=" + element121
+//				+ ", element122=" + element122 + ", element123=" + element123
+//				+ "]";
+//	}
 	
 }

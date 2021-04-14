@@ -161,12 +161,8 @@ public class PLNServices {
 	    // Create the HTML body using Thymeleaf
 	    final String htmlContent = this.htmlTemplateEngine.process(PREPAID_PLN_TEMPLATE_NAME, ctx);
 	    message.setText(htmlContent, true); // true = isHtml
-	    message.addInline("header", new ClassPathResource("/mail/images/Header-M.png"));
-	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-M.png"));
-	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-M.png"));
-	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-M.png"));
-	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-M.png"));
-	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-M.png"));
+	    message.addInline("header", new ClassPathResource("/mail/images/Header-L.png"));
+	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-L.png"));
 
 	    javaMailSender.send(mimeMessage);
 	    log.debug("PLN Prepaid receipt has been sent successfully");

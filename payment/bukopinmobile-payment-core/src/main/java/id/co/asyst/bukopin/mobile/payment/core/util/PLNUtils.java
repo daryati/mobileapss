@@ -184,6 +184,7 @@ public class PLNUtils {
 	
 	// trdesc1+nopel
 	String trdesc1 = StringUtils.rightPad(TRDES1+request.getSubscriberNumber(), 40);
+
 	// trdesc2+sumberdana
 	String trdesc2 = StringUtils.rightPad(TRDES2+request.getAccountNo(), 40);
 	// trdesc3

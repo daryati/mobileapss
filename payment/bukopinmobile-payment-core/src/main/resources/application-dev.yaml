@@ -53,7 +53,7 @@ spring:
       
 config:
    pln:
-      forwarding-institution-code: 4411338
+      forwarding-institution-code: 4390003
       
    # FORWARD INS CODE FOR CC   
    cc:

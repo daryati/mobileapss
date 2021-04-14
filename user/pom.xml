@@ -424,8 +424,14 @@
 				<!-- SOAP URL -->
 				<!-- acc info tibco asyst -->
         		<!-- <soap.url.bukopin.accountInfo>http://10.2.62.81:55581/cbs/listing/accountstatement</soap.url.bukopin.accountInfo> -->
-        		<!-- acc info bkp -->
-        		<soap.url.bukopin.accountInfo>http://10.2.62.80:55578/cbs/listing/accountstatement</soap.url.bukopin.accountInfo>
+        		
+        		<!-- acc info bkp 
+        		<soap.url.bukopin.accountInfo>http://10.2.62.81:55579/cbs/listing/accountstatement</soap.url.bukopin.accountInfo>
+				-->
+				
+				<!-- sebelum diganti 10.2.62.80:55578 --> 
+				<soap.url.bukopin.accountInfo>http://10.2.62.81:55579/cbs/listing/accountstatement</soap.url.bukopin.accountInfo>
+        		
         		<!-- <soap.url.bukopin.accountInfo>http://10.2.64.85:55555/cbs/listing/accountstatement</soap.url.bukopin.accountInfo>-->
         		
         		<soap.url.bukopin.cif>http://10.2.62.81:55511/CBS/Inquiry/CIF</soap.url.bukopin.cif>
@@ -438,8 +444,8 @@
 			<id>STG</id>
 			<properties>
 				<!-- JDBC Config: -->
-				<jdbc.type>postgresql</jdbc.type>
-				<jdbc.version>7.4.1.jre8</jdbc.version>
+				<jdbc.type>mssql</jdbc.type>
+				<jdbc.version>9.2.0.jre8</jdbc.version>
 				<jdbc.groupId>com.microsoft.sqlserver</jdbc.groupId>
 				<jdbc.artifactId>mssql-jdbc</jdbc.artifactId>
 				
@@ -460,8 +466,8 @@
 			<id>PRD</id>
 			<properties>
 				<!-- JDBC Config: -->
-				<jdbc.type>postgresql</jdbc.type>
-				<jdbc.version>7.4.1.jre8</jdbc.version>
+				<jdbc.type>mssql</jdbc.type>
+				<jdbc.version>9.2.0.jre8</jdbc.version>
 				<jdbc.groupId>com.microsoft.sqlserver</jdbc.groupId>
 				<jdbc.artifactId>mssql-jdbc</jdbc.artifactId>
 				

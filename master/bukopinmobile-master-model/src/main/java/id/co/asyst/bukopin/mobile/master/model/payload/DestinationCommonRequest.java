@@ -21,7 +21,11 @@ import java.math.BigDecimal;
 public class DestinationCommonRequest {
     /* Constants: */
 
-    /* Attributes: */
+   
+
+
+
+	/* Attributes: */
     /**
      * Category Id from table Category
      */
@@ -66,6 +70,58 @@ public class DestinationCommonRequest {
      * account Number for transaction response
      */
     private String accountNumber;
+    
+    private String rrn;
+    
+    private String refBayar;
+    
+    private String prodCode;
+    
+    /**
+   	 * @return the rrn
+   	 */
+   	public String getRrn() {
+   		return rrn;
+   	}
+
+   	/**
+   	 * @param rrn the rrn to set
+   	 */
+   	public void setRrn(String rrn) {
+   		this.rrn = rrn;
+   	}
+
+   	/**
+   	 * @return the refBayar
+   	 */
+   	public String getRefBayar() {
+   		return refBayar;
+   	}
+
+   	/**
+   	 * @param refBayar the refBayar to set
+   	 */
+   	public void setRefBayar(String refBayar) {
+   		this.refBayar = refBayar;
+   	}
+
+   	/**
+   	 * @return the prodCode
+   	 */
+   	public String getProdCode() {
+   		return prodCode;
+   	}
+
+   	/**
+   	 * @param prodCode the prodCode to set
+   	 */
+   	public void setProdCode(String prodCode) {
+   		this.prodCode = prodCode;
+   	}
+
+    
+    
+    
 
     /* Constructors: */
 
@@ -198,6 +254,24 @@ public class DestinationCommonRequest {
 		this.accountNumber = accountNumber;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "DestinationCommonRequest [categoryId=" + categoryId
+				+ ", username=" + username + ", subscriberNumber="
+				+ subscriberNumber + ", subscriberName=" + subscriberName
+				+ ", destinationType=" + destinationType + ", transactionType="
+				+ transactionType + ", reference=" + reference
+				+ ", totalAmount=" + totalAmount + ", accountNumber="
+				+ accountNumber + ", rrn=" + rrn + ", refBayar=" + refBayar
+				+ ", prodCode=" + prodCode + "]";
+	}
+	
+	
+	
+
     /* Functionalities: */
 
     
@@ -206,11 +280,14 @@ public class DestinationCommonRequest {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
-    @Override
-    public String toString() {
-	return "DestinationCommonRequest [categoryId=" + categoryId + ", username=" + username + ", subscriberNumber="
-		+ subscriberNumber + ", subscriberName=" + subscriberName + ", destinationType=" + destinationType
-		+ ", transactionType=" + transactionType
-		+ ", reference=" + reference + "]";
-    }
+	
+	
+	
+//    @Override
+//    public String toString() {
+//	return "DestinationCommonRequest [categoryId=" + categoryId + ", username=" + username + ", subscriberNumber="
+//		+ subscriberNumber + ", subscriberName=" + subscriberName + ", destinationType=" + destinationType
+//		+ ", transactionType=" + transactionType
+//		+ ", reference=" + reference + "]";
+//    }
 }

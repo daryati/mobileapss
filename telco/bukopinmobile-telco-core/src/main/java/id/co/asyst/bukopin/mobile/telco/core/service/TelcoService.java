@@ -197,12 +197,8 @@ public class TelcoService {
 	    // final String htmlContent =
 	    // this.htmlTemplateEngine.process(TELCO_TEMPLATE_NAME, ctx);
 	    message.setText(htmlContent, true); // true = isHtml
-	    message.addInline("header", new ClassPathResource("/mail/images/Header-S.png"));
-	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-S.png"));
-	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-S.png"));
-	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-S.png"));
-	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-S.png"));
-	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-S.png"));
+	    message.addInline("header", new ClassPathResource("/mail/images/Header-L.png"));
+	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-L.png"));
 
 	    javaMailSender.send(mimeMessage);
 	    log.debug("Prepaid Telco receipt has been sent successfully");
@@ -317,9 +313,6 @@ public class TelcoService {
 	    ctx.setVariable("customerName", resTelcoPayment.getCustName());
 	    ctx.setVariable("billPeriode", billPeriode);
 	    ctx.setVariable("provider", resTelcoPayment.getProductName());
-	    ctx.setVariable("total", total);
-	    ctx.setVariable("adminCharge", adminCharge);
-	    ctx.setVariable("bill", amount);
 	    
 	    ctx.setVariable("total", total);
 	    ctx.setVariable("adminCharge", adminCharge);
@@ -336,12 +329,8 @@ public class TelcoService {
 	    // Create the HTML body using Thymeleaf
 	    final String htmlContent = this.htmlTemplateEngine.process(TELCO_POSTPAID_TEMPLATE_NAME, ctx);
 	    message.setText(htmlContent, true); // true = isHtml
-	    message.addInline("header", new ClassPathResource("/mail/images/Header-S.png"));
-	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-S.png"));
-	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-S.png"));
-	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-S.png"));
-	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-S.png"));
-	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-S.png"));
+	    message.addInline("header", new ClassPathResource("/mail/images/Header-L.png"));
+	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-L.png"));
 
 	    javaMailSender.send(mimeMessage);
 	    log.debug("Postpaid Telco receipt has been sent successfully");

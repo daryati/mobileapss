@@ -415,7 +415,7 @@ public class TransactionHistoryDaoImpl implements TransactionHistoryDao {
 	String sql = "SELECT" +
 		" A.ID, A.REFERENCE_NUMBER, A.CREATED_DATE, B.ACCOUNT_NUMBER," +
 		" B.ADMIN_FEE, B.AMOUNT, B.TOTAL_AMOUNT, B.TYPE_TELCO," +
-		" C.SUBSCRIBER_NAME, C.SUBSCRIBER_NUMBER, C.ALIAS" + 
+		" C.SUBSCRIBER_NAME, C.SUBSCRIBER_NUMBER, C.ALIAS " + 
 		" FROM TRX A" +
 		" JOIN TELCO_PREPAID B ON B.ID_TRANSACTION = A.ID" +
 		" JOIN DESTINATION C ON C.ID = A.ID_DESTINATION" +
@@ -448,6 +448,7 @@ public class TransactionHistoryDaoImpl implements TransactionHistoryDao {
 	result.setSubscriberName(telcoPrepaidResp.get(8));
 	result.setPhoneNumber(telcoPrepaidResp.get(9));
 	result.setAlias(telcoPrepaidResp.get(10));
+	
 	response = Optional.of(result);
 
 	entityManager.close();
@@ -729,7 +730,8 @@ public class TransactionHistoryDaoImpl implements TransactionHistoryDao {
 	TransactionHistoryTelcoDataResponse result = new TransactionHistoryTelcoDataResponse();
 
 	String sql = "SELECT"
-		+ " A.ID, A.REFERENCE_NUMBER, A.CREATED_DATE, A.ACCOUNT_NUMBER, B.*, C.SUBSCRIBER_NUMBER, C.ALIAS"
+		+ " A.ID, A.REFERENCE_NUMBER, A.CREATED_DATE, A.ACCOUNT_NUMBER, B.*, "
+		+ "C.SUBSCRIBER_NUMBER, C.ALIAS, A.RRN,A.REFBAYAR,A.PRODCODE"
 		+ " FROM TRX A" + " JOIN TELCO_DATA B ON B.ID_TRANSACTION = A.ID"
 		+ " JOIN DESTINATION C ON C.ID = A.ID_DESTINATION" + " WHERE A.ID = " + id + ";";
 
@@ -761,7 +763,9 @@ public class TransactionHistoryDaoImpl implements TransactionHistoryDao {
 	result.setAdminFee(adminFee);
 	result.setTotalAmount(totalAmount);
 	result.setAlias(telcoDataResp.get(11));
-
+	result.setRrn(telcoDataResp.get(12));
+	result.setRefBayar(telcoDataResp.get(13));
+	result.setProdCode(telcoDataResp.get(14));
 	response = Optional.of(result);
 
 	entityManager.close();

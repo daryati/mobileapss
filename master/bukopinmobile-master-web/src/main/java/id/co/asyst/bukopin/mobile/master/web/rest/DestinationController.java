@@ -550,6 +550,8 @@ public class DestinationController {
 		String ref = request.getData().getReference();
 		String accountNumber = request.getData().getAccountNumber();
 		BigDecimal totalAmount = request.getData().getTotalAmount();
+		String rrn="",refBayar="",prodCode="";
+		
 
 		PurchaseCategory findCategory = categoryService.findById(categoryId).orElse(null);
 		if (null == findCategory) {
@@ -608,6 +610,10 @@ public class DestinationController {
 			transaction.setUser(userMap);
 			transaction.setAccountNumber(accountNumber);
 			transaction.setTotalAmount(totalAmount);
+			
+			transaction.setRrn(rrn);
+			transaction.setRefBayar(refBayar);
+			transaction.setProdCode(prodCode);
 
 			// set note id and note en
 			if (TransactionTypeEnum.PLNPRE.name().equalsIgnoreCase(transactionType)) {
@@ -641,6 +647,12 @@ public class DestinationController {
 				billerProduct = TELKOMSEL;
 			    } else if(type.equalsIgnoreCase(IM3) || type.equalsIgnoreCase(MENTARI)) {
 				billerProduct = INDOSAT;
+				//nambah buat indosat
+
+				 rrn = request.getData().getRrn();
+				 refBayar = request.getData().getRefBayar();
+				 prodCode = request.getData().getProdCode();
+				
 			    } else if(type.equalsIgnoreCase(XL) || type.equalsIgnoreCase(AXIS)) {
 				billerProduct = XL;
 			    } else {
@@ -694,6 +706,9 @@ public class DestinationController {
 
 			    transaction.setBillerProduct(billerProduct);
 			}
+			transaction.setRrn(rrn);
+			transaction.setRefBayar(refBayar);
+			transaction.setProdCode(prodCode);
 
 			log.info("Save to Transaction");
 			transaction = transactionService.save(transaction);

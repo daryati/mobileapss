@@ -49,7 +49,7 @@ spring:
          cluster-name: elasticsearch
          cluster-nodes: 10.2.62.119:9200
          username: elastic
-         password: elastic
+         password: Bukopin2020
          
 
 ##spring.data.elasticsearch.cluster-name=elasticsearch

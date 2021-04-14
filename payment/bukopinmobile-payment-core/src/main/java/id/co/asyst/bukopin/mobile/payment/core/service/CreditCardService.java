@@ -201,12 +201,8 @@ public class CreditCardService {
 	    }
 
 	    message.setText(htmlContent, true); // true = isHtml
-	    message.addInline("header", new ClassPathResource("/mail/images/Header-S.png"));
-	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-S.png"));
-	    message.addInline("fb", new ClassPathResource("/mail/images/ic_Facebook-S.png"));
-	    message.addInline("halo", new ClassPathResource("/mail/images/ic_HaloBukopin-S.png"));
-	    message.addInline("ig", new ClassPathResource("/mail/images/ic_Instagram-S.png"));
-	    message.addInline("twitter", new ClassPathResource("/mail/images/ic_Twitter-S.png"));
+	    message.addInline("header", new ClassPathResource("/mail/images/Header-L.png"));
+	    message.addInline("footer", new ClassPathResource("/mail/images/Footers-L.png"));
 
 	    javaMailSender.send(mimeMessage);
 	    log.debug("Payment receipt has been sent successfully");
